@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MentoratNetCore.Data;
 using MentoratNetCore.Models;
 using MentoratNetCore.Services;
+using Newtonsoft.Json.Serialization;
 
 namespace MentoratNetCore
 {
@@ -36,7 +37,14 @@ namespace MentoratNetCore
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
 
-            services.AddMvc();
+            services
+                .AddMvc()
+                // Maintain property names during serialization. See:
+                // https://github.com/aspnet/Announcements/issues/194
+                .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); ;
+
+            // Add Kendo UI services to the services container
+            services.AddKendo();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
