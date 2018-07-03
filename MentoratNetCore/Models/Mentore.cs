@@ -14,10 +14,10 @@ namespace MentoratNetCore.Models
         {
             No_Mentore = Guid.NewGuid().ToString();
             Interventions = new HashSet<Intervention>();
-            Expertises = new HashSet<Expertise>();
+            MentoresExpertises = new HashSet<MentoresExpertises>();
             Inscriptions = new HashSet<MentoratInscription>();
         }
-        public int[] MentoresExpertises { get; set; }
+        //public int[] MentoresExpertises { get; set; }
 
 
         [Key]
@@ -95,11 +95,11 @@ namespace MentoratNetCore.Models
         public virtual ICollection<Intervention> Interventions { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Expertise> Expertises { get; set; }
+        public virtual ICollection<MentoresExpertises> MentoresExpertises { get; set; }
 
         [System.ComponentModel.ReadOnly(true)]
         public string ListerExpertises {
-            get { return string.Join(",", Expertises); }
+            get { return string.Join(",", MentoresExpertises); }
             // get { return "Martin";}           
         }
 

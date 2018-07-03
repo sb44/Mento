@@ -11,7 +11,7 @@ namespace MentoratNetCore.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Expertise()
         {
-            Mentores = new HashSet<Mentore>();
+            MentoresExpertises = new HashSet<MentoresExpertises>();
         }
 
         [Key]
@@ -28,6 +28,6 @@ namespace MentoratNetCore.Models
         public int? No_Regroupement_Expertise { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Mentore> Mentores { get; set; }
+        public virtual ICollection<MentoresExpertises> MentoresExpertises { get; set; }
     }
 }

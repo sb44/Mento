@@ -52,10 +52,10 @@ namespace MentoratNetCore.Data
                 .HasForeignKey(e => e.No_Mentor_Intervention);
 
             builder.Entity<ApplicationCategorieUser>()
-                .HasKey(k => k.Id)
+                //.HasKey(k => k.Id)
                 .ToTable("AspNetCategorieUser")
-                .Property(p => p.Id)
-                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+                .Property(p => p.Id);
+                //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
 
 
             //Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, Configuration>());

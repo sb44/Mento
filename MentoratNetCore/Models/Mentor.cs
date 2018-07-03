@@ -14,7 +14,7 @@ namespace MentoratNetCore.Models
         {
             //Interventions = new HashSet<Intervention>();
             NoMentor = Guid.NewGuid().ToString();
-            this.MentoratCategories = new HashSet<MentoratCategorie>();
+            this.MentoratCategorieMentors = new HashSet<MentoratCategorieMentors>();
             this.MentoratInscriptions = new HashSet<MentoratInscription>();
         }
 
@@ -56,7 +56,7 @@ namespace MentoratNetCore.Models
         [Column("Courriel_Mentor")]
         public string CourrielMentor { get; set; }
 
-        public virtual ICollection<MentoratCategorie> MentoratCategories { get; set; }
+        public virtual ICollection<MentoratCategorieMentors> MentoratCategorieMentors { get; set; }
 
 
         [Column("DateConnexion_Mentor")]

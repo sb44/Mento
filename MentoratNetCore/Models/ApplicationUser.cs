@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using MentoratNetCore.Data;
 using Microsoft.AspNetCore.Identity;
 
 namespace MentoratNetCore.Models
@@ -43,16 +44,14 @@ namespace MentoratNetCore.Models
 
         }
 
-
-
-
-        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
-        {
-            // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
-            var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
-            // Add custom user claims here
-            return userIdentity;
-        }
+        // SB: enlever pour EF Core
+        //public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
+        //{
+        //    // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
+        //    var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
+        //    // Add custom user claims here
+        //    return userIdentity;
+        //}
 
         [ForeignKey("UserId")]
         public ICollection<ApplicationUserRole> UserRoles { get; set; }
@@ -61,9 +60,8 @@ namespace MentoratNetCore.Models
 
     }
 
-    public class ApplicationRole : IdentityRole<string, ApplicationUserRole>
+    public class ApplicationRole : IdentityRole // SB: enlever pour EF.. IdentityRole<string, ApplicationUserRole>
     {
-
         public string NomLong { get; set; }
         public virtual string IdParent { get; set; }
 
@@ -94,28 +92,29 @@ namespace MentoratNetCore.Models
         }
     }
 
-    public class ApplicationUserClaim : IdentityUserClaim { }
+    public class ApplicationUserClaim : IdentityUserClaim<string> { } //SB: ajout <string>
 
-    public class ApplicationUserLogin : IdentityUserLogin { }
+    public class ApplicationUserLogin : IdentityUserLogin<string> { } //SB: ajout <string>
 
-    public class ApplicationUserRole : IdentityUserRole
+    public class ApplicationUserRole : IdentityUserRole<string> // SB: était "ApplicationUserRole : IdentityUserRole"
     {
         [ForeignKey("RoleId")]
         public ApplicationRole Role { get; set; }
     }
 
-    public class ApplicationUserStore :
-    UserStore<ApplicationUser, ApplicationRole, string, ApplicationUserLogin, ApplicationUserRole, ApplicationUserClaim>,
-    IUserStore<ApplicationUser>,
-    IDisposable
-    {
-        public ApplicationUserStore(ApplicationDbContext context) : base(context) { }
-    }
+    // SB: enlève pour EFCore
+    //public class ApplicationUserStore :
+    //UserStore<ApplicationUser, ApplicationRole, string, ApplicationUserLogin, ApplicationUserRole, ApplicationUserClaim>,
+    //IUserStore<ApplicationUser>,
+    //IDisposable
+    //{
+    //    public ApplicationUserStore(ApplicationDbContext context) : base(context) { }
+    //}
 
-    public class ApplicationRoleStore : RoleStore<ApplicationRole, string, ApplicationUserRole>, IDisposable
-    {
-        public ApplicationRoleStore(ApplicationDbContext context) : base(context) { }
-    }
+    //public class ApplicationRoleStore : RoleStore<ApplicationRole, string, ApplicationUserRole>, IDisposable
+    //{
+    //    public ApplicationRoleStore(ApplicationDbContext context) : base(context) { }
+    //}
 
 
 }
