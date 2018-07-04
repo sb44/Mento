@@ -6,14 +6,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
-using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System;
 
-namespace MentoratNetCore.Data.Migrations
+namespace MentoratNetCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180703205347_test")]
-    partial class test
+    [Migration("20180704211733_StartSB")]
+    partial class StartSB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,6 +31,40 @@ namespace MentoratNetCore.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AspNetCategorieUser");
+                });
+
+            modelBuilder.Entity("MentoratNetCore.Models.ApplicationRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken();
+
+                    b.Property<int?>("IdCategorieUtilisateur");
+
+                    b.Property<string>("IdParent");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("NomLong");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdCategorieUtilisateur");
+
+                    b.HasIndex("IdParent");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles");
                 });
 
             modelBuilder.Entity("MentoratNetCore.Models.ApplicationUser", b =>
@@ -93,6 +126,19 @@ namespace MentoratNetCore.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("MentoratNetCore.Models.ApplicationUserRole", b =>
+                {
+                    b.Property<string>("UserId");
+
+                    b.Property<string>("RoleId");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles");
                 });
 
             modelBuilder.Entity("MentoratNetCore.Models.Expert", b =>
@@ -205,21 +251,14 @@ namespace MentoratNetCore.Data.Migrations
 
             modelBuilder.Entity("MentoratNetCore.Models.MentoratCategorieMentors", b =>
                 {
-                    b.Property<string>("Mentor_NoMentor")
-                        .HasColumnName("No_Mentor")
-                        .HasMaxLength(128);
+                    b.Property<string>("NoMentor")
+                        .HasColumnName("No_Mentor");
 
-                    b.Property<string>("MentorNoMentor");
+                    b.Property<int>("MentoratCategorieId");
 
-                    b.Property<string>("MentoratCategorieId");
+                    b.HasKey("NoMentor", "MentoratCategorieId");
 
-                    b.Property<int?>("MentoratCategorieId1");
-
-                    b.HasKey("Mentor_NoMentor");
-
-                    b.HasIndex("MentorNoMentor");
-
-                    b.HasIndex("MentoratCategorieId1");
+                    b.HasIndex("MentoratCategorieId");
 
                     b.ToTable("MentoratCategorieMentors");
                 });
@@ -319,15 +358,13 @@ namespace MentoratNetCore.Data.Migrations
 
             modelBuilder.Entity("MentoratNetCore.Models.MentoresExpertises", b =>
                 {
-                    b.Property<int>("ExpertiseId");
+                    b.Property<int>("No_Expertise");
 
-                    b.Property<int>("MentoreId");
+                    b.Property<string>("No_Mentore");
 
-                    b.Property<string>("MentoreNo_Mentore");
+                    b.HasKey("No_Expertise", "No_Mentore");
 
-                    b.HasKey("ExpertiseId", "MentoreId");
-
-                    b.HasIndex("MentoreNo_Mentore");
+                    b.HasIndex("No_Mentore");
 
                     b.ToTable("MentoresExpertises");
                 });
@@ -357,35 +394,6 @@ namespace MentoratNetCore.Data.Migrations
                     b.HasIndex("InscriptionId");
 
                     b.ToTable("PlanAction");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken();
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256);
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
-
-                    b.ToTable("AspNetRoles");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityRole");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -444,24 +452,6 @@ namespace MentoratNetCore.Data.Migrations
                     b.ToTable("AspNetUserLogins");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId");
-
-                    b.Property<string>("RoleId");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUserRole<string>");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId");
@@ -479,38 +469,13 @@ namespace MentoratNetCore.Data.Migrations
 
             modelBuilder.Entity("MentoratNetCore.Models.ApplicationRole", b =>
                 {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole");
+                    b.HasOne("MentoratNetCore.Models.ApplicationCategorieUser", "CategorieUtilisateur")
+                        .WithMany()
+                        .HasForeignKey("IdCategorieUtilisateur");
 
-                    b.Property<int?>("IdCategorieUtilisateur");
-
-                    b.Property<string>("IdParent");
-
-                    b.Property<string>("NomLong");
-
-                    b.HasIndex("IdCategorieUtilisateur");
-
-                    b.HasIndex("IdParent");
-
-                    b.ToTable("ApplicationRole");
-
-                    b.HasDiscriminator().HasValue("ApplicationRole");
-                });
-
-            modelBuilder.Entity("MentoratNetCore.Models.ApplicationUserRole", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUserRole<string>");
-
-                    b.Property<string>("ApplicationUserId1");
-
-                    b.Property<string>("RoleId1");
-
-                    b.HasIndex("ApplicationUserId1");
-
-                    b.HasIndex("RoleId1");
-
-                    b.ToTable("ApplicationUserRole");
-
-                    b.HasDiscriminator().HasValue("ApplicationUserRole");
+                    b.HasOne("MentoratNetCore.Models.ApplicationRole", "RoleParent")
+                        .WithMany("RolesEnfants")
+                        .HasForeignKey("IdParent");
                 });
 
             modelBuilder.Entity("MentoratNetCore.Models.ApplicationUser", b =>
@@ -518,6 +483,19 @@ namespace MentoratNetCore.Data.Migrations
                     b.HasOne("MentoratNetCore.Models.ApplicationCategorieUser", "CategorieUtilisateur")
                         .WithMany("LstUtilisateurs")
                         .HasForeignKey("IdCategorieUtilisateur");
+                });
+
+            modelBuilder.Entity("MentoratNetCore.Models.ApplicationUserRole", b =>
+                {
+                    b.HasOne("MentoratNetCore.Models.ApplicationRole", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("MentoratNetCore.Models.ApplicationUser", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("MentoratNetCore.Models.Intervention", b =>
@@ -533,13 +511,15 @@ namespace MentoratNetCore.Data.Migrations
 
             modelBuilder.Entity("MentoratNetCore.Models.MentoratCategorieMentors", b =>
                 {
+                    b.HasOne("MentoratNetCore.Models.MentoratCategorie", "MentoratCategorie")
+                        .WithMany()
+                        .HasForeignKey("MentoratCategorieId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("MentoratNetCore.Models.Mentor", "Mentor")
                         .WithMany("MentoratCategorieMentors")
-                        .HasForeignKey("MentorNoMentor");
-
-                    b.HasOne("MentoratNetCore.Models.MentoratCategorie", "MentoratCategorie")
-                        .WithMany("MentoratCategorieMentors")
-                        .HasForeignKey("MentoratCategorieId1");
+                        .HasForeignKey("NoMentor")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("MentoratNetCore.Models.MentoratInscription", b =>
@@ -572,12 +552,13 @@ namespace MentoratNetCore.Data.Migrations
                 {
                     b.HasOne("MentoratNetCore.Models.Expertise", "Expertise")
                         .WithMany("MentoresExpertises")
-                        .HasForeignKey("ExpertiseId")
+                        .HasForeignKey("No_Expertise")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("MentoratNetCore.Models.Mentore", "Mentore")
                         .WithMany("MentoresExpertises")
-                        .HasForeignKey("MentoreNo_Mentore");
+                        .HasForeignKey("No_Mentore")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("MentoratNetCore.Models.PlanAction", b =>
@@ -590,7 +571,7 @@ namespace MentoratNetCore.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
+                    b.HasOne("MentoratNetCore.Models.ApplicationRole")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -612,47 +593,12 @@ namespace MentoratNetCore.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MentoratNetCore.Models.ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.HasOne("MentoratNetCore.Models.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("MentoratNetCore.Models.ApplicationRole", b =>
-                {
-                    b.HasOne("MentoratNetCore.Models.ApplicationCategorieUser", "CategorieUtilisateur")
-                        .WithMany()
-                        .HasForeignKey("IdCategorieUtilisateur");
-
-                    b.HasOne("MentoratNetCore.Models.ApplicationRole", "RoleParent")
-                        .WithMany("RolesEnfants")
-                        .HasForeignKey("IdParent");
-                });
-
-            modelBuilder.Entity("MentoratNetCore.Models.ApplicationUserRole", b =>
-                {
-                    b.HasOne("MentoratNetCore.Models.ApplicationUser")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("ApplicationUserId1");
-
-                    b.HasOne("MentoratNetCore.Models.ApplicationRole", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId1");
                 });
 #pragma warning restore 612, 618
         }

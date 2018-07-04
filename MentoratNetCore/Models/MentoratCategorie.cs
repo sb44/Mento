@@ -11,7 +11,7 @@ namespace MentoratNetCore.Models
     {
         public MentoratCategorie()
         {
-            this.MentoratCategorieMentors = new HashSet<MentoratCategorieMentors>();
+            ///this.MentoratCategorieMentors = new HashSet<MentoratCategorieMentors>();
             this.Mentores = new HashSet<Mentore>();
         }
 
@@ -28,6 +28,6 @@ namespace MentoratNetCore.Models
 
         public virtual ICollection<Mentore> Mentores { get; set; }
 
-        public virtual ICollection<MentoratCategorieMentors> MentoratCategorieMentors { get; set; }
+        ///public virtual ICollection<MentoratCategorieMentors> MentoratCategorieMentors { get; set; }
     }
 }

@@ -6,16 +6,24 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MentoratNetCore.Models;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace MentoratNetCore.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    //public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string, IdentityUserClaim<string>
+    , ApplicationUserRole, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
 
+        /// <summary>
+        /// Code adapté de https://docs.microsoft.com/en-us/aspnet/core/migration/1x-to-2x/identity-2x#add-identityuser-poco-navigation-properties ET https://stackoverflow.com/questions/45863522/ef-core-2-0-identity-adding-navigation-properties
+        /// 
+        /// </summary>
+        /// <param name="builder"></param>
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -29,13 +37,21 @@ namespace MentoratNetCore.Data
 
             base.OnModelCreating(builder);
 
-            // SB : Enlèvement pour EFCore et création de la classe MentoresExpertises
+            // SB : Enlèvement pour EFCore. 
+            //      Remplacé par la création de la classe MentoresExpertises Et le code ci-dessous pour permettre relation Plusieurs à Plusieurs
             //builder.Entity<Expertise>()
             //    .HasMany(e => e.Mentores)
             //    .WithMany(e => e.Expertises)
             //    .Map(m => m.ToTable("MentoresExpertises").MapLeftKey("No_Expertise_ME").MapRightKey("No_Mentore_ME"));
+
+            // Conf. table de jonction "MentoresExpertises" pour rel. plus. à plus.
             builder.Entity<MentoresExpertises>()
-                .HasKey(t => new { t.ExpertiseId, t.MentoreId });
+                .HasKey(t => new { t.No_Expertise, t.No_Mentore });
+
+            // Conf. table de jonction "MentoratCategorieMentors" pour rel. plus. à plus.
+             builder.Entity<MentoratCategorieMentors>()
+                 .HasKey(t => new { t.NoMentor, t.MentoratCategorieId });
+
 
             builder.Entity<Mentore>()
                 .Property(e => e.upsize_ts);
@@ -43,19 +59,38 @@ namespace MentoratNetCore.Data
 
             builder.Entity<Mentore>()
                 .HasMany(e => e.Interventions)
-                .WithOne(e => e.Mentore) //SB: remplacement de .WithOptional par .WithOne pour EFCore3
+                .WithOne(e => e.Mentore) //SB: remplacement de .WithOptional par .WithOne pour EFCore
                 .HasForeignKey(e => e.No_Mentore_Intervention);
 
             builder.Entity<Mentor>()
                 .HasMany(e => e.Interventions)
-                .WithOne(e => e.Mentor) //SB: remplacement de .WithOptional par .WithOne pour EFCore3
+                .WithOne(e => e.Mentor) //SB: remplacement de .WithOptional par .WithOne pour EFCore
                 .HasForeignKey(e => e.No_Mentor_Intervention);
+
 
             builder.Entity<ApplicationCategorieUser>()
                 //.HasKey(k => k.Id)
                 .ToTable("AspNetCategorieUser")
                 .Property(p => p.Id);
-                //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+            //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+
+
+            builder.Entity<ApplicationUser>()
+                .HasMany(e => e.UserRoles)
+                .WithOne()
+                .HasForeignKey(e => e.UserId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ApplicationUserRole>()
+                .HasOne(e => e.User)
+                .WithMany(e => e.UserRoles)
+                .HasForeignKey(e => e.UserId);
+
+            builder.Entity<ApplicationUserRole>()
+                .HasOne(e => e.Role)
+                .WithMany(e => e.UserRoles)
+                .HasForeignKey(e => e.RoleId);
 
 
             //Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, Configuration>());

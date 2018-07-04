@@ -5,6 +5,21 @@
     <UserSecretsId>aspnet-MentoratNetCore-ECF2EAB6-84C8-4A70-BDA2-4002F4D1DC01</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Migrations\20180704200700_StartSB.cs" />
+    <Compile Remove="Migrations\20180704200700_StartSB.Designer.cs" />
+    <Compile Remove="Migrations\20180704201156_StartSB.cs" />
+    <Compile Remove="Migrations\20180704201156_StartSB.Designer.cs" />
+    <Compile Remove="Migrations\20180704201627_StartSB.cs" />
+    <Compile Remove="Migrations\20180704201627_StartSB.Designer.cs" />
+    <Compile Remove="Migrations\20180704204944_StartSB.cs" />
+    <Compile Remove="Migrations\20180704204944_StartSB.Designer.cs" />
+    <Compile Remove="Migrations\20180704205507_StartSB.cs" />
+    <Compile Remove="Migrations\20180704205507_StartSB.Designer.cs" />
+    <Compile Remove="Migrations\20180704210043_StartSB.cs" />
+    <Compile Remove="Migrations\20180704210043_StartSB.Designer.cs" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />

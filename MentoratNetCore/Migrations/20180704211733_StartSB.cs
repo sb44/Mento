@@ -3,82 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 using System.Collections.Generic;
 
-namespace MentoratNetCore.Data.Migrations
+namespace MentoratNetCore.Migrations
 {
-    public partial class test : Migration
+    public partial class StartSB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "UserNameIndex",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropIndex(
-                name: "IX_AspNetUserRoles_UserId",
-                table: "AspNetUserRoles");
-
-            migrationBuilder.DropIndex(
-                name: "RoleNameIndex",
-                table: "AspNetRoles");
-
-            migrationBuilder.AddColumn<bool>(
-                name: "ActifUser",
-                table: "AspNetUsers",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<int>(
-                name: "IdCategorieUtilisateur",
-                table: "AspNetUsers",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "NomUser",
-                table: "AspNetUsers",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "PrenomUser",
-                table: "AspNetUsers",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "ApplicationUserId1",
-                table: "AspNetUserRoles",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "RoleId1",
-                table: "AspNetUserRoles",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "Discriminator",
-                table: "AspNetUserRoles",
-                nullable: false,
-                defaultValue: "");
-
-            migrationBuilder.AddColumn<int>(
-                name: "IdCategorieUtilisateur",
-                table: "AspNetRoles",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "IdParent",
-                table: "AspNetRoles",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "NomLong",
-                table: "AspNetRoles",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "Discriminator",
-                table: "AspNetRoles",
-                nullable: false,
-                defaultValue: "");
-
             migrationBuilder.CreateTable(
                 name: "AspNetCategorieUser",
                 columns: table => new
@@ -151,29 +81,91 @@ namespace MentoratNetCore.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MentoratCategorieMentors",
+                name: "AspNetRoles",
                 columns: table => new
                 {
-                    No_Mentor = table.Column<string>(maxLength: 128, nullable: false),
-                    MentorNoMentor = table.Column<string>(nullable: true),
-                    MentoratCategorieId = table.Column<string>(nullable: true),
-                    MentoratCategorieId1 = table.Column<int>(nullable: true)
+                    Id = table.Column<string>(nullable: false),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
+                    IdCategorieUtilisateur = table.Column<int>(nullable: true),
+                    IdParent = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 256, nullable: true),
+                    NomLong = table.Column<string>(nullable: true),
+                    NormalizedName = table.Column<string>(maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MentoratCategorieMentors", x => x.No_Mentor);
+                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MentoratCategorieMentors_Mentors_MentorNoMentor",
-                        column: x => x.MentorNoMentor,
-                        principalTable: "Mentors",
-                        principalColumn: "No_Mentor",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_MentoratCategorieMentors_MentoratCategorie_MentoratCategorieId1",
-                        column: x => x.MentoratCategorieId1,
-                        principalTable: "MentoratCategorie",
+                        name: "FK_AspNetRoles_AspNetCategorieUser_IdCategorieUtilisateur",
+                        column: x => x.IdCategorieUtilisateur,
+                        principalTable: "AspNetCategorieUser",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AspNetRoles_AspNetRoles_IdParent",
+                        column: x => x.IdParent,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    ActifUser = table.Column<bool>(nullable: false),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(nullable: false),
+                    IdCategorieUtilisateur = table.Column<int>(nullable: true),
+                    LockoutEnabled = table.Column<bool>(nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
+                    NomUser = table.Column<string>(nullable: true),
+                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
+                    PasswordHash = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
+                    PrenomUser = table.Column<string>(nullable: true),
+                    SecurityStamp = table.Column<string>(nullable: true),
+                    TwoFactorEnabled = table.Column<bool>(nullable: false),
+                    UserName = table.Column<string>(maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_AspNetCategorieUser_IdCategorieUtilisateur",
+                        column: x => x.IdCategorieUtilisateur,
+                        principalTable: "AspNetCategorieUser",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MentoratCategorieMentors",
+                columns: table => new
+                {
+                    No_Mentor = table.Column<string>(nullable: false),
+                    MentoratCategorieId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MentoratCategorieMentors", x => new { x.No_Mentor, x.MentoratCategorieId });
+                    table.ForeignKey(
+                        name: "FK_MentoratCategorieMentors_MentoratCategorie_MentoratCategorieId",
+                        column: x => x.MentoratCategorieId,
+                        principalTable: "MentoratCategorie",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MentoratCategorieMentors_Mentors_No_Mentor",
+                        column: x => x.No_Mentor,
+                        principalTable: "Mentors",
+                        principalColumn: "No_Mentor",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -211,6 +203,112 @@ namespace MentoratNetCore.Data.Migrations
                         principalTable: "Mentors",
                         principalColumn: "No_Mentor",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetRoleClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ClaimType = table.Column<string>(nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true),
+                    RoleId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ClaimType = table.Column<string>(nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(nullable: false),
+                    ProviderKey = table.Column<string>(nullable: false),
+                    ProviderDisplayName = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(nullable: false),
+                    RoleId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(nullable: false),
+                    LoginProvider = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    Value = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -282,25 +380,24 @@ namespace MentoratNetCore.Data.Migrations
                 name: "MentoresExpertises",
                 columns: table => new
                 {
-                    ExpertiseId = table.Column<int>(nullable: false),
-                    MentoreId = table.Column<int>(nullable: false),
-                    MentoreNo_Mentore = table.Column<string>(nullable: true)
+                    No_Expertise = table.Column<int>(nullable: false),
+                    No_Mentore = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MentoresExpertises", x => new { x.ExpertiseId, x.MentoreId });
+                    table.PrimaryKey("PK_MentoresExpertises", x => new { x.No_Expertise, x.No_Mentore });
                     table.ForeignKey(
-                        name: "FK_MentoresExpertises_Expertises_ExpertiseId",
-                        column: x => x.ExpertiseId,
+                        name: "FK_MentoresExpertises_Expertises_No_Expertise",
+                        column: x => x.No_Expertise,
                         principalTable: "Expertises",
                         principalColumn: "No_Expertise",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MentoresExpertises_Mentores_MentoreNo_Mentore",
-                        column: x => x.MentoreNo_Mentore,
+                        name: "FK_MentoresExpertises_Mentores_No_Mentore",
+                        column: x => x.No_Mentore,
                         principalTable: "Mentores",
                         principalColumn: "No_Mentore",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -328,26 +425,9 @@ namespace MentoratNetCore.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_IdCategorieUtilisateur",
-                table: "AspNetUsers",
-                column: "IdCategorieUtilisateur");
-
-            migrationBuilder.CreateIndex(
-                name: "UserNameIndex",
-                table: "AspNetUsers",
-                column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserRoles_ApplicationUserId1",
-                table: "AspNetUserRoles",
-                column: "ApplicationUserId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserRoles_RoleId1",
-                table: "AspNetUserRoles",
-                column: "RoleId1");
+                name: "IX_AspNetRoleClaims_RoleId",
+                table: "AspNetRoleClaims",
+                column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoles_IdCategorieUtilisateur",
@@ -367,6 +447,38 @@ namespace MentoratNetCore.Data.Migrations
                 filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserClaims_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserLogins_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserRoles_RoleId",
+                table: "AspNetUserRoles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_IdCategorieUtilisateur",
+                table: "AspNetUsers",
+                column: "IdCategorieUtilisateur");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "AspNetUsers",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "AspNetUsers",
+                column: "NormalizedUserName",
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Interventions_No_Mentor_Intervention",
                 table: "Interventions",
                 column: "No_Mentor_Intervention");
@@ -377,14 +489,9 @@ namespace MentoratNetCore.Data.Migrations
                 column: "No_Mentore_Intervention");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MentoratCategorieMentors_MentorNoMentor",
+                name: "IX_MentoratCategorieMentors_MentoratCategorieId",
                 table: "MentoratCategorieMentors",
-                column: "MentorNoMentor");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MentoratCategorieMentors_MentoratCategorieId1",
-                table: "MentoratCategorieMentors",
-                column: "MentoratCategorieId1");
+                column: "MentoratCategorieId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MentoratInscription_MentorNoMentor",
@@ -412,92 +519,32 @@ namespace MentoratNetCore.Data.Migrations
                 column: "No_Mentor_Mentore");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MentoresExpertises_MentoreNo_Mentore",
+                name: "IX_MentoresExpertises_No_Mentore",
                 table: "MentoresExpertises",
-                column: "MentoreNo_Mentore");
+                column: "No_Mentore");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlanAction_InscriptionId",
                 table: "PlanAction",
                 column: "InscriptionId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetRoles_AspNetCategorieUser_IdCategorieUtilisateur",
-                table: "AspNetRoles",
-                column: "IdCategorieUtilisateur",
-                principalTable: "AspNetCategorieUser",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetRoles_AspNetRoles_IdParent",
-                table: "AspNetRoles",
-                column: "IdParent",
-                principalTable: "AspNetRoles",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserRoles_AspNetUsers_ApplicationUserId1",
-                table: "AspNetUserRoles",
-                column: "ApplicationUserId1",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserRoles_AspNetRoles_RoleId1",
-                table: "AspNetUserRoles",
-                column: "RoleId1",
-                principalTable: "AspNetRoles",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUsers_AspNetCategorieUser_IdCategorieUtilisateur",
-                table: "AspNetUsers",
-                column: "IdCategorieUtilisateur",
-                principalTable: "AspNetCategorieUser",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserTokens_AspNetUsers_UserId",
-                table: "AspNetUserTokens",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_AspNetRoles_AspNetCategorieUser_IdCategorieUtilisateur",
-                table: "AspNetRoles");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_AspNetRoles_AspNetRoles_IdParent",
-                table: "AspNetRoles");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_AspNetUserRoles_AspNetUsers_ApplicationUserId1",
-                table: "AspNetUserRoles");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_AspNetUserRoles_AspNetRoles_RoleId1",
-                table: "AspNetUserRoles");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_AspNetUsers_AspNetCategorieUser_IdCategorieUtilisateur",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_AspNetUserTokens_AspNetUsers_UserId",
-                table: "AspNetUserTokens");
+            migrationBuilder.DropTable(
+                name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
-                name: "AspNetCategorieUser");
+                name: "AspNetUserClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserLogins");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserRoles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
                 name: "Experts");
@@ -515,10 +562,19 @@ namespace MentoratNetCore.Data.Migrations
                 name: "PlanAction");
 
             migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
                 name: "Expertises");
 
             migrationBuilder.DropTable(
                 name: "MentoratInscription");
+
+            migrationBuilder.DropTable(
+                name: "AspNetCategorieUser");
 
             migrationBuilder.DropTable(
                 name: "Mentores");
@@ -528,94 +584,6 @@ namespace MentoratNetCore.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Mentors");
-
-            migrationBuilder.DropIndex(
-                name: "IX_AspNetUsers_IdCategorieUtilisateur",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropIndex(
-                name: "UserNameIndex",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropIndex(
-                name: "IX_AspNetUserRoles_ApplicationUserId1",
-                table: "AspNetUserRoles");
-
-            migrationBuilder.DropIndex(
-                name: "IX_AspNetUserRoles_RoleId1",
-                table: "AspNetUserRoles");
-
-            migrationBuilder.DropIndex(
-                name: "IX_AspNetRoles_IdCategorieUtilisateur",
-                table: "AspNetRoles");
-
-            migrationBuilder.DropIndex(
-                name: "IX_AspNetRoles_IdParent",
-                table: "AspNetRoles");
-
-            migrationBuilder.DropIndex(
-                name: "RoleNameIndex",
-                table: "AspNetRoles");
-
-            migrationBuilder.DropColumn(
-                name: "ActifUser",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "IdCategorieUtilisateur",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "NomUser",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "PrenomUser",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "ApplicationUserId1",
-                table: "AspNetUserRoles");
-
-            migrationBuilder.DropColumn(
-                name: "RoleId1",
-                table: "AspNetUserRoles");
-
-            migrationBuilder.DropColumn(
-                name: "Discriminator",
-                table: "AspNetUserRoles");
-
-            migrationBuilder.DropColumn(
-                name: "IdCategorieUtilisateur",
-                table: "AspNetRoles");
-
-            migrationBuilder.DropColumn(
-                name: "IdParent",
-                table: "AspNetRoles");
-
-            migrationBuilder.DropColumn(
-                name: "NomLong",
-                table: "AspNetRoles");
-
-            migrationBuilder.DropColumn(
-                name: "Discriminator",
-                table: "AspNetRoles");
-
-            migrationBuilder.CreateIndex(
-                name: "UserNameIndex",
-                table: "AspNetUsers",
-                column: "NormalizedUserName",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserRoles_UserId",
-                table: "AspNetUserRoles",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "RoleNameIndex",
-                table: "AspNetRoles",
-                column: "NormalizedName");
         }
     }
 }

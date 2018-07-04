@@ -53,8 +53,8 @@ namespace MentoratNetCore.Models
         //    return userIdentity;
         //}
 
-        [ForeignKey("UserId")]
-        public ICollection<ApplicationUserRole> UserRoles { get; set; }
+        public virtual ICollection<ApplicationUserRole> UserRoles { get; } = new List<ApplicationUserRole>();
+        //public ICollection<ApplicationUserRole> UserRoles { get; set; }
 
 
 
@@ -62,6 +62,15 @@ namespace MentoratNetCore.Models
 
     public class ApplicationRole : IdentityRole // SB: enlever pour EF.. IdentityRole<string, ApplicationUserRole>
     {
+        public ApplicationRole() { }
+
+        public ApplicationRole(string roleName)
+            : base(roleName)
+        {
+        }
+        public virtual ICollection<ApplicationUserRole> UserRoles { get; } = new List<ApplicationUserRole>();
+
+
         public string NomLong { get; set; }
         public virtual string IdParent { get; set; }
 
@@ -98,8 +107,8 @@ namespace MentoratNetCore.Models
 
     public class ApplicationUserRole : IdentityUserRole<string> // SB: était "ApplicationUserRole : IdentityUserRole"
     {
-        [ForeignKey("RoleId")]
-        public ApplicationRole Role { get; set; }
+        public virtual ApplicationUser User { get; set; }
+        public virtual ApplicationRole Role { get; set; }
     }
 
     // SB: enlève pour EFCore

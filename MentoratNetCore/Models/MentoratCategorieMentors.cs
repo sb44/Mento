@@ -9,16 +9,16 @@ namespace MentoratNetCore.Models
 {
     public class MentoratCategorieMentors
     {
-        [Key]
         //[Column( "No_Mentor")]
+        //[Column("No_Mentor")]
+        //[StringLength(128)]
+        //[DatabaseGeneratedAttribute(DatabaseGeneratedOption.None)]
         [Column("No_Mentor")]
-        [StringLength(128)]
-        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.None)]
-        public string Mentor_NoMentor { get; set; }
+        public string NoMentor { get; set; }
 
         public virtual Mentor Mentor { get; set; }
 
-        public string MentoratCategorieId { get; set; }
+        public int MentoratCategorieId { get; set; }
         public virtual MentoratCategorie MentoratCategorie { get; set; }
     }
 }
