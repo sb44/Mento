@@ -10,6 +10,10 @@ namespace MentoratNetCore.Controllers
 {
     public class HomeController : Controller
     {
+        public string Test()
+        {
+            return "test string for test action SB ";
+        }
         public IActionResult Index()
         {
             return View();

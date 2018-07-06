@@ -20,8 +20,9 @@ namespace MentoratNetCore.Data
         }
 
         /// <summary>
-        /// Code adapté de https://docs.microsoft.com/en-us/aspnet/core/migration/1x-to-2x/identity-2x#add-identityuser-poco-navigation-properties ET https://stackoverflow.com/questions/45863522/ef-core-2-0-identity-adding-navigation-properties
-        /// 
+        ///  Usage du "Fluent API" pour configurer le model en overridant OnModelCreating
+        /// "Fluent API configuration has the highest precedence and will override conventions and data annotations." - https://docs.microsoft.com/en-us/ef/core/modeling/?view=aspnetcore-2.1
+        ///  Code adapté de https://docs.microsoft.com/en-us/aspnet/core/migration/1x-to-2x/identity-2x#add-identityuser-poco-navigation-properties ET https://stackoverflow.com/questions/45863522/ef-core-2-0-identity-adding-navigation-properties
         /// </summary>
         /// <param name="builder"></param>
         protected override void OnModelCreating(ModelBuilder builder)
@@ -35,8 +36,6 @@ namespace MentoratNetCore.Data
                 throw new ArgumentNullException("ModelBuilder is NULL");
             }
 
-            base.OnModelCreating(builder);
-
             // SB : Enlèvement pour EFCore. 
             //      Remplacé par la création de la classe MentoresExpertises Et le code ci-dessous pour permettre relation Plusieurs à Plusieurs
             //builder.Entity<Expertise>()
@@ -44,12 +43,12 @@ namespace MentoratNetCore.Data
             //    .WithMany(e => e.Expertises)
             //    .Map(m => m.ToTable("MentoresExpertises").MapLeftKey("No_Expertise_ME").MapRightKey("No_Mentore_ME"));
 
-            // Conf. table de jonction "MentoresExpertises" pour rel. plus. à plus.
+            // Configur. table de jonction "MentoresExpertises" pour relation plus. à plus.
             builder.Entity<MentoresExpertises>()
                 .HasKey(t => new { t.No_Expertise, t.No_Mentore });
 
-            // Conf. table de jonction "MentoratCategorieMentors" pour rel. plus. à plus.
-             builder.Entity<MentoratCategorieMentors>()
+            // Configur. table de jonction "MentoratCategorieMentors" pour relation plus. à plus.
+            builder.Entity<MentoratCategorieMentors>()
                  .HasKey(t => new { t.NoMentor, t.MentoratCategorieId });
 
 
@@ -72,7 +71,7 @@ namespace MentoratNetCore.Data
                 //.HasKey(k => k.Id)
                 .ToTable("AspNetCategorieUser")
                 .Property(p => p.Id);
-            //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+                //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
 
 
             builder.Entity<ApplicationUser>()

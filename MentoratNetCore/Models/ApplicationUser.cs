@@ -43,6 +43,8 @@ namespace MentoratNetCore.Models
             }
 
         }
+        public virtual ICollection<ApplicationUserRole> UserRoles { get; } = new List<ApplicationUserRole>();
+        //public ICollection<ApplicationUserRole> UserRoles { get; set; }
 
         // SB: enlever pour EF Core
         //public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
@@ -52,14 +54,11 @@ namespace MentoratNetCore.Models
         //    // Add custom user claims here
         //    return userIdentity;
         //}
-
-        public virtual ICollection<ApplicationUserRole> UserRoles { get; } = new List<ApplicationUserRole>();
-        //public ICollection<ApplicationUserRole> UserRoles { get; set; }
-
-
-
     }
-
+    /// <summary>
+    /// 1 rôle possède 1 rôle parent. 
+    /// 1 rôle possède 1 ou * rôles enfants 
+    /// </summary>
     public class ApplicationRole : IdentityRole // SB: enlever pour EF.. IdentityRole<string, ApplicationUserRole>
     {
         public ApplicationRole() { }

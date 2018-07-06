@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
@@ -6,25 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20180704200700_StartSB.cs" />
-    <Compile Remove="Migrations\20180704200700_StartSB.Designer.cs" />
-    <Compile Remove="Migrations\20180704201156_StartSB.cs" />
-    <Compile Remove="Migrations\20180704201156_StartSB.Designer.cs" />
-    <Compile Remove="Migrations\20180704201627_StartSB.cs" />
-    <Compile Remove="Migrations\20180704201627_StartSB.Designer.cs" />
-    <Compile Remove="Migrations\20180704204944_StartSB.cs" />
-    <Compile Remove="Migrations\20180704204944_StartSB.Designer.cs" />
-    <Compile Remove="Migrations\20180704205507_StartSB.cs" />
-    <Compile Remove="Migrations\20180704205507_StartSB.Designer.cs" />
-    <Compile Remove="Migrations\20180704210043_StartSB.cs" />
-    <Compile Remove="Migrations\20180704210043_StartSB.Designer.cs" />
-  </ItemGroup>
-
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.3" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.4" PrivateAssets="All" />
+    <PackageReference Include="Sendgrid" Version="9.9.0" />
     <PackageReference Include="Telerik.UI.for.AspNet.Core" Version="2018.2.620" />
   </ItemGroup>
 
