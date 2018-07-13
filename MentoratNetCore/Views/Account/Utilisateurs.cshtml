@@ -1,0 +1,87 @@
+﻿@model MentoratNetCore.Models.UtilisateursViewModel
+
+@{
+    ViewBag.Title = "Utilisateurs";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@if (User.Identity.IsAuthenticated && User.IsInRole("PageMentores"))
+{
+    <h2>Tous les utilisateurs du site Mentorat</h2><br/>
+
+    @(Html.Kendo().Grid<MentoratNetCore.Models.UtilisateursViewModel>()
+                  .Name("grid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.NomComplet).Title("Nom").Filterable(filtre => filtre.Extra(false).Operators(operateur => operateur.ForString(str => str.Clear().Contains("Contient"))));
+                      columns.Bound(c => c.Email).Title("Courriel").Filterable(filtre => filtre.Extra(false).Operators(operateur => operateur.ForString(str => str.Clear().Contains("Contient"))));
+                      columns.Bound(c => c.UserName).Title("Nom d'utilisateur").Filterable(filtre => filtre.Extra(false).Operators(operateur => operateur.ForString(str => str.Clear().Contains("Contient").DoesNotContain("Ne contient pas"))));
+                      columns.Bound(c => c.StatutUser).Title("Statut").Hidden(true).Filterable(filtre => filtre.Extra(false).Operators(operateur => operateur.ForString(str => str.Clear().Contains("Contient"))));
+                      columns.Command(command =>
+                            command.Custom("Dossier").Text(" ").IconClass("k-icon k-i-folder").Click("ModifierUtilisateur")
+                          );
+
+
+                      //if (User.Identity.IsAuthenticated && (User.IsInRole("GererUtilisateur") || User.IsInRole("GererUtilisateurDroits")))
+                      //{
+                      //    columns.Command(command => command.Custom("Consulter").Click("ModifierUtilisateur"));
+                      //}
+                  })
+
+              .ToolBar(toolbar =>
+              {
+                  if (User.Identity.IsAuthenticated && User.IsInRole("GererUtilisateur"))
+                  {
+                      toolbar.Custom().Name("AjouterUtilisateur").Text("Nouveau").HtmlAttributes(new { id = "AjouterUtilisateur", @class = "k-plus" }).Url("#");
+                  }
+                  toolbar.Excel();
+              })
+              .Excel(excel => excel.AllPages(true).Filterable(true))
+              //.Editable(editable => editable.Mode(GridEditMode.PopUp))
+              .Scrollable()
+              //.Pageable()
+              .Sortable()
+              .Filterable()
+              .DataSource(dataSource => dataSource
+                 .Ajax()
+                  .Model(model => model.Id(p => p.Id))
+                  .Read(read => read.Action("Utilisateurs_Read", "Account"))
+              )
+    )
+}
+
+
+<script>
+    $(document).ready(function () {
+        $("#AjouterUtilisateur").kendoButton({
+            icon: "plus"
+        });
+
+        $("#AjouterUtilisateur").bind("click", function () {
+            window.location.href = '@Url.Content("~/Account/Register")';
+        });
+
+    });
+
+    function ModifierUtilisateur(e)
+    {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        window.location.href = "@Url.Action("Utilisateur","Account")?utilisateur=" + dataItem.UserName + "&section=Info";
+           
+    }
+</script>
+
+<style>
+            #grid{
+        height:73vh;
+    }
+
+    @@media only screen and (max-width: 850px) {
+        #grid {
+            height: 95vh;
+        }
+    }
+</style>

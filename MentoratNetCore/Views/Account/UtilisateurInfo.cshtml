@@ -1,0 +1,278 @@
+﻿@model MentoratNetCore.Models.UtilisateurInfoViewModel
+@using MentoratNetCore.Extensions
+
+@using Microsoft.AspNet.Identity
+
+
+@using (Html.BeginForm("UpdateUtilisateur", "Account", FormMethod.Post, new { id = "FormUpdate" }))
+{
+    @Html.AntiForgeryToken()
+   // <h4>Modifier les informations de @{@Model.NomComplet}</h4>
+  //  <hr />
+
+    @Html.HiddenFor(m => m.Id)
+    @Html.ValidationMessageFor(m => m.Id)
+
+    <ul id="fieldlistInfo">
+        <li>
+            @Html.LabelFor(m => m.UserName)
+            @Html.Kendo().TextBoxFor(m => m.UserName)
+            @*@Html.ValidationMessageForKendoCsc("UserName")*@
+            @Html.ValidationMessageFor(m => m.UserName)
+        </li>
+        <li>
+            @Html.LabelFor(m => m.Prenom)
+            @Html.Kendo().TextBoxFor(m => m.Prenom)
+            @Html.ValidationMessageFor(m => m.Prenom)
+        </li>
+        <li>
+            @Html.LabelFor(m => m.Nom)
+            @Html.Kendo().TextBoxFor(m => m.Nom)
+            @Html.ValidationMessageFor(m => m.Nom)
+        <li>
+            @Html.LabelFor(m => m.Email)
+            @Html.Kendo().TextBoxFor(m => m.Email)
+            @Html.ValidationMessageFor(m => m.Email)
+        </li>
+
+        @if (User.Identity.IsAuthenticated && User.IsInRole("GererUtilisateur"))
+        {
+            <li>
+                @Html.LabelFor(m => m.Password)
+                @Html.Kendo().TextBoxFor(m => m.Password).HtmlAttributes(new { type = "password" })
+                @Html.ValidationMessageFor(m => m.Password)
+            </li>
+                <li>
+                    @Html.LabelFor(m => m.ConfirmPassword)
+                    @Html.Kendo().TextBoxFor(m => m.ConfirmPassword).HtmlAttributes(new { type = "password" })
+                    @Html.ValidationMessageFor(m => m.ConfirmPassword)
+                </li>
+        }
+        
+        @if (User.IsInRole("GererUtilisateur"))
+        {
+            <li class="actions">
+                @(Html.Kendo().Button()
+                .Name("btnSubmit")
+                .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                .Content("Enregistrer")
+                )
+
+                @(Html.Kendo().Button()
+                    .Name("btnAnnuler")
+                    .Icon("undo")
+                    .Content("Retour")
+                )
+
+            @if (User.IsInRole("GererUtilisateurSuppression"))
+            {
+                @(Html.Kendo().Button()
+                    .Name("btnSupprimerUtilisateur")
+                    .Icon("trash")
+                    .Content("Supprimer l'utilisateur")
+                )
+            }
+
+            </li>
+        }
+
+
+
+    </ul>
+    }
+
+@Html.Validation_Error_Convertion_Kendo_Template()
+
+<script>
+
+    $(function () {
+
+        @Html.Validation_Error_Convertion_Kendo_Script("FormUpdate");
+
+        $("#FormUpdate").kendoValidator({
+            rules: {
+                comparerPassword: function (input) {
+                    var ret = true;
+                    if (input.is("[name=ConfirmPassword]")) {
+                        ret = input.val() === $("#Password").val();
+                    }
+                    return ret;
+                }
+            },
+            messages: {
+                    comparerPassword: "Le mot de passe et la confirmation ne correspondent pas."
+            }
+        });
+
+    });
+
+    function StatutBoutonsUtilisateurInfo(boolActive) {
+        $("#btnAnnuler").attr("disabled", !boolActive);
+        $("#btnSubmit").attr("disabled", !boolActive);
+    }
+
+
+    $("#btnSubmit").click(function (e) {
+        e.preventDefault();
+
+        StatutBoutonsUtilisateurInfo(false);
+
+        var validator = $("#FormUpdate").data("kendoValidator");
+
+        if (validator.validate()) {
+            $("#FormUpdate").submit();
+        }
+        else {
+            alert("pas valide!");
+        }
+
+
+    });
+
+    $('#FormUpdate').on("submit", function (e)
+    {
+        e.preventDefault();
+
+        $.ajax(
+         {
+            url: this.action,
+            type: this.method,
+            data: $(this).serialize(),
+            success: function (result)
+            {
+                if (!result.success)
+                {
+
+                    $("#tabstripUtilisateur-1").html(result);
+                    return false;
+                }
+                else
+                {
+                    //Enregistrement avec succès
+
+                    var oldUser = "@Html.Raw(Model.UserName)";
+                    var newUser = $("#UserName").val();
+
+                    //Le nom de l'utilisate a été changer alors il ouvrir la page au nouvel utilisateur.
+                    if(oldUser != newUser)
+                    {
+                        window.location.href = "@Url.Action("Utilisateur","Account")?utilisateur=" + newUser + "&section=Info";
+                    }
+                }
+            },
+             error: function (resultat, statut, erreur)
+             {
+                console.log("Resultat: " + resultat.responseText);
+                console.log("statut : " + statut);
+                console.log("Erreur: " + erreur);
+                return false;
+            },
+             complete: function(resultat)
+            {
+                StatutBoutonsUtilisateurInfo(true);
+            }
+
+        });
+
+
+
+    });
+
+    $("#btnAnnuler").click(function (e) {
+        e.preventDefault();
+        window.location.href = '@Url.Content("~/Account/Utilisateurs")';
+    });
+
+
+</script>
+
+@if (User.IsInRole("GererUtilisateurSuppression"))
+            {
+    <script>
+
+        $("#btnSupprimerUtilisateur").click(function (e) {
+            e.preventDefault();
+           // StatutBoutonsUtilisateurInfo(false);
+           // alert("A venir!"); // je dois modifier les FK pour ajouter on cascade Delete.
+
+            $.ajax(
+             {
+                 url: "@Url.Action("SupprimerUtilisateur", "Account")",
+                 type: "Post",
+                 data: JSON.stringify({ utilisateur: '@Html.Raw(Model.UserName)' }),
+                 contentType: "application/json; charset=utf-8",
+                 success: function (result)
+                 {
+                     if (!result.success)
+                     {
+
+                         alert(result.msg);
+                         return false;
+                     }
+                     else
+                     {
+                         //Suppression avec succès
+                         window.location.href = '@Url.Content("~/Account/Utilisateurs")';
+                     }
+                 },
+                 error: function (resultat, statut, erreur)
+                 {
+                     console.log("Resultat: " + resultat.responseText);
+                     console.log("statut : " + statut);
+                     console.log("Erreur: " + erreur);
+                     return false;
+                 },
+                 complete: function(resultat)
+                 {
+                     StatutBoutonsUtilisateurInfo(true);
+                 }
+
+             });
+        });
+    </script>
+}
+
+<style>
+    #fieldlistInfo {
+        margin: 0;
+        padding: 0;
+    }
+
+        #fieldlistInfo li {
+            list-style: none;
+            padding-bottom: .7em;
+        }
+
+        #fieldlistInfo label {
+            display: block;
+            padding-bottom: .3em;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+            color: #444;
+        }
+
+        #fieldlistInfo input {
+            width: 320px;
+            max-width: 90%;
+        }
+
+        #fieldlistInfo button {
+            margin-top: 15px;
+            width: 160px;
+        }
+
+        #btnSupprimerUtilisateur{
+            width:180px !important;
+        }
+
+        #fieldlistInfo input[name="UserName"] {
+            text-transform: lowercase !important;
+        }
+
+
+
+    /*#actions{
+        margin-top : 10px;
+    }*/
+</style>

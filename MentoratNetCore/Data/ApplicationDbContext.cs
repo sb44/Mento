@@ -20,6 +20,13 @@ namespace MentoratNetCore.Data
         }
 
         /// <summary>
+        /// SB: Hack pour adapté code legacy MVC5 avec MVC6
+        /// </summary>
+        public ApplicationDbContext() : this(new DbContextOptionsBuilder<ApplicationDbContext>().UseSqlServer(Startup.ConnectionString).Options)
+        {
+        }
+
+        /// <summary>
         ///  Usage du "Fluent API" pour configurer le model en overridant OnModelCreating
         /// "Fluent API configuration has the highest precedence and will override conventions and data annotations." - https://docs.microsoft.com/en-us/ef/core/modeling/?view=aspnetcore-2.1
         ///  Code adapté de https://docs.microsoft.com/en-us/aspnet/core/migration/1x-to-2x/identity-2x#add-identityuser-poco-navigation-properties ET https://stackoverflow.com/questions/45863522/ef-core-2-0-identity-adding-navigation-properties

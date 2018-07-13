@@ -1,36 +1,153 @@
-﻿@model RegisterViewModel
+﻿@model MentoratNetCore.Models.RegisterViewModel
 @{
-    ViewData["Title"] = "Register";
+    ViewBag.Title = "Inscription";
 }
 
-<h2>@ViewData["Title"]</h2>
+@using Microsoft.AspNet.Identity
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
-            <h4>Create a new account.</h4>
+<h2>@ViewBag.Title.</h2>
+
+@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id = "FormRegister" }))
+{
+    @Html.AntiForgeryToken()
+    <h4>Créer un nouveau compte.</h4>
             <hr />
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Email"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ConfirmPassword"></label>
-                <input asp-for="ConfirmPassword" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
-            <button type="submit" class="btn btn-default">Register</button>
-        </form>
-    </div>
-</div>
+            @Html.ValidationSummary()
 
-@section Scripts {
-    @await Html.PartialAsync("_ValidationScriptsPartial")
+            <ul id="fieldlist">
+                <li>
+                    @Html.LabelFor(m => m.UserName )
+                     @Html.Kendo().TextBoxFor(m => m.UserName )                    
+                </li>
+                <li>
+                    @Html.LabelFor(m => m.Prenom )                    
+                     @Html.Kendo().TextBoxFor(m => m.Prenom )
+                </li>
+                <li>
+                    @Html.LabelFor(m => m.Nom )                   
+                     @Html.Kendo().TextBoxFor(m => m.Nom)
+                <li>
+                    @Html.LabelFor(m => m.Email )
+                     @Html.Kendo().TextBoxFor(m => m.Email )
+                </li>
+                <li>
+                    @Html.LabelFor(m => m.Password )
+                    @Html.Kendo().TextBoxFor(m => m.Password ).HtmlAttributes(new { type="password"})
+                </li>
+                <li>
+                    @Html.LabelFor(m => m.ConfirmPassword )
+                    @Html.Kendo().TextBoxFor(m => m.ConfirmPassword).HtmlAttributes(new { type = "password" })
+                </li>
+                <li>
+                    @Html.LabelFor(m => m.idCategorieUtilisateur)
+                   @(Html.Kendo().DropDownListFor(model => model.idCategorieUtilisateur)
+                    .DataSource(source =>
+                    {
+                        source.Read(read =>
+                        {
+                            read.Action("ObtenirCategorieUtisateur", "Account");
+                        }).ServerFiltering(false);
+                    })
+                    .DataTextField("nomCat")
+                    .DataValueField("noCat")
+                    .HtmlAttributes(new { style = "width:320px; padding-bottom:.5em;" })
+                )
+                           
+                </li>
+
+                <li>
+                    @Html.LabelFor(m => m.CopierDroitsDe )
+                    @(Html.Kendo().DropDownListFor(model => model.CopierDroitsDe)                                            
+                            .DataSource(source =>
+                            {
+                                source.Read(read =>
+                                {
+                                    read.Action("ObtenirUtilisateurs", "Account");
+                                }).ServerFiltering(false);
+                            })
+                            .DataTextField("NomPrenomUser")
+                            .DataValueField("NoUser")
+                            .HtmlAttributes(new { style = "width:320px" })
+                            .Filter("contains")
+                            
+                                       //.SelectedIndex(0)
+                                        //.AutoBind(false)
+                                        )
+                </li> 
+                <li class="actions">
+                    @(Html.Kendo().Button()
+                .Name("btnSubmit")
+                .SpriteCssClass("k-icon k-i-tick")
+                .Content("Enregistrer")
+                    )
+
+                   @(Html.Kendo().Button()
+        .Name("btnAnnuler")       
+        .Icon("cancel")
+        .Content("Annuler")
+                )
+                   
+                </li>
+
+            </ul>
 }
+
+<script>
+
+
+    $("#btnSubmit").click(function ()
+    {
+        $("#FormRegister").submit();
+    });
+
+    $("#btnAnnuler").click(function (e) {
+        e.preventDefault();
+        window.location.href = '@Url.Content("~/Account/Utilisateurs")';
+    });
+
+    </script>
+
+<style>
+
+    #fieldlist {
+        margin: 0;
+        padding: 0;
+    }
+
+        #fieldlist li {
+            list-style: none;
+            padding-bottom: .7em;
+        }
+
+        #fieldlist label {
+            display: block;
+            padding-bottom: .3em;            
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+            color: #444;
+        }
+
+        #fieldlist input{
+            width: 320px;
+            /*max-width: 98%;*/
+        }
+
+        #fieldlist button{
+            margin-top:15px;
+            width:175px;
+        }
+     
+
+    span.k-tooltip {
+        margin-top: 5px;
+        line-height: 1.7em;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: left;
+    }
+</style>
+
+
+
+

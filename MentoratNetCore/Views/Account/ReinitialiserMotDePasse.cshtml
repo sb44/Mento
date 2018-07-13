@@ -1,0 +1,140 @@
+﻿@model MentoratNetCore.Models.ReinitialiserMotDePasseViewModel
+@using MentoratNetCore.Extensions
+
+@using Microsoft.AspNet.Identity
+
+
+@using (Html.BeginForm("ReinitialiserMotDePassePost", "Account", FormMethod.Post, new { id = "FormReinitialiser" }))
+{
+    @Html.AntiForgeryToken()
+  
+    @Html.HiddenFor(m => m.UserId)
+    @Html.ValidationMessageFor(m => m.UserId)
+    @Html.HiddenFor(m => m.Email)
+    @Html.ValidationMessageFor(m => m.Email)
+    @Html.HiddenFor(m => m.Code)
+    @Html.ValidationMessageFor(m => m.Code)
+
+    <ul id="fieldlistInfo">
+        <li>             
+            @Html.ValidationMessageFor(m => m.Message)
+        </li>  
+        <li>
+            @Html.LabelFor(m => m.Utilisateur)
+            @Html.Kendo().TextBoxFor(m => m.Utilisateur)           
+            @Html.ValidationMessageFor(m => m.Utilisateur)
+        </li>       
+        <li>
+            @Html.LabelFor(m => m.Password)
+            @Html.Kendo().TextBoxFor(m => m.Password).HtmlAttributes(new { type = "password" })
+            @Html.ValidationMessageFor(m => m.Password)
+        </li>
+            <li>
+                @Html.LabelFor(m => m.ConfirmPassword)
+                @Html.Kendo().TextBoxFor(m => m.ConfirmPassword).HtmlAttributes(new { type = "password" })
+                @Html.ValidationMessageFor(m => m.ConfirmPassword)
+            </li>
+        <li class="actions">
+            @(Html.Kendo().Button()
+                .Name("btnSubmit")
+                .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                .Content("Enregistrer")
+            )        
+
+        </li>
+
+    </ul>
+    }
+
+@Html.Validation_Error_Convertion_Kendo_Template()
+
+<script>
+
+    $(function () {
+
+        @Html.Validation_Error_Convertion_Kendo_Script("FormReinitialiser");
+
+        $("#Utilisateur").attr("readonly", true);
+
+        $("#FormUpdate").kendoValidator({
+            rules: {
+                comparerPassword: function (input) {
+                    var ret = true;
+                    if (input.is("[name=ConfirmPassword]")) {
+                        ret = input.val() === $("#Password").val();
+                    }
+                    return ret;
+                }
+            },
+            messages: {
+                    comparerPassword: "Le mot de passe et la confirmation ne correspondent pas."
+            }
+        });
+
+    });
+
+    function StatutBoutonsUtilisateurInfo(boolActive) {      
+        $("#btnSubmit").attr("disabled", !boolActive);
+    }
+
+
+    $("#btnSubmit").click(function (e) {
+        e.preventDefault();
+
+        StatutBoutonsUtilisateurInfo(false);
+
+        var validator = $("#FormReinitialiser").data("kendoValidator");
+
+        if (validator.validate()) {
+            $("#FormReinitialiser").submit();
+        }
+        else {
+            
+        }
+
+
+    });  
+
+  
+
+
+</script>
+
+
+
+<style>
+    #fieldlistInfo {
+        margin: 0;
+        padding: 0;
+    }
+
+        #fieldlistInfo li {
+            list-style: none;
+            padding-bottom: .7em;
+        }
+
+        #fieldlistInfo label {
+            display: block;
+            padding-bottom: .3em;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+            color: #444;
+        }
+
+        #fieldlistInfo input {
+            width: 320px;
+            max-width: 90%;
+        }
+
+        #fieldlistInfo button {
+            margin-top: 15px;
+            width: 160px;
+        }
+             
+
+        #fieldlistInfo input[name="UserName"] {
+            text-transform: lowercase !important;
+        }
+           
+</style>

@@ -1,0 +1,129 @@
+﻿@using MentoratNetCore.Extensions
+
+@model MentoratNetCore.Models.ReinitialiserMotDePasseViewModel
+
+@{
+    ViewBag.Title = "Demande de récupération du mot de passe";
+}
+
+@using Microsoft.AspNet.Identity
+
+<h4>@ViewBag.Title.</h4>
+
+@using (Html.BeginForm("MotDePasseOublie", "Account", FormMethod.Post, new { id = "FormRecuperer" }))
+{
+    @Html.AntiForgeryToken()   
+
+            <ul id="fieldlist">              
+                <li>
+                    @Html.LabelFor(m => m.Email)
+                    @Html.Kendo().TextBoxFor(m => m.Email)
+                    @Html.ValidationMessageFor(m => m.Email)
+                </li>
+                @if ( Model ==null || Model.Message== "")
+                {
+                    <li class="actions">
+                        @(Html.Kendo().Button()
+                    .Name("btnSubmit")
+                    .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                    .Content("Envoyer la demande")
+                        )
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <p id="lblMsg"> @Html.DisplayFor(m => m.Message) </p>
+                    </li>
+                }                     
+                          
+            </ul>
+}
+
+@Html.Validation_Error_Convertion_Kendo_Template()
+<script>
+
+    $(function () {
+
+        @Html.Validation_Error_Convertion_Kendo_Script("FormRecuperer");
+             
+        
+    });
+
+    $("#btnSubmit").click(function (e)
+    {
+        e.preventDefault();
+        $("#btnSubmit").attr("disabled", true);
+
+        var validator = $("#FormRecuperer").data("kendoValidator");
+
+        if (validator.validate())
+        {
+            $("#FormRecuperer").submit();
+        }
+        else
+        {
+            $("#btnSubmit").attr("disabled", false);
+        }
+        
+    });
+
+    $("#FormRecuperer").submit(function (e) {
+        var btn = $("#btnSubmit").val();
+       
+        if(btn == undefined)
+        {          
+            e.preventDefault();
+        }
+    });
+
+    </script>
+
+<style>
+
+    #FormRecuperer{
+        margin-top:40px;
+    }
+
+    #fieldlist {
+        margin: 0;
+        padding: 0;
+    }
+
+        #fieldlist li {
+            list-style: none;
+            padding-bottom: .7em;
+        }
+
+        #fieldlist label {
+            display: block;
+            padding-bottom: .3em;            
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+            color: #444;
+        }
+
+        #fieldlist input{
+            width: 320px;
+            /*max-width: 98%;*/
+        }
+
+        #fieldlist button{
+            margin-top:15px;
+            width:175px;
+        }
+     
+
+    span.k-tooltip {
+        margin-top: 5px;
+        line-height: 1.7em;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: left;
+    }
+</style>
+
+
+
+

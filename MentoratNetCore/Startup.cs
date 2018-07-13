@@ -12,11 +12,13 @@ using MentoratNetCore.Data;
 using MentoratNetCore.Models;
 using MentoratNetCore.Services;
 using Newtonsoft.Json.Serialization;
+using Microsoft.AspNetCore.Http;
 
 namespace MentoratNetCore
 {
     public class Startup
     {
+        public static string ConnectionString;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -27,9 +29,11 @@ namespace MentoratNetCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Startup.ConnectionString = Configuration.GetConnectionString("DefaultConnection");
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
+            
             // SB: Service enlevé et remplacer par code suivant avec "ApplicationRole"
             //services.AddIdentity<ApplicationUser, IdentityRole>()
             //    .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -74,11 +78,28 @@ namespace MentoratNetCore
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
 
+
+            services.AddDistributedMemoryCache();
+
+            // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state?view=aspnetcore-2.1
+            services.AddSession(options =>
+            {
+                // Set a short timeout for easy testing.
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // TODO : EFFACER CECI OU METTRE PLUS LONG... LE TEMPS EST 20 MINUTES PAR DÉFAUT!
+                options.Cookie.HttpOnly = true;
+            });
+
+
             services
                 .AddMvc()
                 // Maintain property names during serialization. See:
                 // https://github.com/aspnet/Announcements/issues/194
                 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); ;
+
+
+            //Service custom (UserService) injectera IHttpContextAccessor et sera utilisé ds ValidationCustom https://dotnetcoretutorials.com/2017/01/05/accessing-httpcontext-asp-net-core/
+            //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+           // services.AddSingleton<UserService>();
 
             // Add Kendo UI services to the services container
             services.AddKendo();
@@ -103,7 +124,9 @@ namespace MentoratNetCore
             // Identity is enabled for the application by calling UseAuthentication in the Configure method.
             // UseAuthentication adds authentication middleware to the request pipeline.
             app.UseAuthentication();
-            
+
+            app.UseResponseCaching(); // https://stackoverflow.com/questions/27304210/how-do-i-apply-the-outputcache-attribute-on-a-method-in-a-vnext-project
+            app.UseSession(); // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state?view=aspnetcore-2.1
 
             app.UseMvc(routes =>
             {

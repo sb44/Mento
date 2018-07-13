@@ -1,0 +1,287 @@
+﻿@using MentoratNetCore.Extensions
+@using Microsoft.AspNet.Identity
+@model MentoratNetCore.Models.UtilisateurDroitsViewModel
+
+
+<script>
+
+    function onDataBound(arg) {
+
+        StatutBoutonsCopierDroits(true);
+    }
+
+
+    function StatutBoutonsCopierDroits(boolActive)
+    {
+        $("#btnDroitsCopier").data("kendoButton").enable(boolActive);
+        $("#btnDroitsEnregistrer").data("kendoButton").enable(boolActive);
+        $("#btnDroitsAnnuler").data("kendoButton").enable(boolActive);
+
+    }
+
+
+    function onCheck(e) {
+        var treeView = $("#treeViewDroits").data("kendoTreeView");
+
+        var item = this.dataItem(e.node);
+
+        if (item.hasChildren)
+        {
+            checkChildren(item);
+        }
+
+        if(item.checked)
+        {
+            CheckParent(this,treeView,e.node);
+        }
+
+    }
+
+    function CheckParent(monThis, treeView, item)
+    {
+        var itemChk = monThis.dataItem(item);
+                       
+        if (itemChk.checked) {
+           
+            var itemparent = treeView.parent(treeView.findByText(itemChk.text));
+            var itemParentchk = monThis.dataItem(itemparent)
+
+            if (itemParentchk != null) {
+                itemParentchk.set("checked", true);
+                CheckParent(monThis, treeView, itemparent);
+            }
+
+        }
+    }
+    
+    function checkChildren(item) {
+        if (item.hasChildren) {
+            item.children.data().forEach(function (child) {
+                child.set("checked", item.checked);
+                checkChildren(child);
+            });
+        }
+    }
+</script>
+
+
+<h4>Modifier les droits de @{@Model.NomComplet} </h4>
+<hr />
+
+@*<div class="divTableauDroits">*@
+    <div id="divTreeViewDroits" class="divColonneDroits">
+        <p id="TitreCopierGauche">  Cochez les droits à attribuer :</p>
+        @(Html.Kendo().TreeView()
+            .Name("treeViewDroits")
+            .DataTextField("text")
+            .LoadOnDemand(false)
+            .Events(events => events
+                    .DataBound("onDataBound")
+                    .Check("onCheck")
+                    )
+            .Checkboxes(checkboxes => checkboxes
+                            .Name("chkDroits").CheckChildren(false)
+                             )
+                //.Events(events => events.Check("onCheck"))
+                .DataSource(dataSource => dataSource
+                    .Read(read => read
+                        .Action("UtilisateurDroitsTree_Read", "Account", new { utilisateurEnCours = @Model.Id }).Type(HttpVerbs.Post)
+                    )
+                   
+                )
+        )
+    </div>
+    <div class="divColonneDroits">
+        <p id="TitreCopierDroits">  Vous pouvez cocher les droits à partir de ceux d'un autre utilisateur : </p>
+        @(Html.Kendo().DropDownListFor(model => model.CopierDroitsDe)
+                            .DataSource(source =>
+                            {
+                                source.Read(read =>
+                                {
+                                    read.Action("ObtenirUtilisateurs", "Account", new { utilisateurEnCours = @Model.Id });
+                                }).ServerFiltering(false);
+                            })
+                            .DataTextField("NomPrenomUser")
+                            .DataValueField("NoUser")
+                            //.HtmlAttributes(new { style = "width:250px" })
+                            .Filter("contains")
+
+
+        )
+        <div id="divBtnCopierDroits">
+            @(Html.Kendo().Button()
+                    .Name("btnDroitsCopier")
+                    .HtmlAttributes(new { type = "button" })
+                    .Enable(false)
+                    .Icon("copy"))
+
+        </div>
+    </div>
+
+<div id="divDroitsButtons" class="k-edit-buttons k-state-default">
+
+    @(Html.Kendo().Button()
+        .Name("btnDroitsEnregistrer")
+        .HtmlAttributes(new { type = "button", @class = "k-primary" })
+        .Enable(false)
+        .Content("Enregistrer"))
+
+    @(Html.Kendo().Button()
+        .Name("btnDroitsAnnuler")
+        .HtmlAttributes(new { type = "button" })
+        .Content("Retour")
+        .Enable(false)
+        .Icon("undo"))
+
+</div>
+
+
+
+<script>
+
+    $("#btnDroitsAnnuler").click(function (e) {
+        e.preventDefault();
+        window.location.href = '@Url.Content("~/Account/Utilisateurs")';
+    });
+
+
+    $("#btnDroitsEnregistrer").click(function (e) {
+        e.preventDefault();
+
+        StatutBoutonsCopierDroits(false);
+
+        var treeView = $("#treeViewDroits").data("kendoTreeView");
+        //treeView.updateIndeterminate();
+
+        var checkedNodes = [];
+
+
+        checkedNodeIds(treeView.dataSource.view(), checkedNodes);
+
+        if (checkedNodes.length > 0) {
+            message = "IDs of checked nodes: " + checkedNodes.join(",");
+        } else {
+            message = "No nodes checked.";
+            checkedNodes = null;
+        }
+
+        $.ajax({
+            url: "UtilisateurDroitsTree_Save",
+            type: "Post",
+            data: { utilisateurId: "@Html.Raw(Model.Id)", lesDroits: checkedNodes },
+            success: function (result) {
+                if (!result.success) {
+
+                    StatutBoutonsCopierDroits(true);
+                    return false;
+                }
+                else {
+                    //Enregistrement avec succès
+
+                    var monTreeView = $("#treeViewDroits").data("kendoTreeView");
+                    var strId = "@Html.Raw(Model.Id)";
+
+                    monTreeView.dataSource.read({ utilisateurEnCours: strId });
+
+                    if (result.msg != "") {                       
+                        alert(result.msg);
+                    }
+
+                    StatutBoutonsCopierDroits(true);
+                }
+            },
+            error: function (resultat, statut, erreur) {
+                console.log("Resultat: " + resultat.responseText);
+                console.log("statut : " + statut);
+                console.log("Erreur: " + erreur);
+                StatutBoutonsCopierDroits(true);
+                return false;
+            }
+
+        });
+
+
+    });
+
+    function checkedNodeIds(nodes, checkedNodes) {
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].checked) {
+                checkedNodes.push(nodes[i].id);
+            }
+
+            if (nodes[i].hasChildren) {
+                checkedNodeIds(nodes[i].children.view(), checkedNodes);
+            }
+        }
+    }
+
+
+    $("#btnDroitsCopier").click(function (e) {
+        e.preventDefault();
+
+        StatutBoutonsCopierDroits(false);
+
+        var strIdACopier = $("#CopierDroitsDe").val();
+        var strId = "@Html.Raw(Model.Id)";
+
+        var monTreeView = $("#treeViewDroits").data("kendoTreeView");
+
+        //retirer la sélection de toutes les cases.
+        $("#treeViewDroits input.k-checkbox").prop("checked", false).trigger("change");
+
+        monTreeView.dataSource.read({ utilisateurEnCours: strId, utilisateurACopier: strIdACopier });
+
+
+    });
+
+
+</script>
+
+
+<style>
+    input[type="checkbox"] {
+        vertical-align: bottom;
+    }
+    div.divColonneDroits {
+               display: inline-block;         
+        padding: 1em 2em;      
+        vertical-align:top;
+    }
+
+    #btnDroitsEnregistrer{
+        width:90px;
+    }
+
+        #btnDroitsAnnuler{
+        width:90px;
+    }
+
+    /*#divTreeViewDroits {
+                display: inline-block;         
+        padding: 1em 2em;       
+        vertical-align:top;
+    }*/
+
+
+    #divDroitsButtons {
+        padding: 2em;
+    }
+
+    #TitreCopierDroits, #TitreCopierGauche {
+        font-weight: bold;
+        max-width:250px;
+    }
+
+    #divBtnCopierDroits {
+        display: inline-block;
+    }
+</style>
+
+
+
+
+
+
+
+
+

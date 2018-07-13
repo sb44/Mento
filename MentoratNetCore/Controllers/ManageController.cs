@@ -226,6 +226,7 @@ namespace MentoratNetCore.Controllers
             return RedirectToAction(nameof(SetPassword));
         }
 
+
         [HttpGet]
         public async Task<IActionResult> ExternalLogins()
         {
