@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
-using MentoratNetCore.Models;
-using MentoratNetCore.ViewModels;
-using MentoratNetCore.ModelsViews;
-using System.Web.Mvc;
 
 namespace MentoratNetCore.ViewModels
 {
@@ -28,19 +24,19 @@ namespace MentoratNetCore.ViewModels
        
         //public int Annee { get; set; }
 
-        [AllowHtml]
+       // [AllowHtml]
         public string Objectifs { get; set; }
 
-        [AllowHtml]
+       // [AllowHtml]
         public string Indicateurs { get; set; }
 
-        [AllowHtml]
+       // [AllowHtml]
         public string Actions { get; set; }
 
-        [AllowHtml]
+      //  [AllowHtml]
         public string Echeancier { get; set; }
 
-        [AllowHtml]
+      //  [AllowHtml]
         public string Evaluation { get; set; }
 
         public int Ordre { get; set; }

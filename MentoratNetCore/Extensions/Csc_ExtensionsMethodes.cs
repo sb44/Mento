@@ -18,6 +18,9 @@ using MentoratNetCore.ViewModels.Inscriptions;
 using MentoratNetCore.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Authorization;
+using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace MentoratNetCore.Extensions
 {
@@ -190,9 +193,9 @@ namespace MentoratNetCore.Extensions
         }
 
         [Authorize]
-        public static Boolean VerifierSiUserExiste(string strUser, out ApplicationUser monUserOut)
+        public static Boolean VerifierSiUserExiste(string strUser, UserManager<ApplicationUser> userManager, out ApplicationUser monUserOut)
         {
-            ApplicationUserManager userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            //ApplicationUserManager userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
 
             List<ApplicationUser> lstUser = userManager.Users.ToList();
             ApplicationUser monUser = lstUser.FirstOrDefault(f => f.UserName == strUser);
@@ -213,7 +216,9 @@ namespace MentoratNetCore.Extensions
             var myClient = new WebClient();
             //Il doit y avoir sur la première ligne des informations sur les images.
             //string strHTML = myClient.DownloadString(HttpContext.Server.MapPath("~/Content/Inscriptions/Courriel_Inscription.html"));
-            string strHTML = myClient.DownloadString(System.Web.Hosting.HostingEnvironment.MapPath("~/Content/Inscriptions/Courriel_Inscription.html"));
+
+            //string strHTML = myClient.DownloadString(System.Web.Hosting.HostingEnvironment.MapPath("~/Content/Inscriptions/Courriel_Inscription.html"));
+            string strHTML = Path.Combine(Startup.WebRootPath, "/Content/Inscriptions/Courriel_Inscription.html");
 
             strHTML = strHTML.Replace("<#:Nom>", mentore.NomComplet_Mentore);
             strHTML = strHTML.Replace("<#:Organisme>", mentore.Organisme_Mentore);

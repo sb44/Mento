@@ -1,6 +1,5 @@
 ﻿using MentoratNetCore.Models;
 using MentoratNetCore.Data;
-using MentoratNetCore.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

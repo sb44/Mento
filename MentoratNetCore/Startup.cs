@@ -18,10 +18,12 @@ namespace MentoratNetCore
 {
     public class Startup
     {
-        public static string ConnectionString;
-        public Startup(IConfiguration configuration)
+        public static string WebRootPath { get; private set; }
+        public static string ConnectionString { get; private set; }
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            WebRootPath = env.WebRootPath;
         }
 
         public IConfiguration Configuration { get; }

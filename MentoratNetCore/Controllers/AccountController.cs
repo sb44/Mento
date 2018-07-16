@@ -643,7 +643,7 @@ namespace MentoratNetCore.Controllers
         public ActionResult Utilisateur(string utilisateur, string section)
         {
             ApplicationUser monUser = null;
-            if (utilisateur != null && MentoratNetCore.Extensions.CscExtensionsMethodes.VerifierSiUserExiste(utilisateur, out monUser))
+            if (utilisateur != null && MentoratNetCore.Extensions.CscExtensionsMethodes.VerifierSiUserExiste(utilisateur, _userManager, out monUser))
             {
                 bool boolPhyto = false;
 

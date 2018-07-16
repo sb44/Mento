@@ -18,10 +18,10 @@ namespace MentoratNetCore
         {
             var host = BuildWebHost(args);
 
+            // Pour seedé la BD avec code C#
             using (var scope = host.Services.CreateScope())
             {
                 //var configuration = host.Services.GetRequiredService<IConfiguration>();
-
                 var services = scope.ServiceProvider;
                 try
                 {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MentoratNetCore.Controllers;
-using MentoratNetCore.Controllers;
 
 namespace Microsoft.AspNetCore.Mvc
 {
