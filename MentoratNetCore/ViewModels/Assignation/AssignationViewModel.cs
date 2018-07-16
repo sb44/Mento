@@ -6,6 +6,7 @@ using System.Web;
 using MentoratNetCore.Models;
 using MentoratNetCore.ViewModels;
 using MentoratNetCore.ModelsViews;
+using MentoratNetCore.Data;
 
 namespace MentoratNetCore.ViewModels
 {

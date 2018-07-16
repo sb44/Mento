@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -74,8 +77,8 @@ namespace MentoratNetCore.ViewModels.Inscriptions
         
 
     }
-
-    public class BooleanRequiredAttribute : ValidationAttribute, IClientValidatable
+    // https://stackoverflow.com/questions/36566836/asp-net-core-mvc-client-side-validation-for-custom-attribute
+    public class BooleanRequiredAttribute : ValidationAttribute, IClientModelValidator // IClientValidatable
     {
         public override bool IsValid(object value)
         {
@@ -85,15 +88,34 @@ namespace MentoratNetCore.ViewModels.Inscriptions
                 return true;
         }
 
-        public IEnumerable<ModelClientValidationRule> GetClientValidationRules(
-            ModelMetadata metadata,
-            ControllerContext context)
+        //public IEnumerable<ModelClientValidationRule> GetClientValidationRules(
+        //    ModelMetadata metadata,
+        //    ControllerContext context)
+        //{
+        //    yield return new ModelClientValidationRule
+        //    {
+        //        ErrorMessage = FormatErrorMessage(metadata.GetDisplayName()),
+        //        ValidationType = "booleanrequired"
+        //    };
+        //}
+
+        public void AddValidation(ClientModelValidationContext context)
         {
-            yield return new ModelClientValidationRule
+            MergeAttribute(context.Attributes, "data-val", "true");
+            var errorMessage = FormatErrorMessage(context.ModelMetadata.GetDisplayName());
+            MergeAttribute(context.Attributes, "data-val-BooleanRequired", errorMessage);
+        }
+        private bool MergeAttribute(
+            IDictionary<string, string> attributes,
+            string key,
+            string value)
+        {
+            if (attributes.ContainsKey(key))
             {
-                ErrorMessage = FormatErrorMessage(metadata.GetDisplayName()),
-                ValidationType = "booleanrequired"
-            };
+                return false;
+            }
+            attributes.Add(key, value);
+            return true;
         }
     }
 

@@ -20,6 +20,8 @@ using static MentoratNetCore.AuthorizeCustom.Authorize;
 using Microsoft.AspNetCore.Http;
 using MentoratNetCore.Extensions;
 using System.Web;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace MentoratNetCore.Controllers
 {
@@ -297,7 +299,7 @@ namespace MentoratNetCore.Controllers
             var db = new ApplicationDbContext();
 
             RoleManager<ApplicationRole> monRoleManager = MentoratNetCore.Extensions.CscExtensionsMethodes.ObtenirRoleManager(this._serviceProvider);
-            List<ApplicationRole> droitsACopier = ObtenirRolesParIDUserAsync(model.CopierDroitsDe, db, userEnCours.IdCategorieUtilisateur).ToList();
+            List<ApplicationRole> droitsACopier = (await ObtenirRolesParIDUserAsync(model.CopierDroitsDe, db, userEnCours.IdCategorieUtilisateur)).ToList();
 
             foreach (var roleUser in droitsACopier)
             {
@@ -311,7 +313,7 @@ namespace MentoratNetCore.Controllers
         [Authorize(Roles = "PageUtilisateurs")]
         public JsonResult ObtenirUtilisateurs()
         {
-            return Json(_userManager.Users.OrderBy(o => new { o.NomUser, o.PrenomUser }).Select(g => new { NoUser = g.Id, NomPrenomUser = g.NomUser + " " + g.PrenomUser }), JsonRequestBehavior.AllowGet);
+            return Json(_userManager.Users.OrderBy(o => new { o.NomUser, o.PrenomUser }).Select(g => new { NoUser = g.Id, NomPrenomUser = g.NomUser + " " + g.PrenomUser }));
         }
 
         [Authorize(Roles = "GererUtilisateur,CreerDroit")]
@@ -323,7 +325,7 @@ namespace MentoratNetCore.Controllers
 
             string dump = Extensions.CscExtensionsMethodes.DumpToHtmlString(db.ApplicationCategorieUser.Where(w => w.Id >= userEnCours.IdCategorieUtilisateur).OrderByDescending(o => o.Id).Select(g => new { noCat = g.Id, nomCat = g.Description }));
 
-            return Json(db.ApplicationCategorieUser.Where(w => w.Id >= userEnCours.IdCategorieUtilisateur).OrderByDescending(o => o.Id).Select(g => new { noCat = g.Id, nomCat = g.Description }), JsonRequestBehavior.AllowGet);
+            return Json(db.ApplicationCategorieUser.Where(w => w.Id >= userEnCours.IdCategorieUtilisateur).OrderByDescending(o => o.Id).Select(g => new { noCat = g.Id, nomCat = g.Description }));
 
         }
 
@@ -1758,7 +1760,7 @@ namespace MentoratNetCore.Controllers
 
                     code = HttpUtility.UrlEncode(code);
 
-                    string callbackUrl = Url.Action("ReinitialiserMotDePasse", "Account", new ReinitialiserMotDePasseViewModel { UserId = user.Id, Code = code, Email = user.Email, Utilisateur = user.UserName }, protocol: Request.Url.Scheme);
+                    string callbackUrl = Url.Action("ReinitialiserMotDePasse", "Account", new ReinitialiserMotDePasseViewModel { UserId = user.Id, Code = code, Email = user.Email, Utilisateur = user.UserName }, protocol: Request.Scheme); // protocol: Request.Url.Scheme);
 
                     string apiKey = Environment.GetEnvironmentVariable("SENDGRID_KEY");
 

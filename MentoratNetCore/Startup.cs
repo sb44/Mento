@@ -81,7 +81,7 @@ namespace MentoratNetCore
             services.AddTransient<IEmailSender, EmailSender>();
 
 
-            services.AddDistributedMemoryCache();
+            // services.AddDistributedMemoryCache();
 
             // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state?view=aspnetcore-2.1
             services.AddSession(options =>
@@ -127,7 +127,7 @@ namespace MentoratNetCore
             // UseAuthentication adds authentication middleware to the request pipeline.
             app.UseAuthentication();
 
-            app.UseResponseCaching(); // https://stackoverflow.com/questions/27304210/how-do-i-apply-the-outputcache-attribute-on-a-method-in-a-vnext-project
+            // app.UseResponseCaching(); // https://stackoverflow.com/questions/27304210/how-do-i-apply-the-outputcache-attribute-on-a-method-in-a-vnext-project
             app.UseSession(); // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state?view=aspnetcore-2.1
 
             app.UseMvc(routes =>
