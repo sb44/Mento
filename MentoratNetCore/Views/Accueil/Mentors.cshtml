@@ -1,0 +1,129 @@
+﻿@{
+    ViewBag.Title = "Mentors";
+}
+
+<hgroup class="title">
+    <h1>@ViewBag.Title.</h1>
+    <h2>@ViewBag.Message</h2>
+</hgroup>
+
+<p>
+    Le service de mentorat propose l’expertise de sept conseillers de longue expérience. Ces mentors œuvrent comme conseillers de clubs-conseils en agroenvironnement ou de clubs d’encadrement technique et agissent aussi à titre d’experts auprès de tous les conseillers de première ligne depuis plusieurs années. Présents dans différentes régions du Québec, ils possèdent de l’expertise en grandes cultures et en horticulture. 
+</p>
+<br />
+    @(Html.Kendo().TabStrip()
+        .Name("Mentors2")
+        .TabPosition(TabStripTabPosition.Left)
+        .HtmlAttributes(new { style = "max-width:100%;" })
+        //.Animation(animation =>
+        //      animation.Open(effect =>
+        //          effect.Fade(FadeDirection.In)))
+        .Items(items =>
+        {
+        items.Add()
+            .Text("Luc Bérubé")
+            .Selected(true)
+            .Content(@<text>                    
+                <span class="label">&nbsp;Luc Bérubé</span>
+                <p><img class="alignleft" src="~/Images/CSC/Berube.jpg" />Je suis conseiller au Groupe Pousse-Vert depuis 1999. Avant cela, j’ai œuvré comme représentant aux ventes à la Société Coopérative Agricole de L'Assomption dans les cultures fruitières et maraichères, pendant deux ans. Je suis aussi producteur de pommes de terre de semence, de fraises et de maïs sucré. Je donne des formations menant à la certification sur l’application et la vente de pesticides depuis 2004. Je suis aussi accrédité par Action-réglage pour les pulvérisateurs à rampes. Par mes activités au sein du club d’encadrement technique, je possède une excellente expertise dans la pomme de terre et les petits fruits. Oeuvrant dans le Bas Saint-Laurent, les aspects techniques sur les céréales à paille et les fourrages font aussi partie de mes compétences.</p>
+                </text>)
+        .ContentHtmlAttributes(new { style = "min-height: 200px" });
+        items.Add()
+            .Text("Dominique Fiset")
+            .Content(@<text>
+                <span class="label">&nbsp;Dominique Fiset</span>
+                <p><img class="alignleft" src="~/Images/CSC/Dominique.jpg" />J’ai commencé à développer mon expérience en tant que conseillère en agroenvironnement au Club Optisol de Montmagny en 2001 et au Club Fertilisation Chutes Chaudière en 2002.  Je sillonne donc, depuis 16 ans, les champs de grandes cultures et de cultures fourragères. C’est durant cette période que j’ai peaufiné mon approche en phytoprotection. À la suite d’une fusion, je suis maintenant à l’emploi de Fertior, depuis 2013, en tant que conseillère et coordonnatrice. Je suis passionnée de tout ce qui est directement relié à la ferme, mais principalement la phytoprotection en grandes cultures et en culture de plantes fourragères. Je participe au Projet de « Vitrine de démonstration sur la réduction de l’atrazine » avec le MAPAQ depuis deux ans. Forte de toutes ces expériences, je suis très honorée de faire partie de l’équipe de conseillers régionaux en phytoprotection.</p>
+            </text>)
+        .ContentHtmlAttributes(new { style = "min-height: 200px" });
+        items.Add()
+        .Text("David Girardville")
+        .Content(@<text>
+                    <span class="label">&nbsp;David Girardville</span>
+                    <p><img class="alignleft" src="~/Images/CSC/Girardville.jpg" />Je suis à l’emploi du Club agroenvironnemental du Suroit depuis 1998 et j’ai travaillé comme représentant pour la Coopérative Fédérée du Québec de 1995 à 1998. J’ai participé à titre de rédacteur du cours Gestion intégrée des mauvaises herbes en grandes cultures de l’ITA de Saint-Hyacinthe. Je suis aussi formateur du cours de gestion, recommandation et suivi des herbicides sur les entreprises agricoles pour la CSC, depuis 2003. Je suis membre du Comité révisionnel de l’Ordre des agronomes du Québec (OAQ) dans le cadre du Projet d’élaboration d’un cours portant sur la recommandation de produits phytosanitaires. J’ai participé à plusieurs comités et tables de concertation avec les acteurs du milieu (CSC, CEROM, MAPAQ, OAQ, MDDELCC) et je fais partie de l’équipe de conseillers régionaux en phytoprotection depuis 2009.</p>
+                     </text>)
+            .ContentHtmlAttributes(new { style = "min-height: 200px" });
+        items.Add()
+                .Text("Isabelle Martineau")
+                .Content(@<text>
+                        <span class="label">&nbsp;Isabelle Martineau</span>
+                        <p><img class="alignleft" src="~/Images/CSC/Martineau.jpg" />Je travaille depuis près de 20 ans au sein des clubs-conseils en agroenvironnement. D’abord 13 ans dans Lanaudière puis maintenant en Montérégie. Conseillère au Club-conseil Gestrie-Sol à Granby, je mets à profit mon expérience générale en agroenvironnement avec une expertise particulière en bandes riveraines et en gestion intégrée des ennemis des cultures, notamment le développement d’outils et d’offres de service en phytoprotection, la protection des pollinisateurs, le traitement de semences insecticides et le dépistage des insectes du sol, les espèces exotiques envahissantes et le contrôle mécanique des mauvaises herbes. Mobilisatrice, j’organise des activités de formation et je participe au Comité de protection des pollinisateurs face aux pesticides de la Stratégie phytosanitaire québécoise en agriculture (SPQA) 2011-2021 et à différentes consultations du MAPAQ. Je fais partie de l’équipe de conseillers régionaux en phytoprotection depuis 2009.</p>
+                      </text>)
+                .ContentHtmlAttributes(new { style = "min-height: 200px" });
+            @*items.Add()
+                .Text("Véronique Samson")
+                .Content(@<text>
+                        <span class="label">&nbsp;Véronique Samson</span>
+                        <p><img class="alignleft" src="~/Images/CSC/Samson.jpg" />Je suis à l’emploi des clubs-conseils en agroenvironnement depuis 1996. Lorsque j’ai terminé mon baccalauréat, j’ai eu la chance d'avoir mon premier emploi avec M<sup>me</sup> Anne Vanasse ou j’ai pris goût à la malherbologie, notamment en réalisant des parcelles chez des producteurs de grandes cultures. Depuis toutes ces années, j’ai participé à différents projets en phytoprotection dont : la « Promotion de la lutte intégrée en grandes cultures - SLV-2000 » (2000-2001), des « Essais sur la réduction des herbicides en grandes cultures – MAPAQ » (1997-2000) et des « Essais d’application de fongicide dans les céréales » (2009-2010-2011). Je suis administratrice à la Commission de phytoprotection du CRAAQ et je fais partie de l’équipe de conseillers régionaux en phytoprotection depuis 2009.</p>
+                        </text>)
+                .ContentHtmlAttributes(new { style = "min-height: 200px" });*@
+            items.Add()
+                .Text("Nadia Surdek")
+                .Content(@<text>
+                    <span class="label">&nbsp;Nadia Surdek</span>
+                    <p><img class="alignleft" src="~/Images/CSC/Nadia.jpg" />À la suite de mon baccalauréat de l’Université McGill en sciences de l’agriculture, j’ai débuté ma carrière comme chargée de projet et assistante en enseignement de la botanique à l’Université McGill. Depuis 2002, je travaille exclusivement sur le «terrain», auprès des producteurs agricoles dans le domaine des services-conseils et depuis 2007 au sein du groupe PleineTerre pour des clients membres des clubs Techno-Champ 2000, RAAQ et Dura-Club. J’agis à titre de superviseure pour les productions maraîchères et fruitières, je coordonne l’équipe de professionnels et je veille à la qualité des services offerts dans ce secteur d’activité.  J’ai une bonne expertise en phytoprotection. Je travaille sur l’implantation de cultures intercalaires et d’engrais vert et je fais le suivi de projets personnalisés selon les objectifs des entreprises agricoles. J'œuvre aussi à améliorer la gestion de l’eau sur les fermes. Depuis de nombreuses années, je collabore au Réseau d’avertissements phytosanitaires du MAPAQ pour plusieurs cultures et je participe à plusieurs comités techniques.</p>
+                </text>)
+            .ContentHtmlAttributes(new { style = "min-height: 200px" });
+            items.Add()
+               .Text("Patrice Thibault")
+             .Content(@<text>
+                      <span class="label">&nbsp;Patrice Thibault</span>
+                        <p>@*<img class="alignleft" src="~/Images/CSC/Nom.jpg" />*@Conseiller dans un club d'encadrement technique depuis aussi loin que 1988 dans la région de Québec, je suis un agronome passionné des cultures maraîchères et fruitières, en particulier, ainsi que du travail terrain avec les producteurs. Toujours bien actif dans le milieu, je travaille dans tous les domaines touchant la lutte intégrée et la régie des cultures. Au cours des années, j'ai collaboré, entre autres, au Réseau d'avertissements phytosanitaires du MAPAQ dans plusieurs cultures ainsi qu'à divers groupes de travail en phytoprotection. J'ai également contribué à la réalisation de plusieurs projets en recherche et transfert technologique pour développer l'agriculture au Québec, autant avec des organismes dits publics(MAPAQ, ACC) que privés. Au cours de mon cheminement, je me suis fait un plaisir de transmettre ma passion, mais aussi la réalité de ma profession à de nombreux étudiants-dépisteurs et autres conseillers à leur début de carrière.</p>
+                         </text>)
+                  .ContentHtmlAttributes(new { style = "min-height: 200px" });
+            items.Add()
+                .Text("Vicky Villiard")
+                .Content(@<text>
+                            <span class="label">&nbsp;Vicky Villiard</span>
+                            <p><img class="alignleft" src="~/Images/CSC/Villliard.jpg" />Je travaille au Club agroenvironnemental Dura-Sol Drummond inc. depuis janvier 2001. J’ai développé une expertise en agriculture biologique, notamment à l’aide d’une formation en agriculture biologique (2009-2011). Je suis membre du Comité de priorisation des pesticides à usage limité en cultures commerciales ainsi que membre du Comité sur la dérive des pesticides. À l’été 2015, j’ai participé au Projet sur les méthodes de désherbage à faible risque dans le maïs qui consistait notamment à la mise en place de parcelles de démonstration sur les alternatives à l’atrazine, en collaboration avec le MAPAQ et le CÉROM. Finalement, je fais partie de l’équipe de conseillers régionaux en phytoprotection depuis 2009.</p>
+                            </text>)
+                    .ContentHtmlAttributes(new { style = "min-height: 200px" });
+        })
+)
+<br />
+<p>
+    @(Html.Kendo().Button()
+                    .Name("Accueil")
+                    .HtmlAttributes(new { type = "button", @class = "button-max" })
+                    .Content("Retour à la page d'accueil")
+                    .Events(ev => ev.Click("onClickAccueil"))
+                    )
+
+    @(Html.Kendo().Button()
+                    .Name("Fonctionnement")
+                    .HtmlAttributes(new { type = "button", @class = "button-max" })
+                    .Content("Je veux en apprendre plus")
+                    .Events(ev => ev.Click("onClickFonctionnement"))
+                    )
+
+    @(Html.Kendo().Button()
+                    .Name("Inscription")
+                    .HtmlAttributes(new { type = "button", @class = "button-max" })
+                    .Content("Je veux m'inscrire")
+                    .Events(ev => ev.Click("onClickInscription"))
+                    )
+</p>
+
+<script>
+    function onClickAccueil(e) {
+        window.open("../Accueil/Index", "_self");
+    }
+    function onClickFonctionnement(e) {
+        window.open("../Accueil/Fonctionnement", "_self");
+    }
+    function onClickInscription(e) {
+        window.open("../Inscriptions/Index", "_self");
+    }
+</script>
+
+<style>
+    p{margin-top:5px;}
+    img.alignleft {float: left; margin: 0 20px 15px 0;max-width:98%;}
+    span.label{margin-bottom:5px;padding-top:10px;}
+
+    .button-max {
+        min-width: 307px;
+        line-height: 30px;
+        margin: 0 10px 0 0;
+    }
+
+</style>

@@ -1,0 +1,142 @@
+﻿@model Mentorat.ViewModels._RechercherUtilisateursViewModels
+
+<script>
+    //Variable pour le parent pour déterminer pourquoi le onclose
+    var varCloseRechercherUtilisateursInfo = "";
+
+    function cboRechercherUtilisateurOnChange(e)
+    {
+
+        $("#gridRechercherUtilisateurs").data("kendoGrid").dataSource.read();
+
+    }
+
+    function ObtenirFiltreRoleRechercherUtilisateurs(e)
+    {
+        var dataItem = $("#cboRolesRechercherUtilisateurs").data("kendoDropDownList");
+
+
+        var pasDansRole ;
+        var dansRole = null;
+       
+        pasDansRole=  "@Html.Raw(Model.RoleExclus)";
+       
+        if (dataItem.value() != "")
+        {
+            dansRole =dataItem.value();
+        }
+
+        
+        return { 'dansRole':dansRole, 'pasDansRole':pasDansRole };
+    }
+
+</script>
+
+
+@(Html.Label("Afficher les utilisateurs qui sont dans le droit :"))
+@(Html.Kendo().DropDownList()
+                    .Name("cboRolesRechercherUtilisateurs")
+                    .DataSource(source =>
+                    {
+                        source.Read(read =>
+                        {
+                            read.Action("Roles_Read", "SharedUtilisateurs");
+                        }).ServerFiltering(false);
+                    })
+                    .Filter("contains")
+                    .OptionLabel(" ")
+                    .DataTextField("NomLong")
+                    .DataValueField("Nom")
+                    .Events(e=> e.Change("cboRechercherUtilisateurOnChange"))
+                    .HtmlAttributes(new { style = "width:320px; padding-bottom:.5em;", data_bind = "value:IdCategorie" })
+)
+
+@(Html.Kendo().Grid<Mentorat.ViewModels.RechercherUtilisateursViewModels>()
+              .Name("gridRechercherUtilisateurs")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.NomComplet).Title("Utilisateurs").Filterable(filtre => filtre.Extra(false).Operators(operateur => operateur.ForString(str => str.Clear().Contains("Contient")))); 
+                  columns.Bound(c => c.CategorieUser).Title("Catégorie").Filterable(filtre => filtre.Extra(true).Operators(operateur => operateur.ForString(str => str.Clear().Contains("Contient"))));
+                  columns.Bound(c => c.StatutUser).Title("Statut");
+              })
+              .Scrollable(scroll => scroll.Virtual(true))
+               .Sortable(sortable => sortable
+            .AllowUnsort(true)
+            .SortMode(GridSortMode.MultipleColumn)
+            .ShowIndexes(true))
+              .Filterable()
+                      .Selectable(select =>
+                      {
+                          if (Request.Browser.IsMobileDevice)
+                          {
+                              select.Mode(GridSelectionMode.Single);
+                          }
+                          else
+                          {
+                              select.Mode(GridSelectionMode.Multiple);
+                          }
+                      })
+              .PersistSelection(true)
+              .DataSource(dataSource => dataSource
+                 .Ajax()
+                 .ServerOperation(true)
+                  .Model(model => model.Id(p => p.Id))
+
+                  .Read(read => read.Action("Utilisateurs_Read", "SharedUtilisateurs").Data("ObtenirFiltreRoleRechercherUtilisateurs"))
+              )
+
+)
+
+<div class="k-edit-buttons k-state-default">
+    @(Html.Kendo().Button()
+                .Name("btnEnregistrerRechercherUtilisateurs")
+                .Content(Model.TexteBoutonEnregistrer)
+                .HtmlAttributes(new { type="button", @class="k-primary" })
+    )
+
+    @(Html.Kendo().Button()
+        .Name("btnAnnulerrRechercherUtilisateurs")
+        .Icon("cancel")
+        .Content("Annuler")
+    )
+
+</div>
+
+
+
+<script>
+    $('#btnAnnulerrRechercherUtilisateurs').click(function (e) {
+        varCloseRechercherUtilisateursInfo = "cancel";
+        $(this).closest("[data-role=window]").data("kendoWindow").close();
+    });
+
+    $('#btnEnregistrerRechercherUtilisateurs').click(function (e) {
+        varCloseRechercherUtilisateursInfo = "save";
+        $(this).closest("[data-role=window]").data("kendoWindow").close();
+    });
+ </script>
+
+<style>
+    #gridRechercherUtilisateurs
+    {
+        max-width:90vw;     
+        width:800px;   
+    }
+
+    #btnEnregistrerRechercherUtilisateurs
+    {
+       margin-top:10px;      
+      /* padding-right:10px;
+       padding-left:10px;
+       margin-right:5px;*/
+       min-width:150px;
+    }
+
+    #btnAnnulerrRechercherUtilisateurs{
+       margin-top:10px;      
+      /* padding-right:10px;
+       padding-left:10px;
+       margin-right:20px;*/
+       min-width:150px;    
+    }
+</style>

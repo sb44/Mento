@@ -1,0 +1,15 @@
+﻿@model int?
+
+@(Html.Kendo().DropDownListFor(m => m)
+        .AutoBind(false)
+        //.OptionLabel("Sélectionner le mentor...")
+        .DataTextField("Nom_Mentor")
+        .DataValueField("No_Mentor")
+        .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read.Action("GetMentors", "InterventionsAdm"))
+                    .ServerFiltering(true);
+
+        })
+)
+@Html.ValidationMessageFor(m => m)

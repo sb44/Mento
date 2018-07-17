@@ -1,0 +1,403 @@
+﻿@{
+    ViewBag.Title = "Interventions";
+}
+
+@model Mentorat.Models.ForeignKeyValues 
+
+@using Microsoft.AspNet.Identity
+
+        <hgroup class="title">
+            <h2>@ViewBag.Message</h2>
+        </hgroup>
+        
+        <br />
+
+<div>
+    <label>Année :</label>
+    @(Html.Kendo().DropDownList()
+            .Name("PeriodeInterventionAdm")
+            .DataTextField("Text")
+            .DataValueField("Value")
+            .Events(e => e.Change("PeriodeInterventionAdmOnChange"))
+            .BindTo(new List<SelectListItem>()
+            {
+                    new SelectListItem()
+                    {
+                        Value="1",Text="Toutes les années"
+                    },
+                     new SelectListItem()
+                    {
+                        Value="2018",Text="2018-2019"
+                    },
+                    new SelectListItem()
+                    {
+                        Value="2017",Text="2017-2018"
+                    },
+                    new SelectListItem()
+                    {
+                        Value="2016",Text="2016-2017"
+                    }
+            })
+           .Value(ViewData["AnneeEnCours"].ToString())
+    )
+    <label id="labelPeriodeDate" class="k-label"></label>
+</div>
+
+<br />
+        @(Html.Kendo().Grid<Mentorat.Models.Intervention>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.Date_Intervention).Title("Date").Format("{0:yyyy/MM/dd}").ClientGroupFooterTemplate("#= count # intervention(s)").ClientFooterTemplate("#= count # intervention(s)");
+                  //columns.ForeignKey(c => c.No_Mentor_Intervention, Model.Mentors, "NoMentor", "NomCompletMentor").Title("Mentor").Width(160).EditorTemplateName("CboMentors").ClientGroupHeaderTemplate("Bonjour! #= getHeaderMentor(value,data)#");
+                  columns.ForeignKey(c => c.No_Mentor_Intervention, Model.Mentors, "NoMentor", "NomCompletMentor").Title("Mentor").ClientGroupHeaderTemplate("#= getHeaderMentor(value,data)#");
+                  //columns.ForeignKey(c => c.No_Mentor_Intervention, Model.Mentors, "NoMentor", "NomCompletMentor").Title("Mentor").Width(160).EditorTemplateName("CboMentors").ClientGroupHeaderTemplate("#=foreignValuesMentor[value] # Total : #= getSum(value)/60# hrs");
+                  //columns.Bound(c => c.Duree_Intervention).Title("Durée (min.)").Width(70).ClientGroupFooterTemplate("Total : #= String.Format('{0:0.00}',sum/60) #");          
+                  columns.Bound(c => c.Duree_Intervention).Title("Durée (min.)").ClientGroupFooterTemplate("Total : #= kendo.format('{0:0.00}', sum/60)# hrs").ClientFooterTemplate("Total : #= kendo.format('{0:0.00}', sum/60)# hrs");
+                  //columns.ForeignKey(c => c.No_Mentore_Intervention, Model.Mentores, "No_Mentore", "NomComplet_Mentore").Title("Mentoré").Width(160).EditorTemplateName("CboMentores").ClientGroupHeaderTemplate("#= getHeaderMentores(value,data)#");
+                  columns.ForeignKey(c => c.No_Mentore_Intervention, Model.Mentores, "No_Mentore", "NomComplet_Mentore").Title("Mentoré").ClientGroupHeaderTemplate("#= getHeaderMentores(value,data)#");
+                  columns.Bound(c => c.Mentore.NomComplet_Mentore).Hidden().ClientGroupHeaderTemplate("#= getHeaderMentor(value,data)#");
+                  columns.Bound(c => c.Mentor.NomCompletMentor).Hidden().ClientGroupHeaderTemplate("#= getHeaderMentor(value,data)#");
+                  columns.Bound(c => c.Description_Intervention).Title("Description");
+              })
+              .ToolBar(toolbar => {
+                  toolbar.Excel();
+              })
+              .Excel(excel => excel.AllPages(true).Filterable(true))
+              .Editable(editable => editable.Mode(GridEditMode.PopUp))
+              .Scrollable(scroll => scroll.Enabled(true))
+              .Pageable()
+              .Sortable(sortale => sortale.AllowUnsort(false))
+              .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+              .Groupable()
+              //.Scrollable()
+              //.Events(events =>
+              //{
+              //    events.Edit("onEdit");
+              //})
+              //.HtmlAttributes(new { style = "width:1000px;" })             
+              .Events(events => events.DataBound("onDataBound"))
+              .Events(events => events.ExcelExport("excelExport"))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  //.Events(e => e.Change("onChange"))
+                  .Batch(true)
+                  .PageSize(200)
+                  .Model(model => model.Id(p => p.No_Intervention))
+                   .Events(events => events.RequestEnd("onRequestEnd"))
+                  .Read(read => read.Action("Interventions_Read", "InterventionsAdm").Data("ObtenirFiltreAnnee"))
+                  //.Group(gr=> { gr.Add(p => p.Mentor.NomMentor); })
+                  .Aggregates(ag =>
+                  {
+                      ag.Add(p => p.Duree_Intervention).Sum();
+                      ag.Add(p => p.Date_Intervention).Count();
+                  })
+
+              //.Create(create => create.Action("Interventions_Create", "InterventionsAdm"))
+              //.Update(update => update.Action("Interventions_Update", "InterventionsAdm"))
+              //.Destroy(destroy => destroy.Action("Interventions_Destroy", "InterventionsAdm"))
+              )
+        )
+   
+
+<script type="text/javascript">
+
+    var foreignValuesMentor = {};
+    var foreignValuesMentores = {};
+
+    $(document).ready(function () {
+
+        $(window).trigger("resize");
+
+        var grid = $("#grid").data("kendoGrid");
+
+        var headerCols = grid.thead.parent().find("col");
+        headerCols.eq(0).addClass("colDate");
+        headerCols.eq(1).addClass("colMentor");
+        headerCols.eq(2).addClass("colDuree");
+        headerCols.eq(3).addClass("colMentore");
+        headerCols.eq(4).addClass("colDescription");
+
+        var bodyCols = grid.tbody.parent().find("col");
+        bodyCols.eq(0).addClass("colDate");
+        bodyCols.eq(1).addClass("colMentor");
+        bodyCols.eq(2).addClass("colDuree");        
+        bodyCols.eq(3).addClass("colMentore");
+        bodyCols.eq(4).addClass("colDescription");
+    });
+
+   // var agr;
+    $(function () {
+
+        var grid = $("#grid").data("kendoGrid"),
+
+            values = grid.columns[1].values; //colonne des mentor
+            valuesMentores = grid.columns[3].values; //colonne des mentorés
+
+            console.log("Colonnes : " + grid.columns.indexOf("Mentor"));
+
+        //Garder en mémoire les nom des mentors pour plus tard.
+        for (var i = 0; i < values.length; i++) {
+
+            foreignValuesMentor[values[i].value] = values[i].text;
+         }
+
+        //Garder en mémoire les nom des mentorés pour plus tard
+        for (var i = 0; i < valuesMentores.length; i++) {
+
+            foreignValuesMentores[valuesMentores[i].value] = valuesMentores[i].text;
+        }
+        //console.log("tab for : " + JSON.stringify(foreignValuesMentor))
+
+        
+
+        //find the ForeignKeyColumn and replace it's data-field attribute 
+
+        //to point to the hidden column that contains the text represantation 
+
+       // var menu = grid.thead.find("th[data-field='No_Mentore_Intervention']");
+       // menu = menu.attr("data-field", "Mentore.NomComplet_Mentore");
+       //// menu = menu.data("kendoColumnMenu");
+
+       // menu.field = "Mentore.NomComplet_Mentore";
+    });
+
+    $(window).resize(function () {
+        kendo.resize($("#grid"));
+    });
+
+    function onDataBound(e)
+    {
+       var grid = this;
+        
+        if (grid.dataSource.group().length > 0) {
+            //On va fermer tous les regrouppements.
+            $(".k-grouping-row").each(function () {
+
+                grid.collapseGroup(this);
+
+            });
+        }
+
+        var footerCols = $(".k-grid-footer-wrap").find("col");
+        footerCols.eq(0).addClass("colDate");
+        footerCols.eq(1).addClass("colMentor");
+        footerCols.eq(2).addClass("colDuree");
+        footerCols.eq(3).addClass("colMentore");
+        footerCols.eq(4).addClass("colDescription");
+    }
+
+    //function sumHrs()
+    //{
+    //    var ds = $("#grid").data("kendoGrid").dataSource;
+    //    var ag = ds.aggregates();
+    //    var total = ag.Duree_Intervention.sum;
+    //    console.log(kendo.stringify(ag));
+    //    return total;
+    //}
+
+    //function onDataBound(arg) {
+    //    var aggregates = arg.sender.dataSource.aggregates();
+    //    console.log("Grid data bound: " + aggregates.Duree_Intervention.sum);
+    //}
+
+    function getHeaderMentor(value,data)
+    {
+        //Permet d'afficher un titre personnalisé lors du regroupement sur la colonne Mentor. L'affichage n'est pas traité de la même façon lorsque c'est pour une impression Excel.
+        var result = "";
+        var nom = "";
+        var espace = "";
+        var total = "";
+
+        if (!data.title)
+        {
+            nom = data.value;
+            espace = "  ";
+            total = "&nbsp;&nbsp;&nbsp;" + kendo.format('{0:0.00}', data.aggregates.Duree_Intervention.sum / 60) + " hrs";
+        }
+        else
+        {
+            nom = data.value;
+           // espace = "   ";           
+        }
+        
+        result = nom + espace + total;
+
+        return result;
+    }
+
+    function getHeaderMentores(value, data) {
+        //Permet d'afficher un titre personnalisé lors du regroupement sur la colonne Mentoré. L'affichage n'est pas traité de la même façon lorsque c'est pour une impression Excel.
+        var result = "";
+        var nom = "";
+        var espace = "";
+        var total = "";
+       // console.log("length : " + value.length);
+        if ($.isNumeric(value) || (value === null)) {
+            nom = foreignValuesMentores[value];
+            espace = "";
+            total = "&nbsp;&nbsp;&nbsp;" + kendo.format('{0:0.00}', data.aggregates.Duree_Intervention.sum / 60) + " hrs";
+        }
+        else {
+            nom = data.value;
+            espace = "   ";
+        }
+
+        result = nom + espace + total;
+
+        return result;
+    }
+
+    //function getSum(value,data) {
+    //    console.log("get sum!!!")
+    //    var datasource = $("#grid").data("kendoGrid").dataSource;
+    //    var result = 0;
+    //    console.log("data : " + JSON.stringify(data));
+    //    $(datasource.view()).each(function (index, element) {
+    //        console.log("element value : " + element.value + " element text : " + element.aggregates.No_Mentor_Intervention + " La value : " + value)
+    //        //if (element.value === value) {
+    //        //    result = element.aggregates.Duree_Intervention.sum;
+    //        //}
+    //    });
+
+    //    return result;
+    //}
+
+
+    function excelExport(e) {
+        var sheet = e.workbook.sheets[0];
+
+
+        for (var i = 0; i < sheet.columns.length; i++) {
+
+            sheet.columns[i].autoWidth = false;
+            switch (i) {
+                case (0):
+                    sheet.columns[i].width = 90;
+                    break;
+                case (1):
+                    sheet.columns[i].width = 145;
+                    break;
+                case (2):
+                    sheet.columns[i].width = 100;
+                    break;
+                case (3):
+                    sheet.columns[i].width = 190;
+                    break;
+                case (4):
+                    sheet.columns[i].width = 330;
+                    break;
+                default:
+                    sheet.columns[i].width = 118;
+                  //  sheet.columns[i].autoWidth = true;
+            }
+        }
+
+        for (var rowIndex = 1; rowIndex < sheet.rows.length; rowIndex++) {
+            var row = sheet.rows[rowIndex];
+            for (var cellIndex = 0; cellIndex < row.cells.length; cellIndex++) {
+                row.cells[cellIndex].wrap = true;
+                row.cells[cellIndex].verticalAlign = "top";
+                row.cells[cellIndex].textAlign = "left";
+                row.cells[cellIndex].borderBottom = new Object();
+                row.cells[cellIndex].borderBottom.size = 1;
+
+            }
+        }
+    }
+
+    function PeriodeInterventionAdmOnChange(e) {       
+        var grid = $("#grid").data("kendoGrid");
+        grid.dataSource.page(1);        
+    }
+
+    function ObtenirFiltreAnnee(e) {
+        var dataItem = $("#PeriodeInterventionAdm").data("kendoDropDownList");
+        var strAnnee = "";
+
+        if (dataItem.value() != "") {
+            strAnnee = dataItem.value();
+        }
+
+        return { 'filtreAnnee': strAnnee };
+    }
+
+    function onRequestEnd(e)
+    {
+        console.log("mon object datasource", e);
+        var msg = e.response.MessageDataSource;
+        if ($("#labelPeriodeDate")) {
+            $("#labelPeriodeDate").text(msg);
+        }
+    }
+
+</script>
+
+<style>
+        #grid{
+        height:73vh;
+    }
+
+        .colDate{
+                width:140px;
+            }
+
+        .colDuree{
+            width:140px;
+            }
+
+                       .colMentor{
+                     width:135px;
+                }
+
+                .colMentore{
+                     width:135px;
+                }
+
+    #labelPeriodeDate{
+        display:inline;
+        padding-left:5px;
+        font-size:medium;
+        font-weight:normal;
+    }
+
+    @@media only screen and (max-width: 850px)
+        {
+                #grid{
+            height:95vh;
+                }
+
+                            .colDescription{
+            width:200px;
+    }
+        }
+
+        @@media only screen and (max-height: 400px) {
+                    .k-grid-footer{
+                height:0px;
+            }
+            .k-grid-footer-wrap{
+                 height:0px;
+            }
+
+                .colDate{
+                     width:92px;
+                }
+
+                .colDuree{
+                     width:95px;
+                }
+
+               .colMentor{
+                     width:95px;
+                }
+
+                .colMentore{
+                     width:96px;
+                }
+
+                .k-link{
+                    font-size:small;
+                }
+    }
+</style>

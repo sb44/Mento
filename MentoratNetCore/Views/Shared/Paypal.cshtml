@@ -1,0 +1,28 @@
+﻿@model MentoratNetCore.Models.Paypal
+
+@{   
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Nous vous redirigeons vers le site de paiement en ligne Paypal....</h2>
+
+<form id="frmPaypal" action="@Html.DisplayFor(model=> model.actionURL)" method="post">
+      
+    @Html.HiddenFor(model => model.cmd)
+    @Html.HiddenFor(model=> model.hosted_button_id)
+   @* @Html.HiddenFor(model => model.cancel_return)*@
+   @* @Html.HiddenFor(model => model.@return)*@
+    @Html.HiddenFor(model => model.notify_url)
+    @*@Html.HiddenFor(model => model.on0)
+    @Html.HiddenFor(model => model.os0)   
+    @Html.HiddenFor(model => model.os0)*@
+  @Html.HiddenFor(model=>model.invoice)  
+</form>
+
+<script type="text/javascript" language="javascript">
+    $(this.document).ready(function () {
+        
+        var frm = $("#frmPaypal");
+        frm.submit();
+    });
+</script>

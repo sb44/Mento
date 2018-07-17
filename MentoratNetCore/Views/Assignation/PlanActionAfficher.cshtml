@@ -1,0 +1,303 @@
+﻿@model Mentorat.ViewModels.PlanActionViewModel
+
+<style>
+        
+
+</style>
+
+<input id="noMentore" value="@ViewBag.noMentorePlanAction" type="hidden">
+<input id="noAnnee" value="@ViewBag.noAnneePlanAction" type="hidden">
+
+<div class="divBtn">
+    @(Html.Kendo().Button()
+                    .Name("btnExportPdf")
+                    .Content("Générer un PDF")
+                    .HtmlAttributes(new { type = "button" })
+                    .Enable(true)
+                    .Icon("pdf"))
+    @*<button class='export-pdf k-button'>Générer</button>*@
+</div> 
+
+
+    <div class="pdf-page">
+       <div class="pdf-header">
+            <h2>Plan d'action entre le mentor et le mentoré</h2>
+           <div class="headerImg"><img src="~/Images/CSC/logo CSC-CMYK_160h.png"></div>
+        </div>
+       <div class="pdf-body">
+           <div>
+               <span class="infoPlan">Nom du mentoré : @ViewBag.NomMentorePlanAction </span>
+               <span class="infoPlan">Nom du mentor : @ViewBag.NomMentorPlanAction </span>
+               <span class="infoPlan">Année : @ViewBag.noAnneePlanAction </span><br />
+            </div>
+           <table id="TableAction">
+               <tr>
+                   <td class="titre">Objectifs priorisés</td>
+                   <td class="titre">Indicateurs</td>
+                   <td class="titre">Actions - Étapes <br />  Moyens-Ressources </td>
+                   <td class="titre">Échéanciers et suivis à prévoir</td>
+                   <td class="titre">Évaluation de la progression</td>
+               </tr>
+               @foreach (var maLigne in ViewData["Actions"] as List<Mentorat.ViewModels.PlanActionViewModel>)
+    {
+                   <tr>
+                       <td class="tdCol1">@Html.Raw(@maLigne.Objectifs)</td>
+                       <td class="tdCol2">@Html.Raw(@maLigne.Indicateurs) </td>
+                       <td class="tdCol3"> @Html.Raw(@maLigne.Actions) </td>
+                       <td class="tdCol4"> @Html.Raw(@maLigne.Echeancier) </td>
+                       <td class="tdCol5"> @Html.Raw(@maLigne.Evaluation) </td>
+                   </tr>
+               }
+           </table>
+        </div>
+       <div class="pdf-footer">           
+           <img class="imgCultivonsPlanAction" src="~/Images/CSC/1_Cultivonslavenir_2_avant_couleurs.jpg" />
+        </div>
+
+    </div>
+
+
+
+
+
+@*@(Html.Kendo().Editor()
+      .Name("editorPlanAction")
+      .HtmlAttributes(new { style = "height:11in;width:8in;", aria_label = "editor" })
+      .Resizable(resizable => resizable.Content(false))
+      //.StyleSheets(css => css
+      //  .Add(Url.Content("~/Content/web/Editor/pdf-export-styles.css"))
+      //)
+      .Pdf(pdf => pdf          
+          .PaperSize("Letter")
+          .FileName("PlanAction.pdf")
+          .Margin(20, 20, 20, 20)
+          .ProxyURL(Url.Action("Pdf_Export_Enregistrer", "Assignation"))
+      )
+
+      .Tools(t => t.Clear()
+                   .Pdf())
+      .Value(@<text>
+        <p>
+            <h2>Plan d'action entre le Mentore et le mentoré</h2>
+        </p>
+        <br />        
+       <table>
+           <tr bgcolor="#F5DFDF">
+               <td width="110px">Objectifs priorisés</td>
+               <td width="110px">Indicateurs</td>
+               <td width="120px">Actions - Étapes <br />  Moyens-Ressources </td>
+               <td width="100px">Échéanciers et suivis à prévoir</td>
+               <td width="85px">Évaluation de la progression</td>
+            </tr>
+           @foreach (var maLigne in ViewData["Actions"] as List<Mentorat.ViewModels.PlanActionViewModel>)
+           {
+               <tr> 
+                   <td>@Html.Raw( @maLigne.Objectifs)</td>
+                   <td>@Html.Raw(@maLigne.Indicateurs) </td>
+                   <td> @Html.Raw(@maLigne.Actions) </td>
+                   <td> @Html.Raw(@maLigne.Echeancier) </td>
+                   <td> @Html.Raw(@maLigne.Evaluation) </td>
+               </tr>
+           }
+
+       </table>
+
+    </text>)
+)*@
+
+<script>
+    //$(function () {
+    //    $($("#editorPlanAction").data().kendoEditor.body).attr("contenteditable", false);
+    //})
+
+        // Import DejaVu Sans font for embedding
+
+        // NOTE: Only required if the Kendo UI stylesheets are loaded
+        // from a different origin, e.g. cdn.kendostatic.com
+        kendo.pdf.defineFont({
+            "DejaVu Sans": "https://kendo.cdn.telerik.com/2017.3.1026/styles/fonts/DejaVu/DejaVuSans.ttf",
+            "DejaVu Sans|Bold": "https://kendo.cdn.telerik.com/2017.3.1026/styles/fonts/DejaVu/DejaVuSans-Bold.ttf",
+            "DejaVu Sans|Bold|Italic": "https://kendo.cdn.telerik.com/2017.3.1026/styles/fonts/DejaVu/DejaVuSans-Oblique.ttf",
+            "DejaVu Sans|Italic": "https://kendo.cdn.telerik.com/2017.3.1026/styles/fonts/DejaVu/DejaVuSans-Oblique.ttf"
+        });
+
+
+
+    </script>
+
+<!-- Load Pako ZLIB library to enable PDF compression -->
+<script src="https://kendo.cdn.telerik.com/2017.3.1026/js/pako_deflate.min.js"></script>
+
+
+<script>
+
+
+
+    $("#btnExportPdf").click(function () {
+            // Convert the DOM element to a drawing using kendo.drawing.drawDOM
+        kendo.drawing.drawDOM($('.pdf-page'), { paperSize: "Letter",scale:0.75,landscape:true })
+            .then(function (group) {
+                // Render the result as a PDF file
+                return kendo.drawing.exportPDF(group);
+            })
+            .done(function (data) {
+                // Save the PDF file
+                kendo.saveAs({
+                    dataURI: data,
+                    fileName: "PlanActions.pdf",
+                    proxyURL: "@Url.Action("Pdf_Export_Enregistrer", "Assignation")"
+                });
+        });
+        });
+</script>
+
+<style>
+        /*.k-widget {
+        font-family: "DejaVu Sans", "Arial", sans-serif;
+        font-size: .9em;
+    }*/
+
+        /*.content-wrapper-PA
+        {
+            width:8.5in;
+            height:11in;
+            border:solid;
+            padding:2cm;
+            font-family: "DejaVu Sans", "Arial", sans-serif;            
+        font-size: .9em;
+        }*/
+
+        
+        .pdf-page {
+            margin: 0 auto;
+            box-sizing: border-box;
+            box-shadow: 0 5px 10px 0 rgba(0,0,0,.3);
+            background-color: #fff;
+            color: #333;
+           position: relative;            
+            font-family: "DejaVu Sans", "Arial", sans-serif;  
+            width: 11in; min-height: 8.5in ;  
+           
+        }
+
+       div .divBtn{
+            width:11in;
+            position:relative;
+           margin: 0 auto;
+           margin-bottom:10px;
+        }
+
+        .pdf-header {
+           padding-top:2em;
+           padding-left:3em;       
+        }
+
+        .pdf-body {
+            padding-top:4em;
+            padding-left:3em;
+            padding-right:3em;
+            padding-bottom:7em;            
+        }
+
+        #TableAction{
+            /*position:absolute;*/
+            top:5em;
+            left:0;                  
+            border-right:solid;
+            border-right-width : thin;            
+            
+        }
+
+        #TableAction tr{
+            border-bottom:solid;
+            border-bottom-width :thin;
+        }
+
+        #TableAction tr:first-child 
+        {
+            /*background-color:#F5DFDF;*/
+            border-top:solid;
+            border-top-width:thin;    
+            border-bottom:solid;
+            border-bottom-width:thin;            
+        }
+
+        .titre{
+             background-color:#EDF3F7;
+             border-top:solid;
+            border-top-width:thin;    
+             border-bottom:solid;
+            border-bottom-width:thin;   
+        }
+
+
+        #TableAction td{
+            /*border-style:solid;
+            border-width:1px;*/
+            padding-left:5px;
+            padding-top:5px;
+            padding-bottom: 2px;
+            padding-right:2px;
+            vertical-align: top;
+            border-left:solid;
+            border-left-width:thin;
+        }
+
+    #TableAction .tdCol1{
+        width:3in;       
+    }
+
+        #TableAction .tdCol2{
+        width:1.2in;       
+    }
+
+            #TableAction .tdCol3{
+     width:3.2in;   
+    }
+
+                #TableAction .tdCol4{
+        width:1.1in;       
+    }
+
+                    #TableAction .tdCol5{
+        width:1.0in;       
+    }
+
+    #TableAction p{
+        margin-top:0px;
+    }
+
+    .infoPlan{
+       display:block;
+       margin-top:4px;
+    }
+
+    .titre{
+        vertical-align: middle !important;
+    }
+
+    .pdf-footer
+    {
+        position:absolute;
+        bottom:23px;       
+        width:11in;
+        text-align:center;
+        margin-top:5px;
+    }
+
+    .headerImg
+    {
+               position: absolute;
+    right: 3em;
+    top: 20px;    
+   
+    }
+
+    .imgCultivonsPlanAction
+    {
+        width:90%;      
+    }
+</style>
+
+
+

@@ -1,0 +1,82 @@
+﻿@model Mentorat.ViewModels.PlanActionViewModel
+
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.Objectifs)
+
+
+
+
+@*@(Html.Kendo().Editor()
+           .Name("editor")
+           .Tag("div")
+           .Encode(false)
+           .HtmlAttributes(new { style = "height:440px", aria_label = "editor" })
+            .Resizable(resizable => resizable.Content(true).Toolbar(true))
+            .Events(events => events.Change(@"function (ev){
+            var hiddenInput =  $('#" + Html.NameFor(model => model) + @"');
+            hiddenInput.val(ev.sender.value());
+            hiddenInput.change();
+}"))
+)*@
+
+@(Html.Kendo().EditorFor(model => model.Objectifs)
+    .Name(Html.NameFor(model => model.Objectifs) + "_Editor")
+    .Tag("div")
+    .Encode(false)
+    .Tools(tools => tools.Clear().Bold().Italic().Underline())
+    .Events(events => events.Change(@"function (ev){
+    var hiddenInput =  $('#" + Html.NameFor(model => model.Indicateurs) + @"');
+    hiddenInput.val(ev.sender.value());
+    hiddenInput.change();
+}"))
+)
+
+@Html.HiddenFor(model => model.Indicateurs)
+
+
+
+<style>
+    .k-window{
+        width:750px;       
+    }
+
+   .k-edit-form-container
+   {
+       width:100%;
+   }
+
+   table.k-editor
+   {
+       width:325px;
+       height:150px;       
+   }
+
+   .k-editor.k-resizable .k-editable-area
+   {
+       padding-right:1px;
+   }
+
+   .colGauche
+   {
+       display:inline-block;
+       margin-left:40px;
+       margin-top:10px;
+   }
+
+   .colDroite
+   {
+       display:inline-block;
+       margin-left:30px;
+       margin-top:10px;
+   }
+
+</style>
+
+
+<script>
+    $(document).ready(function () {
+      
+        var editor = $("#Objectifs_Editor").data("kendoEditor");
+        editor.value($("#Objectifs").val());
+    });
+    </script>

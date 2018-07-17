@@ -1,0 +1,564 @@
+﻿@model Mentorat.ViewModels.UtilisateurMentoratViewModel
+@using Mentorat.Extensions
+
+@*@Html.HiddenFor(model => model.No_Mentore,new { id="No_Mentore"})*@
+
+<script>
+    function sendAntiForgery() {
+        return { "__RequestVerificationToken": $('input[name=__RequestVerificationToken]').val() }
+    }
+
+    var validator = $("#FormInscriptionComplement").kendoValidator().data("kendoValidator");
+
+    //$(document).ready(function () {
+
+    //    $(window).trigger("resize");
+
+    //});
+
+
+    function ErreurGrid(erreurs) {
+        console.log("erreurs", erreurs);
+        if (erreurs.errors)
+        {
+            var grid = $("#grid").data("kendoGrid");
+
+            grid.one("dataBinding", function (e) {
+
+                e.preventDefault();   // cancel grid rebind if error occurs
+
+                console.log("erreurs.errors", erreurs.errors);
+
+                for (var erreur in erreurs.errors)
+                {
+                    showMessage(grid.editable.element,erreur,erreurs.errors[erreur].errors[0],"grid");
+                }
+
+            });
+        }
+    }
+
+    function showMessage(container, name, message, type) {
+
+        var validationMessageTmpl;
+
+        if (type == "grid")
+        {
+            validationMessageTmpl = kendo.template($("#messageGrid").html());
+        }
+        else
+        {
+            validationMessageTmpl = kendo.template($("#message").html());
+        }
+
+
+        var cell = container.find("[data-valmsg-for='" + name + "']");
+
+        if (cell.length) {
+            cell.replaceWith(validationMessageTmpl({ field: name, message: message }));
+        }
+        else {
+            container.append(validationMessageTmpl({ field: name, message: message }));
+        }
+
+    }
+
+
+    function ObtenirParametresPourGrid()
+    {
+        return { 'noMentore': "@Html.Raw(Model.IdMentore)" };
+    }
+
+
+
+
+    //function editRow(sender) {
+    //    var grid = $("#grid").data("kendoGrid");
+
+    //}
+
+
+    //    if ($('#grid').find('.k-grid-edit-row').length ==0) {
+    //        //grid is not in edit mode
+    //        var selectRow = $("#grid tr:eq(1)");
+
+    //        console.log("le button",sender)
+
+
+
+    //        grid.editRow(selectRow);
+    //        //selectRow.find(".k-grid-edit")["0"].addClass("display", "none")
+    //        $(sender).addClass("display","none");
+
+
+    //    } else {
+    //        //grid is in edit mode
+    //        grid.cancelChanges();
+    //    }
+
+
+
+
+
+
+
+
+
+    //};
+
+    function ModifierVisible(dataItem) {
+        return dataItem.Annee >= "2017";
+    }
+    function CourrielVisible(dataItem) {
+        return dataItem.Annee >= "2017";
+    }
+
+
+    $("#btnEnregistrerInscription").click(function (e) {
+        e.preventDefault();
+
+        var validator = $("#FormInscriptionComplement").data("kendoValidator");
+
+        var siValide = validator.validate();
+
+
+        if (siValide) {
+            $("#btnEnregistrerInscription").prop("disabled", true);
+            $("#FormInscriptionComplement").submit();
+        }
+        else {
+            //pas valide.
+        }
+    });
+
+
+    function EventEdit(e)
+    {
+        $("#btnEnregistrerInscription").prop("disabled",true);
+    }
+
+    function EventCancel(e)
+    {
+        $("#btnEnregistrerInscription").prop("disabled",false);
+    }
+
+
+
+
+
+
+
+
+    function onCloseCourriel(e)
+    {
+        // $("html, body").css("overflow", "");
+    }
+
+
+
+    function AfficherPlanAction(e) {
+        e.preventDefault();
+       
+        
+        var grid = $("#grid").getKendoGrid();
+
+        var dataItem = grid.dataItem($(e.target).closest("tr"));
+
+        var annee = dataItem.Annee;
+        var mentore = "@Html.Raw(Model.IdMentore)";
+
+        var url = '@Url.Action("PlanActionAfficher","Assignation")?noMentore=' + mentore + '&noAnnee=' + annee;
+
+        var Modification = @Html.Raw(Json.Encode(ViewData["ModificationPdf"]));
+       
+
+        if (Modification == true)
+        {
+            url = "@Url.Action("PlanAction","Assignation")?noMentore=" + mentore + "&noAnnee=" + annee;
+        }
+
+        Cookies.set('UtilisateurTabStripPage', 'phyto', { expires: 1/48 });
+            
+       
+
+        window.location.href = url;
+     }
+
+    function PlanActionVisible(e) {
+        return e.AfficherBoutonPlan;
+    }
+
+</script>
+
+@if (User.IsInRole("AssignationCourriel"))
+{
+    <script>
+        function InscriptionEcrireCourriel(e) {
+            e.preventDefault();
+           
+            var grid = $("#grid").getKendoGrid();
+
+            var dataItem = grid.dataItem($(e.target).closest("tr"));
+
+            var fen = $("#fenCourriel").data("kendoWindow");
+
+            var toSend = JSON.stringify({ idInscription: dataItem.NoInscription });
+
+            console.log("toSend", toSend);
+
+            $.ajax(
+            {
+                url: '@Url.Action("SendCourriel", "Assignation")',
+                type: "POST",
+                data: toSend,
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+
+                    if (!result.success && result.success != false) {
+                        $("#fenCourriel").html(result);
+                        fen.center().open();
+                    }
+                    else {
+                        $("#fenCourriel").data("kendoWindow").close();
+                    }
+                },
+                error: function (resultat, statut, erreur) {
+                    console.log("Resultat: " + resultat.responseText);
+                    console.log("statut : " + statut);
+                    console.log("Erreur: " + erreur);
+                }
+
+            });
+
+
+        }
+
+
+   
+
+    </script>
+}
+
+@if (Model.AfficherRenouvellement)
+{
+    <p>
+        <div><span class="k-widget k-tooltip k-invalid-msg field-validation-error" ><span class="abonnementWarning k-icon k-i-warning"></span>@Html.DisplayFor(model => Model.MessageRenouvellement)</span></div>
+       
+
+        @if(@Model.AfficherBoutonPaypal)
+        {
+            <div>
+                @using (Html.BeginForm("RenouvellerMentorat", "Assignation", FormMethod.Post, new { id = "FormInscriptionPaypal" }))
+                {
+
+                    <input type="text" name="nomComplet_Mentore" value="@Html.DisplayFor(model => model.NomComplet_Mentore)" readonly hidden="hidden" />
+                    <input type="text" name="typeMentorat" value="@Html.DisplayFor(model => model.TypeSectionMentorat)" readonly hidden="hidden" />
+                    <input type="text" name="utilisateur" value="@Html.DisplayFor(model=> model.NomUtilisateur)" readonly hidden="hidden" />
+                    <input type="image" src="https://www.paypalobjects.com/fr_CA/i/btn/btn_buynowCC_LG.gif" border="0" style="width: 87px; height: 47px;" name="submit" alt="PayPal - la solution de paiement en ligne la plus simple et la plus sécurisée !">
+                    <img alt="" border="0" src="https://www.paypalobjects.com/fr_CA/i/scr/pixel.gif" width="1" height="1">
+                }
+            </div>  
+         }
+        
+    </p>
+}
+
+
+    <ul id="fieldlist">
+        <li>
+
+            @(Html.Kendo().Grid<Mentorat.ViewModels.AssignationViewModel>()
+              .Name("grid")
+         //.Scrollable(s => s.Enabled(true))
+         .Editable()
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Annee).Title("Année").Width(75);
+              columns.Bound(c => c.DateInscription).Title("Inscription").Format("{0:yyyy/MM/dd}").Width(95);
+              columns.Bound(c => c.DateDebut).Title("Début").Format("{0:yyyy/MM/dd}").EditorTemplateName("Date").Width(120);
+              columns.Bound(c => c.DateFin).Title("Fin").Format("{0:yyyy/MM/dd}").EditorTemplateName("Date").Width(120);
+              columns.Bound(c => c.APaye).Title("Payé").ClientTemplate(
+                                "# if (APaye == true) { #" +
+                                    "Oui" +
+                                "# } else { #" +
+                                    "Non" +
+                                "# } #"
+                            ).Width(65);
+              columns.ForeignKey(c => c.Mentor.NoMentor, (System.Collections.IEnumerable)ViewData["lstMentors"], "Id", "Nom").Title("Mentor").Width(100);
+              // columns.Bound(c => c.Mentor.NoMentor).Title("Mentor").Width(100);
+
+
+              //columns.Bound(c => c.Annee).Title("").ClientTemplate(
+              //                 "# if (Annee == 2017) { #" +
+              //                     "<a onclick=\"editRow(this)\" role=\"button\" href=\"\\#\" class=\"k-button k-button-icontext k-grid-modifier k-grid-edit \">Modifier</a>" +
+              //                     "<a role=\"button\" href=\"\\#\" class=\"k-button k-button-icontext k-grid-courriel\">Courriel</a>" +
+              //                 "# } #" +
+              //                 "<a role=\"button\" href=\"\\#\" class=\"k-button k-button-icontext k-grid-pland'action\">Plan d'action</a>"
+              //             ).Width(200);
+
+
+              columns.Command(command =>
+              {
+                  command.Custom("PlanActionPhyto").Text(" ").IconClass("k-icon k-i-file-pdf k-i-pdf ").Click("AfficherPlanAction").Visible("PlanActionVisible");
+
+                  if (User.IsInRole("AssignationSuppression"))
+                  {
+                      command.Destroy().Text(" ").HtmlAttributes("new {width:20px;}");
+                  }
+
+                  if (User.IsInRole("GererMentores"))
+                  {
+                      command.Edit().Text(" ").Visible("ModifierVisible").HtmlAttributes("new {width:20px;}");
+                  }
+
+                  if (User.IsInRole("AssignationCourriel"))
+                  {
+                      command.Custom("CourrielPhyto").Text(" ").Visible("CourrielVisible").IconClass("k-icon k-i-email k-i-envelop k-i-letter").Click("InscriptionEcrireCourriel");
+                  }
+
+
+
+              }).Width(150).HeaderTemplate("Plan action");
+
+          })
+          .Events(e =>
+          {
+              e.Edit("EventEdit");
+              e.Cancel("EventCancel");
+          }
+    )
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Scrollable(s => s.Height("auto"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(m =>
+          {
+              m.Id(i => i.NoInscription);
+              m.Field(item => item.Annee).Editable(true);
+              m.Field(item => item.DateInscription).Editable(false);
+              //m.Field(item => item.DateDebut).Editable(false);
+              //m.Field(item => item.DateFin).Editable(false);
+              // m.Field(item => item.APaye);
+          })
+          .Read(read => read.Action("GridUtilisateurInscriptions_Read", "Account").Data("ObtenirParametresPourGrid"))
+
+      .Update(update => update.Action("GridUtilisateurInscriptions_Update", "Account").Data("sendAntiForgery"))
+      .Destroy(update => update.Action("GridUtilisateurInscriptions_Destroy", "Account").Data("sendAntiForgery"))
+      .Events(events => events.Error("ErreurGrid"))
+      )
+            )            
+        </li>
+
+        @using (Html.BeginForm("Modification", "Assignation", FormMethod.Post, new { id = "FormInscriptionComplement" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <li>
+                @Html.HiddenFor(model => model.IdMentore)
+
+                <label for="Expertise">Champs d'expertise :</label>
+                @(Html.Kendo().MultiSelectFor(model => model.LesIdExpertises)
+                         .AutoBind(true)
+                         //.BindTo(new SelectList(Model.Expertises, "No_Expertise", "Nom_Expertise"))
+                         .DataTextField("Nom_Expertise")
+                         .DataValueField("No_Expertise")
+                         .DataSource(source =>
+                         {
+                             source.Read(read =>
+                             {
+                                 read.Action("ObtenirExpertises", "Inscriptions");
+                                 read.Type(HttpVerbs.Post);
+
+                             })
+                             .ServerFiltering(true);
+                         })
+                         .HtmlAttributes(new { style = "width:350px;" })
+                )
+                @Html.ValidationMessageFor(model => model.LesIdExpertises)
+            </li>
+                <li>
+                    <label for="Objectifs">Objectifs de développement / attentes par rapport au mentor :</label>
+                    @Html.TextAreaFor(model => model.Objectifs_Mentore, new { style = "width:800px;height:75px;max-width:90%" })
+                    @Html.ValidationMessageFor(model => model.Objectifs_Mentore)
+                </li>
+                <li>
+                    <div id="divInscriptionsButtons" class="k-edit-buttons k-state-default">
+
+                        @if(User.IsInRole("GererMentores"))
+                        {
+                                @(Html.Kendo().Button()
+                            .Name("btnEnregistrerInscription")
+                            .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                            .Enable(true)
+                            .Content("Enregistrer"))
+                        }
+                       
+
+                        @*@(Html.Kendo().Button()
+                            .Name("btnAnnuler")
+                            .HtmlAttributes(new { type = "button" })
+                            .Content("Retour")
+                            .Enable(true)
+                            .Icon("undo"))*@
+
+                    </div>
+                </li>
+        }
+
+
+ 
+    </ul>
+
+@(Html.Kendo().Window()
+                     .Name("fenCourriel")
+                    .Title("")
+                    //.Width(800)
+                    //.Height(660)
+                    .Actions(actions => actions.Close())
+                    //.LoadContentFrom("EnvoyerCourriel", "Assignation")
+                    .Modal(true)
+                    .Visible(false)
+                    .Draggable(true)
+                   // .Events(ev => ev.Close("onCloseCourriel"))
+)
+
+<script type="text/kendo-template" id="messageGrid">
+    <div class="k-widget k-tooltip k-tooltip-validation k-invalid-msg field-validation-error" style="margin: 0.5em; display: block; " data-for="#=field#" data-valmsg-for="#=field#" >
+        <span class="k-icon k-warning"> </span>#=message#<div class="k-callout k-callout-n"></div>
+    </div>
+</script>
+
+@Html.Validation_Error_Convertion_Kendo_Template()
+
+
+
+<script>
+    $('#FormInscriptionComplement').on("submit", function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: this.action,
+            type: this.method,
+            data: $(this).serialize(),
+            success: function (result) {
+                if (!result.success) {
+                    var tabStrip = $("#tabstripUtilisateur .k-content.k-state-active");
+                    
+
+                  
+                    //var tabStrip = $("#tabstripUtilisateur").kendoTabStrip().data("kendoTabStrip")
+                   
+                    if(result.erreurs !="undefined" && result.erreurs.length > 0 )
+                    {
+                        for (var i = 0; i < result.erreurs.length; i++) {
+                            erreur = result.erreurs[i];
+                            // console.log("mon erreur", result[i])
+                            showMessage($('#FormInscriptionComplement'), erreur.Key, erreur.Message,"form");
+                        }
+                    }
+                    else
+                    {
+                        $(tabStrip[0]).html(result);
+                    }
+                   
+                                     
+                    return false;
+                }
+                else {
+                    //Enregistrement avec succès
+
+
+                }
+                $("#btnEnregistrerInscription").prop("disabled", false);
+            },
+            error: function (resultat, statut, erreur) {
+                console.log("Resultat: " + resultat.responseText);
+                console.log("statut : " + statut);
+                console.log("Erreur: " + erreur);
+            }
+
+        });
+    });
+
+    //$(window).resize(function () {
+    //    kendo.resize($("#grid"));
+    //});
+
+
+
+    </script>
+
+@*<script>
+    $(document).ready(function() {
+        $("#Expertise").kendoMultiSelect({
+            "dataTextField": "Nom_Expertise",
+            "dataValueField": "No_Expertise"
+        });
+    });
+</script>*@
+
+
+<style>
+
+    #grid table /* header + data table */
+    {
+        table-layout: fixed;
+    }
+    
+    #fieldlist {
+        margin: 1em;
+        padding: 0;
+    }
+
+        #fieldlist li {
+            list-style: none;
+            padding-bottom: .3em;
+        }
+
+        #fieldlist label {
+            display: block;
+            padding-bottom: .1em;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+            color: #444;
+        }
+
+
+    span.k-tooltip {
+        margin-top: 5px;
+        line-height: 1.7em;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: left;
+    }
+
+    .k-grid tbody .k-button
+    {
+        min-width:20px;
+        padding-left : 10px;
+        padding-right:2px;
+    }
+
+    #fieldlist label{
+        padding-top:25px;
+    }
+
+    #fieldlist{
+        margin-bottom:15px;
+    }
+
+     #fenCourriel{
+            max-width:800px;
+            max-height:660px;  
+
+        }
+
+     .abonnementWarning{
+         vertical-align: text-bottom;
+            margin-right: 5px;
+     }
+</style>
+
+
+

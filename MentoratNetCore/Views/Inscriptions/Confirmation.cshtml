@@ -1,0 +1,71 @@
+﻿@model Mentorat.Models.Mentore
+
+@{
+    ViewBag.Title = "Première étape complétée!";
+}
+
+<hgroup class="title">
+    <h1>@ViewBag.Title</h1>
+    @*<h2>@ViewBag.Message</h2>*@
+</hgroup>
+
+<p>
+    La première étape de votre inscription est maintenant complétée! Vous devez maintenant cliquer sur le bouton « Acheter » et remplir le formulaire PayPal sécurisé pour effectuer votre paiement. <b>Votre inscription ne sera pas activée tant que cette étape ne sera pas effectuée.</b>
+</p>
+<p>
+    Consultez la section « En apprendre plus » du site Web pour les détails sur le fonctionnement du service. N’hésitez pas à communiquer avec la CSC pour obtenir davantage de renseignements.
+</p>
+<p>
+    La CSC vous remercie de votre intérêt!
+</p>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+    <input type="hidden" name="cmd" value="_s-xclick">
+    <input type="hidden" name="hosted_button_id" value="EX42EE9RSNYCE">
+    <table>
+        <tr><td><input type="hidden" name="on0" value="Inscription au nom de "></td></tr>
+        <tr><td><input type="hidden" name="os0" maxlength="200" value="@Html.DisplayFor(model => model.NomComplet_Mentore)"></td></tr>
+    </table>
+    <input type="image" src="https://www.paypalobjects.com/fr_CA/i/btn/btn_buynowCC_LG.gif" border="0" style="width: 87px; height: 47px;" name="submit" alt="PayPal - la solution de paiement en ligne la plus simple et la plus sécurisée !">
+    <img alt="" border="0" src="https://www.paypalobjects.com/fr_CA/i/scr/pixel.gif" width="1" height="1">
+</form>
+
+<div>
+    <h4>Vos coordonnées ont été transmises à la CSC :</h4>
+    <hr />
+
+    <div id="table">
+        <div class="row">
+            <span class="cell"><b>Prénom :</b></span>
+            <span class="cell">@Html.DisplayFor(model => model.Prenom_Mentore)</span>
+        </div>
+        <div class="row">
+            <span class="cell"><b>Nom :</b></span>
+            <span class="cell">@Html.DisplayFor(model => model.Nom_Mentore)</span>
+        </div>
+        <div class="row">
+            <span class="cell"><b>Organisme :</b></span>
+            <span class="cell">@Html.DisplayFor(model => model.Organisme_Mentore)</span>
+        </div>
+        <div class="row">
+            <span class="cell"><b>Courriel :</b></span>
+            <span class="cell">@Html.DisplayFor(model => model.Courriel_Mentore)</span>
+        </div>
+        <div class="row">
+            <span class="cell"><b>Téléphone :</b></span>
+            <span class="cell">@Html.DisplayFor(model => model.Telephone_Mentore)</span>
+        </div>
+        <div class="row">
+            <span class="cell"><b>Cellulaire :</b></span>
+            <span class="cell">@Html.DisplayFor(model => model.Cellulaire_Mentore)</span>
+        </div>
+        <div class="row">
+            <span class="cell"><b>Objectifs :</b></span>
+            <span class="cell">@Html.DisplayFor(model => model.Objectifs_Mentore)</span>
+        </div>
+    </div>
+</div>
+
+@*<p>
+    @Html.ActionLink("Retour à la page d'accueil", "Index", "Accueil")
+</p>*@

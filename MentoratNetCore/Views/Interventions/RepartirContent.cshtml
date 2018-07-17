@@ -1,0 +1,235 @@
+﻿@using Mentorat.Views
+@using Mentorat.Extensions
+@model  Mentorat.Views.InterventionsController.ObjRepartir
+
+
+@*@{
+    //ViewBag.Title = "Répartir";
+    Layout = null;
+}*@
+
+<script>
+    var monValideur = $("#FormRepartir").kendoValidator().data("kendoValidator");
+
+
+    //Les fonctions de la page doivent être au début de la page pour être reconnues.
+    function calculTemps(e) {
+        var multiselect = $("#ChoixMentores").data("kendoMultiSelect");
+        var minutes = $("#duree").data("kendoNumericTextBox").value();
+        var NbMentores = multiselect.value().length;
+        var value = 0;
+
+        if (NbMentores > 0) {
+            value = Math.round(minutes / NbMentores);
+        }
+
+
+        $("#lblTemps").text(value + " minutes");
+
+        console.log("Calcultemps du bon!");
+    };
+
+</script>
+
+
+
+
+@using (Html.BeginForm("RepartirContent", "Interventions", FormMethod.Post, new { id = "FormRepartir" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.AntiForgeryToken()
+
+        <div id="divForm" class="k-state-default" >
+        <h3>Répartir le temps d'une activité pour plusieurs mentorés</h3>
+        <br />
+      
+        <ul id="fieldlist">
+            <li>
+                <label for="Date">Date :</label>
+                @(Html.Kendo().DatePickerFor(model => model.Date)
+                        .Name("Date")
+                        .Start(CalendarView.Month)
+                        .Depth(CalendarView.Month)
+                        .Format("yyyy-MM-dd")
+                        .Value(DateTime.Now.ToShortDateString())
+                        .Min(@ViewData["DateFermeture"].ToString())
+                        .Max(DateTime.Today.AddDays(7))
+                        .HtmlAttributes(new { style = "width:180px" })
+                )
+                @Html.ValidationMessageForKendoCsc("Date")
+            </li>
+            <li>
+                <label for="Duree">Durée totale à répartir (min.) :</label>
+                @(Html.Kendo().NumericTextBoxFor(model => model.Duree)
+                .Name("duree")
+                .Min(5)
+                .Max(1000)
+                .Step(5)
+                .Format("0")
+                .Events(e => e.Change("calculTemps").Spin("calculTemps"))
+                .HtmlAttributes(new { style = "width:180px" })
+                )
+                @*<span class="k-invalid-msg" data-for="duree"></span>*@
+                @Html.ValidationMessageForKendoCsc("duree")
+            </li>
+            <li>
+                <label>Description :</label>
+                @Html.TextAreaFor(model => model.Commentaire, new { style = "width:90%;max-width:400px;height:100px" })
+                @Html.ValidationMessageFor(model => model.Commentaire)
+            </li>
+            <li>
+                <label>Sélectionner les mentorés accompagnés :</label>
+                @(Html.Kendo().MultiSelectFor(model => model.ChoixMentores)
+                 .AutoBind(true)
+                 .Name("ChoixMentores")
+                 .Filter("contains")
+                 .DataTextField("NomComplet_Mentore")
+                 .DataValueField("No_Mentore") 
+                 .DataSource(source =>
+                 {
+                     source.Read(read =>
+                     {
+                         read.Action("ObtenirMentores", "Interventions");
+                         read.Type(HttpVerbs.Post);
+                     });
+                 })
+                 .HtmlAttributes(new { style = "width:90%;max-width:400px;" })
+                 .Events(e => e.Change("calculTemps"))
+                )
+                @Html.ValidationMessageForKendoCsc("ChoixMentores")
+            </li>
+            <li><br /></li>
+            <li><label>Temps attribué à chaque mentor :</label><label id="lblTemps">0 minutes</label></li>
+
+
+        </ul>
+    </div>
+    <div class="k-edit-buttons k-state-default">
+            @(Html.Kendo().Button()
+                .Name("btnRepartir")
+                .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                .SpriteCssClass("k-icon k-i-tick")
+                .Content("Enregistrer")
+            )
+            @(Html.Kendo().Button()
+        .Name("btnAnnuler")
+        //.SpriteCssClass("k-icon k-i-tick")
+        .Icon("cancel")
+        .Content("Annuler")
+            )
+        </div>
+       
+
+}
+
+@Html.Validation_Error_Convertion_Kendo_Template()
+
+<script>
+
+    $(function () {
+         @Html.Validation_Error_Convertion_Kendo_Script("FormRepartir")
+        console.log("la date du popup : " + _dateMax);
+    });
+
+    $('#btnAnnuler').click(function (e) {
+        $("#fenRepartir").data("kendoWindow").close();
+    });
+
+    $('#btnRepartir').click(function (e) {
+        e.preventDefault();
+        $("#FormRepartir").submit();
+        console.log("dans click");
+    });
+
+    $('#FormRepartir').on("submit", function (e) {
+        e.preventDefault();
+        console.log("dans submit");
+        $.ajax({
+            url: this.action,
+            type: this.method,
+            data: $(this).serialize(),           
+            success: function (result) {
+               
+                if (!result.success) {
+                    var msg = result.msg + "";
+
+                    if (msg != "")
+                    {
+                        alert(msg);
+                    }
+                    else
+                    {
+                        alert("Impossible d'enregistrer!");
+                    }
+                   
+                    //$("#fenRepartir").html(result);
+                }
+                else {
+                    $("#fenRepartir").data("kendoWindow").close();
+                }
+            },
+            error: function (resultat, statut, erreur) {
+                console.log("Resultat: " + resultat.responseText);
+                console.log("statut : " + statut);
+                console.log("Erreur: " + erreur);
+            }
+
+        });
+
+    });
+
+</script>
+
+<style>
+
+    .k-numerictextbox  .k-input
+    {
+        width: 100% !important;
+    }
+
+    #divForm {    
+        overflow:auto;     
+        height: 475px;
+        clear: both;
+        border-width: 0 0 1px 0;
+        border-style:solid;
+        bottom: -1em;
+        padding:.6em;       
+    }
+
+    div.k-edit-buttons{
+        padding-top: 10px;
+        text-align:right;
+    }    
+
+    #fieldlist {
+        margin: 0;
+        padding: 0;
+    }
+
+        #fieldlist li {
+            list-style: none;
+            padding-bottom: .7em;
+        }
+
+        #fieldlist label {
+            display: block;
+            padding-bottom: .3em;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+            color: #444;
+        }
+
+        #fieldlist input {
+            width: 200px;
+        }
+
+    span.k-tooltip {
+        margin-top: 5px;
+        line-height: 1.7em;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: left;
+    }
+</style>

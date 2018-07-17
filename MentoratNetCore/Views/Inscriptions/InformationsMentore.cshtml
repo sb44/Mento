@@ -1,0 +1,321 @@
+﻿@using Mentorat.Extensions
+@model Mentorat.ViewModels.Inscriptions.InformationsMentoreViewModel
+
+
+<script>
+    function onClose(e) {
+
+    }
+
+    function onOpen(e) {
+
+    }
+
+    function onOui(e)
+    {
+        EnregistrerInfoMentore();
+    }
+
+    function EnregistrerInfoMentore() {
+        $("#FormModifierMentore").submit();
+    }
+
+    $("#FormModifierMentore").on("submit", function (e) {
+        e.preventDefault();
+
+
+        $.ajax({
+            url: this.action,
+            type: this.method,
+            data: $(this).serialize(),
+            success: function (result)
+            {
+                if (!result.success)
+                {
+                    var tabStrip = $("#tabstripUtilisateur .k-content.k-state-active");
+                    $(tabStrip[0]).html(result);
+                }
+                else {
+                    //Enregistrement avec succès
+
+
+                    @*var oldUser = "@Html.Raw(Model.UserNameHidden)";*@
+                    
+
+
+                    //Le nom de l'utilisate a été changer alors il ouvrir la page au nouvel utilisateur.
+                    if(result.refresh)
+                    {
+                        if ($("#AdminHiddenInfo").val() == "True")
+                        {
+                            var newUser = result.userName;
+                            window.location.href = "@Url.Action("Utilisateur","Account")?utilisateur=" + newUser + "&section=Dossier";
+                        }
+                        else
+                        {
+                            window.location.href = "@Url.Action("Login","Account")";
+                        }
+                    }
+                }
+
+
+            },
+            error: function (resultat, statut, erreur) {
+                console.log("Resultat: " + resultat.responseText);
+                console.log("statut : " + statut);
+                console.log("Erreur: " + erreur);
+            }
+
+        });
+    });
+
+
+</script>
+
+@using (Html.BeginForm("InformationsMentore", "Inscriptions", FormMethod.Post, new { id = "FormModifierMentore" }))
+{    
+    @Html.ValidationSummary(true)
+    @Html.AntiForgeryToken()
+
+
+    @Html.HiddenFor(m => m.NoMentore)
+    @Html.ValidationMessageFor(m => m.NoMentore)
+
+    
+    <ul id="fieldlistDossier">
+        <li>
+            <input id="AdminHiddenInfo" name="AdminHiddenInfo" type="hidden" value="@User.IsInRole("GererUtilisateur").ToString()"  />
+            <label for="Courriel"> Nom d'utilisateur:</label>
+            <input id="UserNameHidden" name="UserNameHidden" type="hidden" value="@Html.DisplayTextFor(model=> model.UserNameHidden)" />
+            <input id="CourrielHidden" name="CourrielHidden" type="hidden" value="@Html.DisplayTextFor(model=> model.CourrielHidden)" />
+            @if ((Model.UserNameHidden != Model.CourrielHidden && Model.UserNameHidden == User.Identity.Name))
+            {               
+                @*<input id="UserNameHidden" type="hidden" value="@Html.DisplayTextFor(model=> model.UserName)" />*@
+                @Html.Kendo().TextBoxFor(model => model.UserName)              
+            }
+            else
+            {                   
+                @*<label for="UserName">@Html.DisplayTextFor(model => model.UserName)</label>*@
+                @Html.Kendo().TextBoxFor(model => model.UserName).HtmlAttributes(new { @class="inputSansBordure", @readonly="readonly"})
+            }    
+            @Html.ValidationMessageFor(model => model.UserName)      
+
+        </li>
+        <li>
+            <label for="Prenom">Prénom :</label>
+            @Html.Kendo().TextBoxFor(model => model.PrenomMentore)
+            @Html.ValidationMessageFor(model => model.PrenomMentore)
+        </li>
+        <li>
+            <label for="Nom">Nom :</label>
+            @Html.Kendo().TextBoxFor(model => model.NomMentore)
+            @Html.ValidationMessageFor(model => model.NomMentore)
+        </li>
+        <li>
+            <label for="Courriel">Adresse courriel:</label>          
+            @Html.Kendo().TextBoxFor(model => model.CourrielMentore)
+            @Html.ValidationMessageFor(model => model.CourrielMentore)            
+        </li>
+        <li>
+            <label for="Organisme">Organisme :</label>
+            @Html.Kendo().TextBoxFor(model => model.Organisme_Mentore)
+            @Html.ValidationMessageFor(model => model.Organisme_Mentore)
+        </li>
+        <li>
+            <label for="Telephone">Numéro de téléphone :</label>
+            @Html.Kendo().TextBoxFor(model => model.TelephoneMentore)
+            @Html.ValidationMessageFor(model => model.TelephoneMentore)
+        </li>
+        <li>
+            <label for="Cellulaire">Numéro de cellulaire :</label>
+            @Html.Kendo().TextBoxFor(model => model.CellulaireMentore)
+            @Html.ValidationMessageFor(model => model.CellulaireMentore)
+        </li>
+      
+       
+        
+       @if (!User.IsInRole("Mentors"))
+       {
+        <li class="actions">
+            @(Html.Kendo().Button()
+                .Name("btnEnregistrerInfoMentore")
+                .SpriteCssClass("k-icon k-i-tick")
+                .Content("Enregistrer")
+                .HtmlAttributes(new{ @class="k-primary" })
+             )          
+
+
+            @(Html.Kendo().Button()
+                .Name("btnModifierMotDePasse")                
+                .Content("Modifier le mot de passe")                
+            )
+            <input id="estMentorsInfoMentore" name="estMentorsInfoMentore" type="hidden" value=false />
+        </li>
+        
+       }
+       else
+       {
+           <li>
+               <input id="estMentorsInfoMentore" name="estMentorsInfoMentore" type="hidden" value=true />
+               </li>
+       }
+
+    </ul>
+}
+
+@(Html.Kendo().Dialog()
+        .Name("dialogConfirmation")
+        .Title("Voulez-vous poursuivre?")
+        .Content("")
+        .Visible(false)
+        .Width(400)
+        .Modal(false)
+        .Actions(actions =>
+        {
+            actions.Add().Text("Oui").Action("onOui");
+            actions.Add().Text("Non");            
+        })
+        .Events(ev => ev.Close("onClose").Open("onOpen"))
+)
+
+@Html.Validation_Error_Convertion_Kendo_Template()
+
+<script>
+
+    $(document).ready(function () {
+        @Html.Validation_Error_Convertion_Kendo_Script("FormModifierMentore");
+
+        var validator = $("#FormModifierMentore").kendoValidator().data("kendoValidator");
+
+        if ($("#estMentorsInfoMentore").val()=="true")
+        {            
+            $("#FormModifierMentore :input").attr("readonly", "readonly");           
+        }
+
+        $("#btnEnregistrerInfoMentore").click(function (e) {
+            e.preventDefault();
+
+            if (validator.validate())
+            {
+                var ancien = $('#UserNameHidden').val();
+                var ancienCourriel = $('#CourrielHidden').val();
+                var strNouveau = "";
+                var boolChanger = false;
+
+                
+
+                if ($("#UserName").val() != ancien)
+                {
+                    strNouveau = $("#UserName").val();
+                    boolChanger = true;                   
+                }
+                else
+                {
+                    if ($("#CourrielMentore").val() != ancienCourriel && ancienCourriel == ancien)
+                    {
+                        strNouveau = $("#CourrielMentore").val();
+                        boolChanger = true;                       
+                    }
+                }
+
+                if (boolChanger && $("#AdminHiddenInfo").val() == "True")
+                {
+                    //l'admin n'a pas besoin d'avoir la demande de confirmation.
+                    boolChanger = false;
+                }
+
+                if (boolChanger)
+                {
+                    var dialog = $("#dialogConfirmation").data("kendoDialog");
+                    dialog.element[0].innerHTML = "Votre code d'utilsateur pour accèder au site sera modifié par : " + strNouveau + ". <br/><br/> Désirez-vous poursuivre?";
+
+                    dialog.open();
+                }
+                else
+                {
+                    EnregistrerInfoMentore();
+                }
+            }
+
+
+        });//fin click
+
+        $("#btnModifierMotDePasse").click(function (e) {
+            e.preventDefault();
+            //  alert($("#No_Mentore").val());
+            if ("@User.Id()" != $("#NoMentore").val())
+            {
+                alert("Ce bouton permet à l'utilisateur de modifier son mot de passe. Il peut aussi, en tout temps, cliquer sur le lien <Bonjour ...> présent en haut de la page.");
+            }
+            else
+            {
+                window.location.href = "@Url.Action("Manage","Account")";
+            }
+        
+
+        });//fin click
+
+
+    });//fin ready
+
+
+
+
+</script>
+
+
+
+
+<style>
+    #fieldlistDossier {
+        margin: 0;
+        padding: 0;
+    }
+
+        #fieldlistDossier li {
+            list-style: none;
+            padding-bottom: .7em;
+        }
+
+        #fieldlistDossier label {
+            display: block;
+            padding-bottom: .3em;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+            color: #444;
+        }
+
+        #fieldlistDossier input {
+            width: 340px;
+            max-width: 90%;
+        }
+
+        #fieldlistDossier button {
+            margin-top: 15px;
+            width: 170px;
+            text-align: center;
+        }
+
+        #fieldlistDossier input[name="UserName"] {
+            text-transform: lowercase !important;
+        }
+
+        #fieldlistDossier input[name="CourrielMentore"] {
+            text-transform: lowercase !important;
+        }
+
+
+    span.k-tooltip {
+        margin-top: 5px;
+        line-height: 1.7em;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: left;
+    }
+
+    .inputSansBordure
+    {
+        border-width:0px;
+    }
+</style>

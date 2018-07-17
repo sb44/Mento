@@ -1820,7 +1820,7 @@ namespace MentoratNetCore.Controllers
         {
             if (userId == null || code == null)
             {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
+                return RedirectToAction(nameof(AccueilController.Index), "Home");
             }
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)

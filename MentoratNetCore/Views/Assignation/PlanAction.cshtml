@@ -1,0 +1,254 @@
+﻿<input id="noMentore" value="@ViewBag.noMentorePlanAction" type="hidden">
+<input id="noAnnee" value="@ViewBag.noAnneePlanAction" type="hidden">
+
+<div class="TitrePlanAction">
+<span class="spanTitrePlan">Mentoré : </span>@ViewBag.NomMentorePlanAction <br/>
+<span class="spanTitrePlan">Mentor : </span>@ViewBag.NomMentorPlanAction <br/>
+<span class="spanTitrePlan">Année : </span>@ViewBag.noAnneePlanAction <br/><br/>
+</div>
+
+@(Html.Kendo().Grid<Mentorat.ViewModels.PlanActionViewModel>()
+    .Name("gridPlanActions")
+    .Columns(col =>
+    {
+        col.Bound(c => c.Id).Hidden();
+        col.Bound(c => c.Objectifs).Title("Objectifs priorisés").Encoded(false).Width(280).EditorTemplateName("EditorPlanAction");
+        col.Bound(c => c.Indicateurs).Title("Indicateurs").Encoded(false).EditorTemplateName("EditorPlanAction").Width(120);
+        col.Bound(c => c.Actions).Title("Actions-Étapes \n Moyens-Ressources").Encoded(false).EditorTemplateName("EditorPlanAction");
+        col.Bound(c => c.Echeancier).Title("Échéanciers et suivis à prévoir").Encoded(false).EditorTemplateName("EditorPlanAction").Width(120);
+        col.Bound(c => c.Evaluation).Title("Évaluation de la progression").Encoded(false).EditorTemplateName("EditorPlanAction").Width(110);
+        col.Bound(c => c.Ordre).Hidden();
+        col.Command(command => { command.Edit().Text(" "); command.Destroy().Text(" "); }).Width(100);
+    })
+    .Scrollable(sc => sc.Enabled(false))
+     //.Editable(editable => { editable.TemplateName("PlanActionModification").Mode(GridEditMode.PopUp); editable.Window(x => x.Title("Modifier-Inscrire une action d'un mentoré")); })
+     .Editable(editable => editable.Mode(GridEditMode.InLine))
+     .ToolBar(toolbar =>
+     {
+         toolbar.Create().Text("Ajouter une ligne");
+         toolbar.Custom().Name("AfficherPlanAction").Text("Imprimer le plan d'action").HtmlAttributes(new { id = "AfficherPlanAction" }).Url("#");
+         toolbar.Custom().Name("CopierPlan").Text("Dupliquer le dernier plan d'action").HtmlAttributes(new { id = "CopierPlan" });
+     })
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .Model(model => model.Id(p => p.Id))
+         .Create(create => create.Action("PlanAction_Create", "Assignation").Data("obtenirParametreGrid"))
+        .Read(read => read.Action("PlanAction_Read", "Assignation").Data("obtenirParametreGrid"))
+        .Update(update => update.Action("PlanAction_Update", "Assignation").Data("obtenirParametreGrid"))
+        .Destroy(destroy => destroy.Action("PlanAction_Destroy", "Assignation").Data("obtenirParametreGrid"))
+        .Sort(s=> s.Add(m=> m.Ordre))
+        .Events(e=> e.RequestEnd("eventRequestEnd"))
+)
+
+   )
+
+@(Html.Kendo().Sortable()
+    .For("#gridPlanActions")
+    .Filter("table > tbody  >tr:not(.k-grid-edit-row)")
+    .Cursor("move")
+    .HintHandler("noHint")
+    .PlaceholderHandler("placeholder")
+    .ContainerSelector("#gridPlanActions tbody")
+    .Events(events=> events.Change("onChange"))
+    )
+
+<p>*Vous pouvez changer l'ordre des lignes par un simple glisser-déposer.</p>
+
+<script>
+
+    $(document).ready(function () {
+        $(".k-grid-CopierPlan").hide(); //A réactiver pour l'année prochaine.
+    });
+
+    var noHint = $.noop;
+
+    
+
+    function obtenirParametreGrid() {
+        return { noMentore: $("#noMentore").val(), noAnnee: parseInt($("#noAnnee").val()) };
+    }
+
+    function placeholder(element) {
+        return element.clone().addClass("k-state-selected").css("opacity", 0.65);
+    }
+
+    function onChange(e) {
+
+        var grid = e.sender.element.data("kendoGrid"),
+            //oldIndex = e.oldIndex,
+           // newIndex = e.newIndex,
+            view = grid.dataSource.view(),
+            dataItem = grid.dataSource.getByUid(e.item.data("uid"));
+
+        dataItem.OrdreTmp = view[e.newIndex].Ordre;
+
+
+        //var ligne2;
+        //var indexligne;
+
+        //if (oldIndex < newIndex)
+        //{
+        //    //vers le bas
+        //    ligne2 = view[newIndex];
+        //    indexligne = newIndex - 1;
+        //}
+        //else
+        //{
+        //    //vers le haut
+        //    ligne2 = view[newIndex];
+        //    indexligne = newIndex+1
+        //}
+        //console.log("oldindex", oldIndex);
+        //console.log("newindex", newIndex);
+        //console.log("indexligne", indexligne);
+        //console.log("ligne1", dataItem);
+        //console.log("ligne2", ligne2);
+
+
+
+
+        //dataItem.OrdreTmp = newIndex;
+        //dataItem.dirty = true;
+
+        //if (oldIndex < newIndex) {
+        //    for (var i = oldIndex + 1; i <= newIndex; i++) {
+        //        view[i].Ordre--;
+        //        view[i].dirty = true;
+        //    }
+        //} else {
+        //    for (var i = oldIndex - 1; i >= newIndex; i--) {
+        //        view[i].Ordre++;
+        //        view[i].dirty = true;
+        //    }
+        //}
+
+        // grid.dataSource.sync();
+       
+        var complements = obtenirParametreGrid();
+        var ligne = { model: dataItem };
+        ligne = $.extend({}, complements, ligne);
+        ligne = JSON.stringify(ligne);
+        
+        $.ajax({
+            url: "@Url.Action("PlanAction_ModifierOrdre", "Assignation")",
+            type: "POST",
+        data: ligne,
+        contentType: "application/json; charset=utf-8",
+        success: function (result) {
+            if (result.success) {
+                grid.dataSource.read();
+            }
+            else {
+                alert("echec!");
+            }
+        },
+        error: function (resultat, statut, erreur) {
+            console.log("Resultat: " + resultat.responseText);
+            console.log("statut : " + statut);
+            console.log("Erreur: " + erreur);
+        }
+
+    });
+
+
+
+    }
+
+    function eventRequestEnd(e)
+    {
+
+        if(e.type=="create" || e.type == "destroy")
+        {
+            //Pour afficher la nouvelle ligne à la fin.
+            var grid = $("#gridPlanActions").data("kendoGrid");
+            grid.dataSource.read();
+        }
+    }
+
+    $("#AfficherPlanAction").bind("click", function () {
+        var annee = $("#noAnnee").val();
+        var mentore = $("#noMentore").val();
+
+        window.location.href = '@Url.Action("PlanActionAfficher","Assignation")?noMentore=' + mentore + '&noAnnee=' + annee;
+    });
+
+    $("#CopierPlan").bind("click", function () {
+        var annee = $("#noAnnee").val();
+        var mentore = $("#noMentore").val();
+        var grid = $("#gridPlanActions").data("kendoGrid");
+        // window.location.href = '@Url.Action("PlanActionDupliquer","Assignation")?noMentore=' + mentore + '&noAnnee=' + annee;
+
+        var data = JSON.stringify( {noAnnee : annee, noMentore: mentore});
+      
+        $.ajax({
+            url: "@Url.Action("PlanAction_Dupliquer", "Assignation")",
+            type: "POST",
+            data: data,
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                if (result.success) {
+                    grid.dataSource.read();
+                }
+                else {
+                    if (result.message != "")
+                    {
+                        alert(result.message);
+                    }
+                    
+                }
+            },
+            error: function (resultat, statut, erreur) {
+                console.log("Resultat: " + resultat.responseText);
+                console.log("statut : " + statut);
+                console.log("Erreur: " + erreur);
+            }
+        });
+    });
+</script>
+
+<style>
+ #gridPlanActions > table 
+{
+    table-layout: fixed;
+}
+
+ #gridPlanActions .k-grid , #gridPlanActions .k-grid-header , #gridPlanActions .k-header,  #gridPlanActions .k-link
+ {
+    height:auto;
+}
+
+  
+
+#gridPlanActions .k-grid,  #gridPlanActions .k-grid-header , #gridPlanActions .k-header 
+ {
+    white-space: normal;
+   vertical-align: top;
+  text-align: left;
+
+}
+
+    .k-grid td {
+        vertical-align:top;
+    }
+
+#gridPlanActions p{
+    margin-top:0px;
+}
+
+.k-grid-CopierPlan
+{
+    float: right;
+}
+
+    .k-grid tbody .k-button
+    {
+        min-width:20px;
+        padding-left : 10px;
+        padding-right:2px;
+    }
+
+.spanTitrePlan{
+    font-weight:400;
+    font-size:1.2em;
+}
+</style>

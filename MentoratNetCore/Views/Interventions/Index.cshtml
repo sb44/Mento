@@ -1,0 +1,626 @@
+﻿@{
+    ViewBag.Title = "Interventions";
+}
+
+@model Mentorat.Models.ForeignKeyValues
+@using Microsoft.AspNet.Identity
+@using Mentorat.Extensions
+
+
+        <hgroup class="title">
+            <h2>@ViewBag.Message</h2>
+        </hgroup>
+
+        <br />
+
+        <div>
+            <label>Année :</label>
+            @(Html.Kendo().DropDownList()
+            .Name("PeriodeIntervention")
+            .DataTextField("Text")
+            .DataValueField("Value")
+            .Events(e => e.Change("PeriodeInterventionOnChange"))
+            .BindTo(new List<SelectListItem>()
+            {
+                    new SelectListItem()
+                    {
+                        Value="1",Text="Toutes les années"
+                    },
+                     new SelectListItem()
+                    {
+                        Value="2018",Text="2018-2019"
+                    },
+                    new SelectListItem()
+                    {
+                        Value="2017",Text="2017-2018"
+                    },
+                    new SelectListItem()
+                    {
+                        Value="2016",Text="2016-2017"
+                    }                   
+            })
+            .Value(@ViewData["AnneeEnCours"].ToString())
+             )
+            <label id="labelPeriodeDate" class="k-label"></label>
+         </div>
+
+        <br />
+
+        @(Html.Kendo().Grid<Mentorat.ViewModels.InterventionsViewModel>()
+                      .Name("grid")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Date_Intervention).Title("Date").Format("{0:yyyy/MM/dd}").ClientGroupFooterTemplate("#= count # intervention(s)").ClientFooterTemplate("#= count # intervention(s)");
+                          columns.Bound(c => c.Duree_Intervention).Title("Durée (min.)").ClientGroupFooterTemplate("Total : #= kendo.format('{0:0.00}', sum/60)# hrs").ClientFooterTemplate("Total : #= kendo.format('{0:0.00}', sum/60)# hrs");
+                          columns.ForeignKey(c => c.No_Mentore_Intervention, (System.Collections.IEnumerable) ViewData["ListeMentor"], "No_Mentore", "NomComplet_Mentore").Title("Mentoré");
+                          columns.Bound(c => c.NomComplet_Mentore_Intervention).Hidden().ClientGroupHeaderTemplate("#= getHeaderMentores(value,data)#");
+                          columns.Bound(c => c.Description_Intervention).Title("Description");
+                          columns.Command(command => { command.Destroy(); }).Width(95);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          if(Session["intNoMentor"].ToString()!="")
+                          {
+                              toolbar.Create();
+                              toolbar.Custom().Name("RepartirTemps").Text("Répartir").HtmlAttributes(new { id = "RepartirTemps", @class = "k-plus" }).Url("#");
+                              toolbar.Save();
+                              toolbar.Excel();
+                          }
+
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InCell))
+                      .Pageable()
+                      .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                      .Groupable()
+                       //.Scrollable(scroll => scroll.Enabled(Request.Browser.IsMobileDevice))
+                       .Scrollable(scroll => scroll.Enabled(true))
+                      .Resizable(resize => resize.Columns(true))
+                      // .HtmlAttributes(new { style = "height:75vh;" })
+                      .Excel(excel => excel.AllPages(true).Filterable(true))
+                      .Events(events => events.DataBound("onDataBound"))
+                      .Events(events => events.Edit("onEdit"))
+                      //.Events(events => events.Save("onSave"))
+                      .Events(events => events.ExcelExport("excelExport"))
+                      //.Sortable(sortale => sortale.AllowUnsort(false))
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(e => e.Change("onChange"))
+                          .Events(e => e.Error("onError"))
+                          .Events(e => e.Sync("onSync"))
+                           .Events(events => events.RequestEnd("onRequestEnd"))
+                          .Batch(true)
+                          .PageSize(100)
+                          .Model(model => model.Id(p => p.No_Intervention))
+                      .Read(read => read.Action("Interventions_Read", "Interventions").Data("ObtenirFiltreAnnee"))
+                      .Create(create => create.Action("Interventions_Create", "Interventions"))
+                      .Update(update => update.Action("Interventions_Update", "Interventions"))
+                      .Destroy(destroy => destroy.Action("Interventions_Destroy", "Interventions"))
+                  .Aggregates(ag =>
+                  {
+                      ag.Add(p => p.Duree_Intervention).Sum();
+                      ag.Add(p => p.Date_Intervention).Count();
+                  })
+              )
+        )
+        @(Html.Kendo().Window()
+                     .Name("fenRepartir")
+                    .Title("")
+                    //.Width(500)
+                    //.Height(550)
+                    .Actions(actions => actions.Close())
+                    .LoadContentFrom("RepartirContent", "Interventions")
+                    .Modal(true)
+                    .Visible(false)
+                    .Draggable(true)
+                    .Events(ev => ev.Close("onClose"))
+        )
+   
+<script>   
+
+    var _dateMax= @Html.Raw(Json.Encode(ViewData["DateFermeture"]));
+    _dateMax = new Date(parseInt(_dateMax.substr(6)));
+
+    $(document).ready(function () {        
+
+        $(window).trigger("resize");
+
+        var grid = $("#grid").data("kendoGrid");
+
+        var headerCols = grid.thead.parent().find("col");
+        headerCols.eq(0).addClass("colDate");
+        headerCols.eq(1).addClass("colDuree");
+        headerCols.eq(2).addClass("colMentore");
+        headerCols.eq(3).addClass("colDescription");
+
+        var bodyCols = grid.tbody.parent().find("col");
+        bodyCols.eq(0).addClass("colDate");
+        bodyCols.eq(1).addClass("colDuree");
+        bodyCols.eq(2).addClass("colMentore");
+        bodyCols.eq(3).addClass("colDescription");
+
+            
+
+    });
+
+    
+    //$(function () {
+    //    var grid = $("#grid").data("kendoGrid");
+
+    //    //var menu = grid.thead.find("th[data-field='Mentore.NomComplet_Mentore']");
+    //    //menu = menu.attr("data-field", "NomComplet_Mentore_Intervention");  
+        
+    //    //var menu = grid.thead.find("th[data-field='NomComplet_Mentore_Intervention]");
+    //    // menu = menu.attr("data-field", "Mentore.NomComplet_Mentore");
+    //});
+
+
+    function onSync(e)
+    {
+        var griderror = $("#grid").data("kendoGrid").table.find("td.errorCell");
+
+        if(!griderror.length)
+        {
+           //Aucune erreur alors on peut rafraichir le Grid pour mettre à jour le pied de page.
+            var gridSource = $("#grid").data("kendoGrid").dataSource;
+            gridSource.fetch();
+        }        
+    }
+
+    function onEdit(e)
+    {
+        if (Date.parse(e.model.Date_Intervention) < Date.parse(_dateMax)) {
+            this.closeCell();
+            this.table.focus();            
+        }
+        else
+        {
+            if (e.model.No_Intervention==0)
+            {
+                var dateEnCours = new Date();
+                var dateId =  dateEnCours.getHours().toString()+dateEnCours.getMinutes().toString()+dateEnCours.getSeconds().toString()+dateEnCours.getMilliseconds().toString();
+
+                var ligne= $("#grid").data("kendoGrid").table.find("tr[data-uid='" + e.model.uid +"']");
+
+                if (ligne.length)
+                {
+                    e.model.No_Intervention=-dateId;
+                }
+
+            }
+            
+            var cdate = e.container.find("[data-role=datetimepicker]");
+
+            if(cdate.length)
+            {
+                var dateMax = new Date();
+                dateMax.setDate(dateMax.getDate()+7)
+               // dateMax = dateMax + 7;
+                cdate.data("kendoDateTimePicker").setOptions({min: _dateMax,max:dateMax });
+            }
+        }
+    }
+
+
+    function onClose(e) {
+        var fen = $("#fenRepartir").data("kendoWindow");
+        fen.refresh();
+
+        var dg = $("#grid").data("kendoGrid");
+        dg.dataSource.read();
+    }
+
+function onChange(e)
+    {
+
+    console.log("On change : " + e.action);
+
+    if (e.action == "add")
+    {      
+        var model = e.items[0];
+        var dateNow = new Date();
+        var jour = dateNow.getDate();
+        var mois = dateNow.getMonth() + 1;
+        var annee = dateNow.getFullYear();
+
+        model.No_Mentore_Intervention = 1;
+        model.Date_Intervention = new Date(annee + '/' + mois + '/' + jour);
+        model.Duree_Intervention = 0;        
+    }else
+    {
+        if(e.action == "itemchange")
+        {
+            if(e.field = "Description_Intervention")
+            {
+                var model = e.items[0];
+                // model.Description_Intervention = model.Description_Intervention.replace("<","< ").replace(">"," >");
+                model.Description_Intervention = model.Description_Intervention.replace(/</g,"< ").replace(/>/g," >");
+            }
+        }
+    }
+
+   
+}   
+
+function onError(args) {
+    if (args.errors) {
+        console.log("Erreur!");
+        args.preventDefault();
+        var grid = $("#grid").data("kendoGrid");
+
+        //remove previous errors
+        grid.table.find(".errorCell").each(function () {
+            $(this).removeClass("errorCell");
+        })
+
+        grid.table.find(".k-dirty-cell").each(function () {
+            $(this).removeClass("k-dirty-cell");
+        })
+
+        grid.one("dataBinding", function (e) {
+            e.preventDefault();   // cancel grid rebind if error occurs                             
+
+            var fieldCellIndices = {},
+            dataSource = grid.dataSource,
+            errors = args.errors;
+
+            //get current column indexes
+            for (var i = 0; i < grid.columns.length; i++) {
+                if (grid.columns[i].field) {
+                    fieldCellIndices[grid.columns[i].field] = i;
+                }
+            }
+
+            for (var i = 0; i < errors.length; i++) {
+                var error = errors[i];
+                var item;
+                var id;
+                var uid;
+
+                if (error.id <=0)
+                {
+                    //c'est une création nous devons faire la recherche par le faux No_Intervention
+                    var res = $.grep(dataSource._data,function(d){
+                        return d.No_Intervention == error.id;
+                    });
+                    uid = res[0].uid;
+                    id = res[0].id;
+                }
+                else
+                {
+                    item = dataSource.get(error.id);
+                    uid = item.uid;
+                    id = error.id;
+                }
+                
+                  var  row = grid.table.find("tr[data-uid='" + uid+ "']");
+
+                for (var j = 0; j < error.errors.length; j++) {
+                    var field = error.errors[j].field,
+                        message = error.errors[j].message;
+
+                    //find the cell
+                    var container = row.find("td:eq(" + fieldCellIndices[field] + ")");
+
+                    //show the validation error message
+                    showMessage(container, field, message, id);
+                    //highlight the cell that have error
+                    container.addClass("errorCell");
+                }
+            }
+        });
+            
+    }
+}
+
+function showMessage(container, name, errors, id) {
+    var validationMessageTmpl = kendo.template($("#message").html());
+   
+    //add the validation message to the form
+  
+    var cell = container.find("[data-valmsg-for=" + name + "]");
+
+    if (cell.length)
+    {
+        cell.replaceWith(validationMessageTmpl({ field: name, message: errors, id: id }));
+    }
+    else
+    {
+        container.append(validationMessageTmpl({ field: name, message: errors, id: id }));
+    }
+    
+}
+
+
+    $(document).ready(function ()
+{
+       $("#RepartirTemps").kendoButton({
+            icon:"plus"
+        });
+
+        $("#RepartirTemps").bind("click", function() {         
+            var test = $("#fenRepartir").data("kendoWindow");           
+            test.open().center(true);
+        // }
+        });
+
+});
+
+    $('#btnRepartir').click(function (e) {   
+        e.preventDefault();      
+    });
+
+   function validerAjax(){
+       console.log("MaFonction");
+   }
+
+   function getHeaderMentores(value, data) {
+       //Permet d'afficher un titre personnalisé lors du regroupement sur la colonne Mentor. L'affichage n'est pas traité de la même façon lorsque c'est pour une impression Excel.
+       var result = "";
+       var nom = "";
+       var espace = "";
+       var total = "";
+
+       if (!data.title)
+       {
+           nom = data.value;
+           espace = "  ";
+           total = "&nbsp;&nbsp;&nbsp;" + kendo.format('{0:0.00}', data.aggregates.Duree_Intervention.sum / 60) + " hrs";
+       }
+       else
+       {
+           nom = data.value;
+           // espace = "   ";           
+       }
+        
+       result = nom + espace + total;
+
+       return result;
+   }
+      
+   function onDataBound(e) {
+       var grid = this;
+
+       $(".templateCell").each(function () {
+           eval($(this).children("script").last().html());
+           var tr = $(this).closest('tr');
+           var item = grid.dataItem(tr);
+           kendo.bind($(this), item);
+       });
+
+
+       grid.tbody.find('>tr').each(function () {
+           var dataItem = grid.dataItem(this);
+           if (dataItem != null)
+           {
+               if (Date.parse(dataItem.Date_Intervention) < Date.parse(_dateMax)) {
+                   $(this).find('.k-grid-delete').attr('disabled', true).prop('disabled', true);
+               }
+           }
+          
+       });
+
+       if (grid.dataSource.group().length > 0) {
+           //On va fermer tous les regrouppements.
+           $(".k-grouping-row").each(function () {
+
+               grid.collapseGroup(this);
+
+           });
+       }
+          
+
+       var footerCols = $(".k-grid-footer-wrap").find("col");        
+       footerCols.eq(0).addClass("colDate");
+       footerCols.eq(1).addClass("colDuree");
+       footerCols.eq(2).addClass("colMentore");
+       footerCols.eq(3).addClass("colDescription");
+
+
+       //var grid = $("#grid").data("kendoGrid");
+       
+
+       //for (var i = 0; i < grid.columns.length; i++) {
+
+       //    grid.autoFitColumn(grid.columns.length-1);
+
+       //}
+
+
+
+   }
+
+   $(window).resize(function(){
+       kendo.resize($("#grid"));      
+   });
+
+   function excelExport(e)
+   {
+       var sheet = e.workbook.sheets[0];
+       //var workbook = new kendo.ooxml.Workbook();
+       
+       //var workbook = new kendo.ooxml.Workbook({
+       //    sheets: [
+       //     {
+       //         rows: [
+       //           { cells: [ { value: "Border", borderBottom: { color: "#ff0000", size: 3 } } ] }
+       //         ]
+       //     }
+       //    ]
+       //});
+       
+       for (var i = 0; i < sheet.columns.length; i++)
+       {         
+
+           sheet.columns[i].autoWidth = false;  
+           switch(i)
+           {
+               case (0):                   
+                   sheet.columns[i].width = 118;   
+                   break;
+               case (1):                  
+                   sheet.columns[i].width = 118;
+                   break;
+               case(2):
+                   sheet.columns[i].width = 234;                
+                   break;
+               case(3):
+                   sheet.columns[i].width = 335;                                               
+                   break;
+               default:
+                   sheet.columns[i].width = 118;                   
+                 //  sheet.columns[i].autoWidth = true;
+           }          
+       }
+
+       for (var rowIndex = 1; rowIndex < sheet.rows.length; rowIndex++) {
+           var row = sheet.rows[rowIndex];
+           for (var cellIndex = 0; cellIndex < row.cells.length; cellIndex ++) {               
+               row.cells[cellIndex].wrap = true;
+               row.cells[cellIndex].verticalAlign = "top";
+               row.cells[cellIndex].textAlign = "left";
+               row.cells[cellIndex].borderBottom = new Object();
+               row.cells[cellIndex].borderBottom.size=1; 
+                            
+           }
+       }
+   }
+
+
+ 
+   function ObtenirFiltreAnnee(e)
+   {
+       var dataItem = $("#PeriodeIntervention").data("kendoDropDownList");
+       var strAnnee = "";
+       
+       if (dataItem.value() != "")
+       {
+           strAnnee =dataItem.value();
+       }
+        
+       return { 'filtreAnnee':strAnnee };
+   }
+
+   function PeriodeInterventionOnChange(e)
+   {
+       var grid = $("#grid").data("kendoGrid");
+       grid.dataSource.page(1); 
+   }
+
+   function onRequestEnd(e)
+   {
+       console.log("mon object datasource", e);
+       var msg = e.response.MessageDataSource;
+       if ($("#labelPeriodeDate")) {
+           $("#labelPeriodeDate").text(msg);
+       }
+   }
+
+   //$(window).on("resize", function() {
+   //    kendo.resize($(".chart-wrapper"));
+   //});
+     
+</script>
+
+<script type="text/kendo-template" id="message">
+    <div class="k-widget k-tooltip k-tooltip-validation k-invalid-msg field-validation-error" style="margin: 0.5em; display: block; " data-for="#=field#" data-valmsg-for="#=field#" id="#=field#_#=id#_validationMessage">
+        <span class="k-icon k-warning"> </span>#=message#<div class="k-callout k-callout-n"></div>
+    </div>
+</script>
+
+<style>
+
+         .k-list-container {
+            width:250px !important;  /*Augmenter la taille du dropbox*/      
+        }
+
+    a[disabled] {
+        pointer-events: none;
+    }
+
+    #grid{
+        height:73vh;
+    }
+
+    .colDate{
+        width:140px;
+    }
+
+    .colMentore{
+            width:135px;
+    }
+
+        .colDuree{
+            width:140px;
+    }
+        
+            #labelPeriodeDate{
+        display:inline;
+        padding-left:5px;
+        font-size:medium;
+        font-weight:normal;
+    }
+
+    @@media only screen and (max-width: 500px) {
+        /*div.k-widget.k-window
+        {
+             width:95vw !important;
+        }*/
+        #FormRepartir {
+            width: 95vw !important;
+        }
+
+    
+
+        }
+
+     @@media only screen and (max-width: 750px) {
+            .colDescription{
+            width:200px;
+    }
+        }
+
+    @@media only screen and (max-width: 850px)
+ {
+           #grid{
+        height:95vh;
+    } 
+
+ }
+
+    /*Cacher le pied page du grid pour les écrans trop petits*/
+    @@media only screen and (max-height: 400px) {
+                    .k-grid-footer{
+                height:0px;
+            }
+            .k-grid-footer-wrap{
+                 height:0px;
+            }
+
+                .colDate{
+                     width:90px;
+                }
+
+                .colDuree{
+                     width:105px;
+                }
+                               
+             .k-link{
+                    font-size:small;
+                }
+
+                .colMentore{
+                     width:96px;
+                }
+
+
+
+    }
+
+</style>
+
+
+

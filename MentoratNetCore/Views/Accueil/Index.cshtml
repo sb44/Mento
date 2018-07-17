@@ -1,0 +1,89 @@
+﻿@{
+    ViewBag.Title = "Accueil";
+}
+
+@section featured {
+
+    <div class="featured" style="max-width:100%;">
+        <div class="content-wrapper">
+            <hgroup class="title">
+                <h2>@ViewBag.Message</h2>
+            </hgroup>
+            <p>
+                La Coordination services-conseils (CSC) offre un service de mentorat en gestion intégrée des ennemis des cultures (GIEC) pour les conseillers en production végétale. Ce service vous donne la possibilité d’obtenir des informations et de l’accompagnement dans ce domaine à l’aide de conseillers d’expérience, les mentors.<br /><br />
+            </p>
+            <p>
+                @(Html.Kendo().Button()
+                    .Name("Mentors")
+                    .HtmlAttributes(new { type = "button", @class = "button-max" })
+                    .Content("Les mentors")
+                    .Events(ev => ev.Click("onClickMentors")))
+                
+                @(Html.Kendo().Button()
+                    .Name("Fonctionnement")
+                    .HtmlAttributes(new { type = "button", @class = "button-max" })
+                    .Content("Je veux en apprendre plus")
+                    .Events(ev => ev.Click("onClickFonctionnement")))
+
+                 @(Html.Kendo().Button()
+                    .Name("Inscriptions")
+                    .HtmlAttributes(new { type = "button", @class = "button-max" })
+                    .Content("Je veux m'inscrire")
+                    .Events(ev => ev.Click("onClickInscriptions")))
+            </p>
+            @*<br />
+            <p>
+                <img src="~/Images/CSC/bg_footer2.jpg" />
+            </p>*@
+        </div>
+    </div>
+    }
+
+<br />
+<img src="~/Images/CSC/bg_footer2.jpg" />
+@*<p>
+    Ce projet est réalisé en vertu du Volet 3 du programme d’appui à l’offre de services-conseils agricoles et été soutenu par l’aide financière du ministère de l’Agriculture, des Pêcheries et de l’Alimentation du Québec.
+</p>*@
+<br />
+<br />
+<p class="centrerimage">
+    <img src="~/Images/CSC/LogoEntente.gif" />
+</p>
+
+    <script>
+        function onClickMentors(e) {
+            window.open("../Accueil/Mentors", "_self");
+        }
+        function onClickFonctionnement(e) {
+            window.open("../Accueil/Fonctionnement", "_self");
+        }
+        function onClickInscriptions(e) {
+            window.open("../Inscriptions/Index", "_self");
+        }
+    </script>
+
+    <style>
+
+        .button-max {
+            min-width: 307px;
+            line-height: 30px;
+            margin: 0 10px 0 0;
+            max-width:98%;
+        }
+        .centrerimage
+        {
+            text-align: center;           
+        }
+        img{
+            max-width:98%;
+        }
+
+
+    </style>
+
+
+
+
+
+
+

@@ -1,0 +1,303 @@
+﻿@model  MentoratNetCore.Views.AssignationController.ObjMail
+@using MentoratNetCore.Extensions
+
+
+
+<script>    
+
+    function onChange(e)
+    {
+        this.dataSource.filter({});
+    }
+
+    function onFiltering(e)
+    {
+        var filter = e.filter;
+       
+       
+            if (filter != null && filter.value.indexOf(";") > 0) {
+                e.preventDefault();
+
+                var newtag = filter.value.replace(";", "");
+                var values = this.value().slice();
+
+                var ajout = { NomComplet: newtag, AdresseCourriel: newtag };
+
+                // debugger;
+                //if (this.dataSource.indexOf(ajout) == -1)
+                //{
+                this.dataSource.add(ajout);
+                //}
+
+                var add = [newtag];
+
+                this.dataSource.filter({});
+
+                if (values.length > 0) {
+                    var merge = $.merge(add, values);
+                    this.value($.unique(merge));
+
+                } else {
+
+                    this.value(add);
+                }
+
+                this.trigger("change");
+            }
+             
+    }
+
+    $('#btnEnvoyer').click(function (e) {
+       // debugger;
+        e.preventDefault();        
+        monEditor = $("#Message");
+
+        var value = monEditor.data("kendoEditor").value();
+
+        // strip all paragraphs
+        value = value.replace(/<p[^>]*>/g, "").replace(/<\/p>/g, "<br />");
+
+        monEditor.val(value);
+
+
+        $("#FormEnvoyerCourriel").submit();
+       
+    });
+
+    var desactiverScroll = false;
+
+    $('#FormEnvoyerCourriel').on("submit", function (e) {
+      //  debugger;
+        e.preventDefault();
+        desactiverScroll = false;
+        console.log("dans submit");
+        $.ajax({
+            url:this.action,
+            type: this.method,
+            data: $(this).serialize(),
+            success: function (result) {
+                if (!result.success) {
+                    console.log(result);
+                    desactiverScroll = true;
+                    $("#fenCourriel").html(result);                    
+                }
+                else {
+                    $("#fenCourriel").data("kendoWindow").close();
+                }
+            },
+            error: function (resultat, statut, erreur) {
+                console.log("Resultat: " + resultat.responseText);
+                console.log("statut : " + statut);
+                console.log("Erreur: " + erreur);
+            }
+
+        });
+
+    });
+
+    $('#btnAnnuler').click(function (e) {
+        e.preventDefault();
+        $("#fenCourriel").data("kendoWindow").close();
+    });
+    
+</script>
+
+
+    @using (Html.BeginForm("EnvoyerCourriel", "Assignation", FormMethod.Post, new { id = "FormEnvoyerCourriel" }))
+    {
+        @Html.ValidationSummary(true)
+        @Html.AntiForgeryToken()
+        <div id="divForm" class="k-state-default">
+            <ul id="fieldlistMail">
+                <li>
+                    <label>De : @Html.DisplayFor(model => model.DeNom) (@Html.DisplayFor(model => model.De))</label>
+                    @Html.HiddenFor(model => model.De)
+                    @Html.HiddenFor(model => model.DeNom)
+                    @Html.ValidationMessageFor(model => model.De)
+                </li>
+                <li>
+                    <label>A :</label>
+                    @(Html.Kendo().MultiSelectFor(model => model.LesDestinataires)
+        .Name("LesDestinataires")
+        .AutoBind(true)
+        .Filter("contains")
+        .ValuePrimitive(true)
+        .DataTextField("NomComplet")
+        .DataValueField("AdresseCourriel")
+                .Events(e =>
+                {
+                    e.Filtering("onFiltering").Change("onChange");
+                })
+                .DataSource(source =>
+                {
+                    source.Read(read =>
+                    {
+                        read.Action("ObtenirCourriels", "Assignation");
+                        read.Type(HttpVerbs.Post);
+                    })
+                    .ServerFiltering(false);
+                }
+                )
+                .HtmlAttributes(new { style = "width:500px;" })
+                    )
+                    @Html.ValidationMessageFor(model => model.LesDestinataires)
+                </li>
+                <li>
+                    <label>CC :</label>
+                    @(Html.Kendo().MultiSelectFor(model => model.LesCC)
+        .Name("LesCC")
+        .AutoBind(true)
+        .Filter("contains")
+        .ValuePrimitive(true)
+        .DataTextField("NomComplet")
+        .DataValueField("AdresseCourriel")
+                .Events(e =>
+                {
+                    e.Filtering("onFiltering").Change("onChange");
+                })
+                .DataSource(source =>
+                {
+                    source.Read(read =>
+                    {
+                        read.Action("ObtenirCourriels", "Assignation");
+                        read.Type(HttpVerbs.Post);
+                    })
+                    .ServerFiltering(false);
+                }
+                )
+                .HtmlAttributes(new { style = "width:500px;" })
+                    )
+                    @Html.ValidationMessageFor(model => model.LesCC)
+                    @*@Html.HiddenFor(model => model.LesCCI)*@
+                </li>
+
+                <li>
+                    <label for="Sujet">Sujet : </label>
+                    @Html.TextBoxFor(model => model.Sujet, new { style = "width:500px" })
+                </li>
+
+                <li>
+                    <label for="Message">Message : </label>
+                    @*@Html.TextAreaFor(model => model.Message, new { style = "width:500px;height:300px" })*@
+                    @(Html.Kendo().EditorFor(model => model.Message)
+               .HtmlAttributes(new { Style = "width:90%;height:300px" })
+               .Resizable(resizable => resizable.Content(true).Toolbar(true))
+                    )
+                    @Html.ValidationMessageFor(model => model.Message)
+                </li>
+            </ul>
+        </div>
+
+        <div class="k-edit-buttons k-state-default">
+            @(Html.Kendo().Button()
+                    .Name("btnEnvoyer")                  
+                    .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                    .SpriteCssClass("k-icon k-i-tick")
+                    .Content("Envoyer")
+            )
+            @(Html.Kendo().Button()
+            .Name("btnAnnuler")
+            //.SpriteCssClass("k-icon k-i-tick")
+            .Icon("cancel")
+            .Content("Annuler")
+            )
+        </div>
+
+    }
+      
+
+    @Html.Validation_Error_Convertion_Kendo_Template()
+
+    <script>
+    var monValideur = $("#FormEnvoyerCourriel").kendoValidator().data("kendoValidator");
+
+    $(function () {
+     @Html.Validation_Error_Convertion_Kendo_Script("FormEnvoyerCourriel")
+    } );
+
+    </script>
+
+
+    <style>
+            #divForm {
+                overflow: auto;
+                /*height: 90%;*/
+                clear: both;
+                border-width: 0 0 1px 0;
+                border-style: solid;
+                bottom: -1em;
+                padding: .6em;
+            }
+
+            div.k-edit-buttons {
+                padding-top: 10px;
+                text-align: right;
+            }
+
+
+
+            #fieldlistMail {
+                margin: 0;
+                padding: 0;
+            }
+
+                #fieldlistMail li {
+                    list-style: none;
+                    padding-bottom: .7em;
+                }
+
+                #fieldlistMail label {
+                    display: block;
+                    padding-bottom: .3em;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    font-size: 12px;
+                    color: #444;
+                }
+
+                #fieldlistMail input {
+                    width: 200px;
+                }
+
+            span.k-tooltip {
+                margin-top: 5px;
+                line-height: 1.7em;
+                width: 100%;
+                box-sizing: border-box;
+                text-align: left;
+            }
+
+            /*#fieldlist {
+            margin: 1em;
+            padding: 0;
+        }
+
+            #fieldlist li {
+                list-style: none;
+                padding-bottom: .3em;
+            }
+
+            #fieldlist label {
+                display: block;
+                padding-bottom: .1em;
+                font-weight: bold;
+                text-transform: uppercase;
+                font-size: 12px;
+                color: #444;
+            }
+
+            #fieldlist input {
+                width: 250px;
+            }
+
+        span.k-tooltip {
+            margin-top: 5px;
+            line-height: 1.7em;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: left;
+        }*/
+    </style>
+
+
+

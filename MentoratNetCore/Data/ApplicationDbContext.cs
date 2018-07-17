@@ -20,7 +20,7 @@ namespace MentoratNetCore.Data
         }
 
         /// <summary>
-        /// SB: Hack pour adapté code legacy MVC5 avec MVC6
+        /// SB: Hack "Poor Man's DI" pour adapté code legacy MVC5 à MVCCore
         /// </summary>
         public ApplicationDbContext() : this(new DbContextOptionsBuilder<ApplicationDbContext>().UseSqlServer(Startup.ConnectionString).Options)
         {
@@ -113,5 +113,7 @@ namespace MentoratNetCore.Data
         public virtual DbSet<MentoratInscription> MentoratInscription { get; set; }
 
         public virtual DbSet<PlanAction> PlanAction { get; set; }
+
+        public virtual DbSet<MentoresExpertises> MentoresExpertises { get; set; }
     }
 }

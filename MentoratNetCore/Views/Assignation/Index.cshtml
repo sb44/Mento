@@ -1,0 +1,401 @@
+﻿@*@model Mentorat.Models.ForeignKeyValues*@ 
+@{
+    ViewBag.Title = "Mentorés";
+}
+@using Mentorat.Models
+
+@using Microsoft.AspNet.Identity
+
+    @if (User.Identity.IsAuthenticated && User.IsInRole("PageMentores"))
+    {
+        <hgroup class="title">
+            <h2>@ViewBag.Title.</h2>
+            <h2>@ViewBag.Message</h2>
+        </hgroup>
+
+        <br />
+
+        <div>
+            @*<label>Année :</label>
+            @(Html.Kendo().DropDownList()
+            .Name("PeriodeIntervention")
+            .DataTextField("Text")
+            .DataValueField("Value")
+            .Events(e => e.Change("PeriodeInterventionOnChange"))
+            .BindTo(new List<SelectListItem>()
+            {
+                    new SelectListItem()
+                    {
+                        Value="1",Text="Toutes les années"
+                    },
+                     new SelectListItem()
+                    {
+                        Value="2018",Text="2018-2019"
+                    },
+                    new SelectListItem()
+                    {
+                        Value="2017",Text="2017-2018"
+                    },
+                    new SelectListItem()
+                    {
+                        Value="2016",Text="2016-2017"
+                    }
+            })
+            .SelectedIndex(2)
+            )*@
+
+            <label>Afficher :</label>
+            @(Html.Kendo().DropDownList()
+            .Name("PeriodeIntervention")
+            .DataTextField("Text")
+            .DataValueField("Value")
+            .Events(e => e.Change("PeriodeInterventionOnChange"))
+            .BindTo(new List<SelectListItem>()
+            {
+                    new SelectListItem()
+                    {
+                        Value="1",Text="Inscriptions actives"
+                    },
+                     new SelectListItem()
+                    {
+                        Value="2",Text="Inscriptions inactives"
+                    },
+                    new SelectListItem()
+                    {
+                        Value="3",Text="Toutes les inscriptions"
+                    }
+            })
+            .SelectedIndex(0)
+            )
+
+          @*  <label id="labelPeriodeDate" class="k-label"></label>*@
+        </div>
+
+        <input id="tous" value="false" hidden>
+       
+        <br />
+
+        @(Html.Kendo().Grid<Mentorat.ViewModels.AssignationViewModel>()
+                              .Name("grid")
+                          .Scrollable(s => s.Enabled(true))
+
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.NomUtilisateur).Title("Utilisateur").Hidden(true);
+                              columns.Bound(c => c.Mentore.NomComplet_Mentore).Title("Mentoré").Width(115).Filterable(filtre => filtre.Extra(false).Operators(operateur => operateur.ForString(str => str.Clear().Contains("Contient"))));
+                              columns.Bound(c => c.Mentore.Organisme_Mentore).Title("Organisme").Width(128).Filterable(filtre => filtre.Extra(false).Operators(operateur => operateur.ForString(str => str.Clear().Contains("Contient"))));
+                              columns.Bound(c => c.MentoratCategorie.Nom).Title("Type").Filterable(filtre => filtre.Extra(false).Operators(operateur => operateur.ForString(str => str.Clear().Contains("Contient"))));
+                              columns.Bound(c => c.DateInscription).Title("Inscription").Width(135).Format("{0:yyyy/MM/dd}");
+                              columns.Bound(c => c.DateDebut).Title("Début").Width(115).Format("{0:yyyy/MM/dd}");
+                              columns.Bound(c => c.DateFin).Title("Fin").Width(115).Format("{0:yyyy/MM/dd}");
+                              //  columns.ForeignKey(c => c.Mentor.NoMentor, (System.Collections.IEnumerable) ViewData["ListeMentor"], "NoMentor", "NomCompletMentor").Title("Mentor").Width(120);//.EditorTemplateName("No_Mentor_Mentore");
+                              columns.Bound(c => c.APaye).Title("Payé").ClientTemplate(
+                                                "# if (APaye == true) { #" +
+                                                    "Oui" +
+                                                "# } else { #" +
+                                                    "Non" +
+                                                "# } #"
+                                            ).Filterable(ftb => ftb.Messages(m => m.IsFalse("Non payé")).Messages(m => m.IsTrue("Payé")).Messages(m=>m.Info("Afficher ceux qui ont?")));
+
+                              columns.Bound(c => c.Mentor.NomCompletMentor).Title("Mentor").Width(115).Filterable(filtre => filtre.Extra(false).Operators(operateur => operateur.ForString(str => str.Clear().Contains("Contient"))));
+
+
+
+
+                              ////début des colonnes temporaires
+                              columns.Bound(c => c.Annee).Title("Annéee").Hidden(true);
+                              columns.Bound(c => c.Mentore.CellulaireMentore).Title("Cellulaire").Hidden(true);
+                              columns.Bound(c => c.Mentore.CourrielMentore).Title("Courriel").Hidden(true);
+                              columns.Bound(c => c.Mentore.ListerExpertises).Title("Expertises").Hidden(true);
+                              columns.Bound(c => c.Mentore.Objectifs_Mentore).Title("Objectifs").Hidden(true);
+                              columns.Command(command =>
+                              {
+                                  command.Custom("Dossier").Text(" ").IconClass("k-icon k-i-folder").Click("ConsulterMentore").HtmlAttributes(new { @class = "IconGridMentores" });
+                                  command.Custom("Plan").Visible("PlanActionVisible").Text(" ").IconClass("k-icon k-i-ppt").Click("ModifierPlan").HtmlAttributes(new { @class = "IconGridMentores" });
+                              }).Width(50);
+                              //columns.Bound(c => c.ListerExpertises).Title("Expertises").Width(230).Hidden(true);
+                              //  columns.Bound(c => c.Mentore.Objectifs_Mentore).Title("Objectifs").Hidden(true);
+                              ////fin des colonnes temporaires
+                          })
+                      .ToolBar(toolbar =>
+                      {
+                          if(User.IsInRole("Mentors"))
+                          {
+                              toolbar.Custom().Name("AfficherTousLesMentores").Text("Afficher tous les mentorés").HtmlAttributes(new { id = "AfficherTousLesMentores" }).Url("#");
+                          }
+
+                          toolbar.Excel();
+                      })
+                      .Sortable(sortale => sortale.AllowUnsort(false))
+                      .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                      .Groupable(g=> g.Enabled(User.IsInRole("GererUtilisateur")))
+
+                      //.Excel(excel => excel.AllPages(true).Filterable(true))
+                      //.Resizable(resize => resize.Columns(true))
+                      //.Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                      //.Groupable()
+                      //.Editable(editable => { editable.TemplateName("Modification").Mode(GridEditMode.PopUp); editable.Window(x => x.Title("Assignation d'un mentoré")); })
+                      .Pageable()
+              //.Sortable(sortable =>
+              //{
+              //    sortable.SortMode(GridSortMode.SingleColumn);
+              //})
+              //.Sortable(sortale => sortale.AllowUnsort(false))
+              .Events(e => e.ExcelExport("excelExport"))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Batch(true)
+                  //.Sort(sort => sort.Add("DateInscription").Descending())
+                  .PageSize(50)
+                  //.Model(model => model.Id(p => p.MentorMentore.NoMentor))
+                  .Model(model => model.Id(p => p.NoInscription))
+                  //.Create(create => create.Action("Mentores_Create", "Assignation"))
+                  .Read(read => read.Action("Mentores_Read", "Assignation").Data("ObtenirFiltreAnnee"))
+                  .Sort(sort=> sort.Add("DateInscription").Descending())
+              //.Update(update => update.Action("Mentores_Update", "Assignation").Data("sendAntiForgery"))
+              //.Destroy(destroy => destroy.Action("Mentores_Destroy", "Assignation"))
+              )
+        )
+        @(Html.Kendo().Window()
+                     .Name("fenCourriel")
+                    .Title("")
+                    //.Width(800)
+                    //.Height(660)                    
+                    .Actions(actions => actions.Close())
+                    //.LoadContentFrom("EnvoyerCourriel", "Assignation")
+                    .Modal(true)
+                    .Visible(false)
+                    .Draggable(true)
+                    .Events(ev => ev.Close("onClose"))
+        )
+    }
+    //else
+    @*{
+        <hgroup class="title">
+            <h2>Vous n’avez pas les autorisations nécessaires pour accéder à cette page.</h2>
+        </hgroup>
+    }*@
+
+@*else
+{
+    <hgroup class="title">
+        <h2>Vous n’avez pas les autorisations nécessaires pour accéder à cette page.</h2>
+    </hgroup>
+}*@
+
+
+
+<script type="text/javascript">
+    function sendAntiForgery() {
+        return { "__RequestVerificationToken": $('input[name=__RequestVerificationToken]').val() }
+    }
+
+
+
+    $(document).ready(function () {
+
+        $(window).trigger("resize");
+
+      var grid = $("#grid").data("kendoGrid");
+
+       var headerCols = grid.thead.parent().find("col");
+        headerCols.eq(7).addClass("colCommandes");
+    //    headerCols.eq(1).addClass("colDuree");
+    //    headerCols.eq(2).addClass("colMentore");
+
+        var bodyCols = grid.tbody.parent().find("col");
+       bodyCols.eq(7).addClass("colCommandes");
+    //    bodyCols.eq(1).addClass("colDuree");
+        //    bodyCols.eq(2).addClass("colMentore");
+
+
+       $("#AfficherTousLesMentores").bind("click", function (e) {
+           if ($("#tous").val()!="true")
+           {
+               $("#tous").val("true");
+               $("#AfficherTousLesMentores").text("Afficher seulement vos mentorées");
+           }
+           else
+           {
+               $("#tous").val("false");
+               $("#AfficherTousLesMentores").text("Afficher tous les mentorés");
+           }
+           var grid = $("#grid").data("kendoGrid");
+           grid.dataSource.page(1);
+       });
+
+
+    });
+
+    var exportFlag = false;
+      function excelExport(e)
+    {
+          if (!exportFlag) {
+              
+            e.sender.showColumn(9);
+            e.sender.showColumn(10);
+            e.sender.showColumn(11);
+            e.sender.showColumn(12);
+              e.sender.showColumn(13)
+              //e.sender.showColumn(12);
+              e.sender.hideColumn(14)
+            e.preventDefault();
+            exportFlag = true;
+            setTimeout(function () {
+                e.sender.saveAsExcel();
+            });
+          } else {
+              e.sender.showColumn(14);
+            e.sender.hideColumn(9);
+            e.sender.hideColumn(10);
+            e.sender.hideColumn(11);
+            e.sender.hideColumn(12);
+            e.sender.hideColumn(13);
+           
+            //e.sender.hideColumn(12);
+            //e.sender.showColumn(8);
+
+           // e.PreventDefault;
+            //  e.sender.hideColumn(6);
+            exportFlag = false;
+
+            //console.log(e.column.field, e.newWidth, e.oldwith);
+        }
+      }
+
+      @*function EnvoyerCourriel(e)
+      {
+          e.preventDefault();
+
+          var grid = $("#grid").getKendoGrid();
+
+          var dataItem = grid.dataItem($(e.target).closest("tr"));
+
+          var fen = $("#fenCourriel").data("kendoWindow");
+
+          var test =JSON.stringify({Mentore:dataItem});
+
+          $.ajax({
+              url: "@Url.Action("SendCourriel", "Assignation")",
+              type: "POST",
+              data: JSON.stringify({ mentore: dataItem }),
+              contentType: "application/json; charset=utf-8",
+              success: function (result) {
+                  if (!result.success) {
+                     // console.log(result);
+                      $("#fenCourriel").html(result);
+                      fen.center().open();
+                  }
+                  else {
+                      $("#fenCourriel").data("kendoWindow").close();
+                  }
+              },
+              error: function (resultat, statut, erreur) {
+                  console.log("Resultat: " + resultat.responseText);
+                  console.log("statut : " + statut);
+                  console.log("Erreur: " + erreur);
+              }
+
+          });
+
+      }*@
+
+    function ConsulterMentore(e)
+    {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        window.location.href = "@Url.Action("Utilisateur","Account")?utilisateur=" + dataItem.NomUtilisateur + "&section=" + dataItem.MentoratCategorie.Nom;
+    }
+    function ModifierPlan(e)
+    {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        //console.log("dataitem", dataItem);
+
+        window.location.href = "@Url.Action("PlanAction","Assignation")?noMentore=" + dataItem.Mentore.NoMentore + "&noAnnee=" + dataItem.Annee;
+    }
+
+
+      function onClose(e)
+      {
+         // $("html, body").css("overflow", "");
+      }
+
+      $(window).resize(function () {
+          kendo.resize($("#grid"));
+      });
+
+
+    //Pour le combobox Année
+      function ObtenirFiltreAnnee(e) {
+          var dataItem = $("#PeriodeIntervention").data("kendoDropDownList");
+          var strAnnee = "";
+          var boolTous;
+
+          if (dataItem.value() != "") {
+              strAnnee = dataItem.value();
+          }
+
+          boolTous = $("#tous").val();
+
+          if (boolTous == null || boolTous == '' || boolTous != "false")
+          {
+              boolTous = true;
+          }
+
+
+          return { 'filtreAnnee': strAnnee, 'filtreTous' : boolTous };
+      }
+
+      function PeriodeInterventionOnChange(e) {
+          var grid = $("#grid").data("kendoGrid");
+          grid.dataSource.page(1);
+      }
+
+         
+      function PlanActionVisible(e) {       
+          return e.AfficherBoutonPlan;
+            }
+
+</script>
+
+<style>
+        #grid{
+        height:73vh;
+    }
+
+        .IconGridMentores
+        {
+            min-width:40px !important;
+        }
+
+                    #labelPeriodeDate{
+        display:inline;
+        padding-left:5px;
+        font-size:medium;
+        font-weight:normal;
+    }
+
+        #fenCourriel{
+            max-width:800px;
+            max-height:660px;  
+        }
+
+      input[type=radio] {
+        width:150px;
+      }
+     
+
+     @@media only screen and (max-width: 850px)
+     {
+            #grid {
+                height:95vh;
+            }
+
+            .colCommandes{
+                background-color:red;
+            }
+     }
+</style>

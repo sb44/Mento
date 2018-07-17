@@ -1,0 +1,278 @@
+﻿@model Mentorat.ViewModels.Inscriptions.InscriptionsMentoreViewModel
+@using Mentorat.Extensions
+
+@{
+    ViewBag.Title = "Je veux m'inscrire";
+}
+
+
+
+
+<hgroup class="title">
+    <h1>@ViewBag.Title.</h1>
+   @* <h2>@ViewBag.Message</h2>*@
+</hgroup>
+
+<p>
+    Afin de bénéficier du service de mentorat en GIEC, il vous suffit de compléter le formulaire ci-dessous et de procéder au paiement des frais d’inscription de 150&nbsp;$ (plus taxes) via PayPal. Les places étant limitées, vous êtes encouragés à vous inscrire rapidement. Cela permettra également à votre mentor de mieux évaluer vos besoins, avant d’être trop avancé en saison.<br /><br />
+    <b><u>Rabais de groupe</u></b><br/>
+    La deuxième personne d’une même organisation qui s’inscrira bénéficiera d’un remboursement de 20&nbsp;$ et la troisième ainsi que les suivantes, un remboursement de 40&nbsp;$. Pour bénéficier de cette offre, toutes les personnes d’une même organisation doivent être inscrites avant le 31 décembre de l’année en cours.<br /><br />
+    En cas de difficulté rencontrée en remplissant ce formulaire ou pour toute autre question, vous êtes priés de communiquer avec M. Michel Dupuis au <span style="white-space: nowrap">450&nbsp;679-0540, poste 8738</span> ou à <a href="mailto:mdupuis@coordination-sc.org" style="padding:0">mdupuis@coordination-sc.org</a>.<br /><br />
+    Vous serez contacté par un mentor dans un délai de 48 à 72 heures après réception de votre formulaire dûment complété. Lors de ce premier contact, le mentor prendra le temps de bien évaluer vos besoins afin de vous proposer les meilleures stratégies de soutien et d’accompagnement.<br />
+</p>
+<p>
+    <b><u>Renouvellement de l’inscription</u></b><br/>
+    Si vous étiez inscrit à l’année 2017-2018 ou 2016-2017 et souhaitez renouveler  votre inscription pour 2018-2019, une nouvelle procédure a été mise en place afin de créer votre compte :
+    <ol typle="1">
+        <li>Cliquez sur le bouton « Connexion » (en haut à droite de l’écran);</li>
+        <li>Dans « Authentification », cliquez sur « Mot de passe oublié?»</li>
+        <li>Dans « Demande de récupération du mot de passe», inscrivez votre adresse courriel et envoyez la demande;</li>
+        <li>Retrouvez le message « Réinitialisation de votre mot de passe » dans votre boîte de courriels et cliquez sur le lien « Modifier votre mot de passe »;</li>
+        <li>Dans la nouvelle fenêtre qui s’ouvre à vous, inscrivez votre nouveau mot de passe;</li>
+        <li>Vous êtes maintenant connecté dans votre compte, cliquez sur le bouton « Acheter ». </li>
+    </ol>
+
+<br />
+
+@*<p>
+    Bonjour,<br /><br />
+    Veuillez prendre note que le projet est terminé pour la saison 2016 et reprendra au courant du mois de mars 2017. En cas de besoin, contactez la Coordination services-conseils au 450 679-0540, poste 8831.<br /><br />
+    Merci.
+
+</p>
+<br />*@
+
+
+@using (Html.BeginForm("InscriptionPhyto", "Account", FormMethod.Post, new { id = "FormInscription" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.AntiForgeryToken()
+
+    <b><u>Formulaire pour nouvelle inscription</u></b><br /><br />
+    <ul id="fieldlist">
+        <li>
+            <label for="Courriel">Courriel :</label>
+            @(Html.Kendo().TextBoxFor(model => model.CourrielMentore) )              
+            @Html.ValidationMessageFor(model => model.CourrielMentore)
+        </li>
+        <li>
+            @Html.LabelFor(m => m.Password)
+            @Html.Kendo().TextBoxFor(m => m.Password).HtmlAttributes(new { type = "password" })
+            @Html.ValidationMessageFor(m => m.Password)
+        </li>
+        <li>
+            @Html.LabelFor(m => m.ConfirmPassword)
+            @Html.Kendo().TextBoxFor(m => m.ConfirmPassword).HtmlAttributes(new { type = "password" })
+            @Html.ValidationMessageFor(m => m.ConfirmPassword)
+        </li>
+        <li>
+            <label for="Prenom">Prénom :</label>
+            @Html.Kendo().TextBoxFor(model => model.PrenomMentore)
+            @Html.ValidationMessageFor(model => model.PrenomMentore)
+        </li>
+        <li>
+            <label for="Nom">Nom :</label>
+            @Html.Kendo().TextBoxFor(model => model.NomMentore)
+            @Html.ValidationMessageFor(model => model.NomMentore)
+        </li>
+        <li>
+            <label for="Organisme">Organisme :</label>
+            @Html.Kendo().TextBoxFor(model => model.Organisme_Mentore)
+            @Html.ValidationMessageFor(model => model.Organisme_Mentore)
+        </li>
+        <li>
+            <label for="Telephone">Numéro de téléphone :</label>
+            @Html.Kendo().TextBoxFor(model => model.TelephoneMentore)
+            @Html.ValidationMessageFor(model => model.TelephoneMentore)
+        </li>
+        <li>
+            <label for="Cellulaire">Numéro de cellulaire :</label>
+            @Html.Kendo().TextBoxFor(model => model.CellulaireMentore)
+            @Html.ValidationMessageFor(model => model.CellulaireMentore)
+        </li>
+        <li>
+            <label for="Expertise">Je désire bénéficier du service de mentorat pour les champs d’expertise suivants :</label>
+            @(Html.Kendo().MultiSelectFor(model => model.MentoresExpertises)                 
+                 .DataTextField("Nom_Expertise")
+                 .DataValueField("No_Expertise")
+                 .DataSource(source =>
+                 {
+                     source.Read(read =>
+                     {
+                         read.Action("ObtenirExpertises", "Inscriptions");
+                         read.Type(HttpVerbs.Post);
+                     });
+                 })
+                 .HtmlAttributes(new { style = "width:350px;max-width:98%;" })
+            )
+            @Html.ValidationMessageFor(model => model.MentoresExpertises)
+        </li>
+        <li>
+            <label for="Objectifs">Mes objectifs de développement / mes attentes par rapport à un mentor (1 000 caractères max.) :</label>
+            @Html.TextAreaFor(model => model.Objectifs_Mentore, new { style = "width:600px;height:200px;max-width:98%;"})
+            @Html.ValidationMessageFor(model => model.Objectifs_Mentore)
+        </li>
+        <li>
+         @*  @(Html.DisplayFor(model => model.Paye_Mentore))*@
+            @Html.Kendo().CheckBoxFor(model => model.Paye_Mentore)
+            @Html.ValidationMessageFor(model => model.Paye_Mentore)
+        </li>
+        <li class="actions">
+            @(Html.Kendo().Button()
+                .Name("textButton")
+                .SpriteCssClass("k-icon k-i-tick")
+                .Content("Créer un compte et passer à l'écran de paiement PayPal")
+            )
+        </li>
+        <li class="ligneFonctionnement">
+            @Html.ActionLink("¹ Fonctionnement du mentorat.", "Fonctionnement", "Accueil", new { @id = "lienFonctionnement" }, new { target = "_blank" } )
+        </li>
+    </ul>
+}
+
+@Html.Validation_Error_Convertion_Kendo_Template()
+
+<script>
+
+    $(function () {
+        @Html.Validation_Error_Convertion_Kendo_Script("FormInscription");
+
+        
+        $("#FormInscription").kendoValidator({
+            messages: {              
+                booleanrequired: function () { return $("#Paye_Mentore").attr("data-val-range"); },
+                CourrielMentore: function (input) { return input.attr("data-val-remote"); },
+                comparerPassword: function () { return "Le mot de passe et la confirmation ne correspondent pas."; }
+            },
+            rules: {
+                booleanrequired: function (input, params)
+                {
+                    if (input.is("[name=Paye_Mentore]")  )
+                    {
+                        input = $("#Paye_Mentore"); //kendo a créé 2 champs avec le même nom alors je pointe vers le premier                       
+                        return $(input).is(':checked') ;
+                    }
+                    return true;
+                },
+                CourrielMentore: function (input)
+                {
+                    return inputRule(input, "CourrielMentore");
+                },
+                comparerPassword: function (input) {
+                    var ret = true;
+                    if (input.is("[name=ConfirmPassword]")) {
+                        ret = input.val() === $("#Password").val();
+                    }
+                    return ret;
+                }
+            }
+        });
+         
+    });
+
+    var validation = {
+        CourrielMentore: {
+            valid: false,
+            value: ""
+        }
+    };
+
+    function inputRule(input, name) {
+        if (!input.is("[name=" + name + "]")) {
+            return true;
+        } else {
+            var state = validation[input.attr("name")];
+            if (state.value == input.val() && state.valid) {
+                return true
+            } else {
+                customValidator(input)
+                return false;
+            };
+        }
+    }
+    function customValidator(input) {
+        $.ajax({
+            url: "@Url.Action("VerifierCourrielExiste", "Inscriptions")",
+            type:"POST",
+            data: JSON.stringify({ CourrielMentore: input.val() }),
+            contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if(data)
+                    {
+                        validation[input.attr("name")].valid = true;
+                        validation[input.attr("name")].value = input.val();
+                        $("#FormInscription").getKendoValidator().validateInput(input);
+                    }
+                    else{
+                        validation[input.attr("name")].valid = false;
+                        validation[input.attr("name")].value = input.val();
+                    }
+                },
+                error: function () {
+
+                }
+            });
+    }
+
+
+
+    $("#textButton").click(function (e) {
+        e.preventDefault();
+        
+        $("#textButton").attr("disabled", "disabled");
+     
+        var validator;
+
+        validator = $("#FormInscription").data("kendoValidator");
+
+        if (validator.validate())
+        {
+            $("#FormInscription").submit();
+        }
+
+        $("#textButton").attr("disabled", false);
+    });
+
+</script>
+
+
+<style>
+
+    #fieldlist {
+        margin: 0;
+        padding: 0;
+    }
+
+        #fieldlist li {
+            list-style: none;
+            padding-bottom: .7em;
+        }
+
+        #fieldlist label {
+            display: block;
+            padding-bottom: .3em;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+            color: #444;
+        }
+
+        #fieldlist input {
+            width: 200px;
+            max-width:98%;
+        }
+
+    span.k-tooltip {
+        margin-top: 5px;
+        line-height: 1.7em;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: left;
+    }
+
+    .ligneFonctionnement{
+        margin-top:25px;
+    }
+</style>
+
+

@@ -1,0 +1,144 @@
+﻿@{
+    ViewBag.Title = "Mentors";
+}
+
+@using Microsoft.AspNet.Identity
+
+        <hgroup class="title">
+            <h1>@ViewBag.Title.</h1>
+            <h2>@ViewBag.Message</h2>
+        </hgroup>
+
+        <br />
+        <br />
+ 
+       
+
+        @(Html.Kendo().Grid<global::Mentorat.Models.Mentor>()
+                      .Name("grid")
+                      .Columns((Kendo.Mvc.UI.Fluent.GridColumnFactory<global::Mentorat.Models.Mentor> columns) =>
+                      {
+                          columns.Bound(c => c.PrenomMentor).Title("Prénom");
+                          columns.Bound(c => c.NomMentor).Title("Nom");
+                          columns.Bound(c => c.TaxeMentor).Title("Taxe").Width(60);
+                          columns.Bound(c => c.NoTpsMentor).Title("No TPS").Width(160);
+                          columns.Bound(c => c.NoTvqMentor).Title("To TVQ").Width(160);
+                          columns.Bound(c => c.DateConnexionMentor).Title("Date fermeture").Format("{0:yyyy/MM/dd}").Width(145);
+
+                          int iEditWidth = 90;
+
+                          columns.Command((Kendo.Mvc.UI.Fluent.GridActionCommandFactory<global::Mentorat.Models.Mentor> command) =>
+                          { command.Edit();
+                              if (User.IsInRole("GestionMentorsSuppression"))
+                              {
+                                  command.Destroy();
+                                  iEditWidth += 90;
+                              }
+                          }).Width(iEditWidth);
+                          //columns.Bound(c => c.CourrielMentor).Title("Courriel").Hidden(true);
+                      })
+                      //.ToolBar((Kendo.Mvc.UI.Fluent.GridToolBarCommandFactory<global::Mentorat.Models.Mentor> toolbar) =>
+                      //{
+                      //    toolbar.Create();
+                      //})
+                      .Editable((Kendo.Mvc.UI.Fluent.GridEditingSettingsBuilder<global::Mentorat.Models.Mentor> editable) => editable.Mode(GridEditMode.InLine))
+                      .Sortable((Kendo.Mvc.UI.Fluent.GridSortSettingsBuilder<global::Mentorat.Models.Mentor> sortable) =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+                      .Scrollable(scroll => scroll.Enabled(true))
+                      .DataSource((Kendo.Mvc.UI.Fluent.DataSourceBuilder<global::Mentorat.Models.Mentor> dataSource) => dataSource
+                          .Ajax()
+                          .Model(
+                          (Kendo.Mvc.UI.Fluent.DataSourceModelDescriptorFactory<global::Mentorat.Models.Mentor> model) =>
+                          { model.Id(p => p.NoMentor); model.Field(f => f.PrenomMentor).Editable(false); model.Field(f => f.NomMentor).Editable(false); } )
+                          .Read(read => read.Action("Mentors_Read", "Mentors"))
+                          //.Create(create => create.Action("Mentors_Create", "Mentors"))
+                          .Update(update => update.Action("Mentors_Update", "Mentors"))
+                          .Destroy(destroy => destroy.Action("Mentors_Destroy", "Mentors"))
+                          .Events(e => e.Error("onDataError"))
+                      )
+        )
+
+<script>
+    $(document).ready(function () {
+
+        $(window).trigger("resize");
+          
+        var grid = $("#grid").data("kendoGrid");
+
+        var headerCols = grid.thead.parent().find("col");
+        headerCols.eq(0).addClass("colPrenom");
+        headerCols.eq(1).addClass("colNom");
+        //    headerCols.eq(2).addClass("colMentore");
+
+        var bodyCols = grid.tbody.parent().find("col");
+        bodyCols.eq(0).addClass("colPrenom");
+        bodyCols.eq(1).addClass("colNom");
+        //    bodyCols.eq(2).addClass("colMentore");
+
+    });
+
+    function onDataError(args) {
+        debugger;
+        if (args.errors) {
+
+            var grid = $("#grid").data("kendoGrid");
+
+            grid.one("dataBinding", function (e) {
+
+                e.preventDefault();   // cancel grid rebind if error occurs                                              
+
+            });
+
+        }
+
+    }
+
+    $(window).resize(function () {
+        kendo.resize($("#grid"));
+    });
+
+</script>
+
+<style>
+        /*#grid{       
+        height:auto;       
+    }*/
+
+
+        div.k-grid-content{
+            min-height: 100px;
+            max-height: 60vh;
+            height:auto !important;
+        }
+
+        /*.colPrenom{
+            min-width:120px;
+        }
+
+        .colNom{
+            min-width:120px;
+        }*/
+
+             @@media only screen and (max-width: 880px)
+     {
+            #grid {
+                max-height:95vh;
+               
+            }
+
+                    /*div.k-grid-content{
+            height:200px !important;
+        }*/
+
+                    .colPrenom{
+            width:120px;
+        }
+
+        .colNom{
+            width:120px;
+        }
+
+     }
+</style>

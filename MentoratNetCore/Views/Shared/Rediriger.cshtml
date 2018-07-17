@@ -1,0 +1,18 @@
+﻿
+@{
+    if(ViewBag.LayoutRedirection!=null && ViewBag.LayoutRedirection==false)
+    {
+        Layout = null;
+    }
+
+}
+
+
+
+<script type="text/javascript" language="javascript">
+ //   $(this.document).ready(function () {      
+       
+        window.location.href = '@Url.Action(ViewBag.ActionRedirection, ViewBag.ControllerRedirection)';
+      
+  //  });
+</script>

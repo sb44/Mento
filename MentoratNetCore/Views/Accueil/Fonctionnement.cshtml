@@ -1,0 +1,143 @@
+﻿@{
+    ViewBag.Title = "Je veux en apprendre plus";
+}
+
+<hgroup class="title">
+    <h1>@ViewBag.Title.</h1>
+    <h2>@ViewBag.Message</h2>
+</hgroup>
+<br />
+@(Html.Kendo().PanelBar()
+.Name("panelbar")
+.ExpandMode(PanelBarExpandMode.Single)
+.Items(panelbar =>
+{
+panelbar.Add().Text("Entente de mentorat")
+        //.Expanded(true)
+        .Content(@<div style="padding: 10px;">
+                <div>
+                    <p>
+                        Le <b>mentorat</b> désigne une relation interpersonnelle de soutien, une <u>relation d'aide</u>, d'échanges et d'apprentissage, dans laquelle une personne d'expérience, le <b>mentor</b>, offre sa sagesse acquise et son expertise dans le but de favoriser le développement d'une autre personne, le mentoré, qui a des compétences ou des connaissances à acquérir et des objectifs professionnels à atteindre<sup>1</sup>. <br /><br />
+                        Plus concrètement, le mentor peut aider les conseillers mentorés à : <br />
+                        <ul>
+                            <li>Élaborer un dossier de phytoprotection pour le producteur agricole;</li>
+                            <li>Dépister les ravageurs, les mauvaises herbes, les maladies et identifier les solutions les plus efficaces et rentables;</li>
+                            <li>Justifier l’utilisation de pesticides et émettre les recommandations adéquates;</li>
+                            <li>Réaliser une évaluation détaillée ciblée en phytoprotection;</li>
+                            <li>Développer ses connaissances en phytoprotection et élargir son réseau de contact dans ce domaine;</li>
+                            <li>Planifier les achats de semences et de produits phytosanitaires pour des producteurs agricoles;</li>
+                            <li>Présenter une offre de service en phytoprotection et à savoir vendre ce service;</li>
+                            <li>Mobiliser sa clientèle à l’importance de la phytoprotection dans la réduction des risques tout en améliorant la rentabilité des entreprises agricoles.</li>
+                        </ul><br />
+                        Pour assurer la réussite d’une relation de mentorat, il est essentiel que les individus impliqués définissent clairement leurs besoins respectifs. Ceux-ci devraient se concrétiser par des comportements que chacun s’engage à adopter.<br /><br />
+                        Même si l’élément déclencheur d’une demande de mentorat est souvent une question très concrète concernant le cas d’un client, les conseillers doivent s’engager dans une démarche qui ira au-delà d’une réponse directe.<br /><br />
+                        D’un autre côté, les mentors seront pleinement conscients de l’importance qu’un conseiller apporte une réponse rapide à un client dont le besoin doit être adressé dans un délai généralement bref.<br /><br />
+                        La réalisation du service de mentorat en GIEC est donc tributaire d’une entente qui implique des responsabilités de la part des mentorés et des mentors, dont en voici les principales.<br /><br />
+                    <u>Responsabilités des mentorés</u>
+                        <ul>
+                            <li>S’inscrire au service de mentorat et défrayer son abonnement</li>
+                            <li>S’engager pleinement dans la démarche de mentorat</li>
+                            <li>Identifier le plus clairement possible ses besoins en spécifiant ce qui doit être répondu rapidement (attente d’un client). Veuillez noter que le rôle du mentor est d’accompagner le mentoré dans une démarche. Il faut donc, le plus possible, éviter de le contacter seulement dans le but d’obtenir des réponses rapides.</li>
+                            <li>Faire confiance au mentor et ne pas craindre d’exposer ses lacunes en matière de phytoprotection</li>
+                            <li>Discuter de différentes stratégies d’apprentissage avec son mentor et accepter les règles proposées par ce dernier</li>
+                            <li>Contacter le mentor au besoin en réalisant qu’un délai de 24 à 48 heures est acceptable</li>
+                            <li>Respecter l’entente concernant la fréquence des rencontres et/ou discussions</li>
+                        </ul>
+                     <br />
+                     <u>Responsabilités des mentors</u>
+                        <ul>
+                            <br />
+                            <li>Écouter attentivement les besoins exprimés par le mentoré</li>
+                            <li>Convenir avec le mentoré des objectifs poursuivis par la démarche de mentorat</li>
+                            <li>Répondre aux besoins urgents du mentoré (réponse à un client en attente) dans un délai (de 24 à 48 heures) satisfaisant les attentes des clients</li>
+                            <li>Proposer plusieurs stratégies d’apprentissage, pouvant impliquer plus d’un mentor, afin d’optimiser le développement des compétences du mentoré</li>
+                            <li>S’assurer d’établir une relation de confiance avec le mentoré</li>
+                            <li>Définir clairement sa contribution à la démarche ainsi que celles des éventuels autres mentors</li>
+                            <li>Accompagner le mentoré tout au long de la démarche de mentorat</li>
+                        </ul><br /><br />
+                        <p id="piedPageEntente"><sup>1</sup>Cuerrier, C. (2002). Le mentorat: lexique et répertoire de base. Québec : Éditions Fondation de l'entrepreneurship</p>
+                    </p>
+                </div>
+            </div>);
+
+        panelbar.Add().Text("Description de la démarche")
+            //.Expanded(true)
+            .Content(@<div style="padding: 10px;">
+                <div>
+                    <p>
+                        La première étape de la démarche est de s’inscrire au service de mentorat par le biais du présent site Web sous « Je veux m’inscrire ». La Coordination services-conseils assignera alors un mentor au participant en fonction de son lieu de travail et des besoins exprimés par le mentoré aux questions « Quels sont vos champs d'expertise » et « Mes objectifs de développement / mes attentes par rapport à un mentor » du formulaire d’inscription. <br /><br />                        
+                        Le mentor communiquera avec le mentoré dans un délai de 48 à 72 heures à la suite de la réception de l’assignation. Ce premier contact permettra de préciser les besoins du mentoré et d’établir un plan d’action, s’il y a lieu. À partir de ce moment, le mentoré pourra contacter son mentor selon son entente avec celui-ci pour obtenir de l’aide, des informations et de l’accompagnement dans le processus d’amélioration de son expertise. Le mentor devra assurer un suivi dans les 24 à 48 heures suivantes.<br /><br />                      
+                        À la demande des mentorés ou à l’initiative des mentors, des activités de formation ou d’information liés à la GIEC seront organisées pour une partie ou la totalité des mentorés.<br /><br />
+                        Le service est en vigueur pour une période de 1 an, à partir de la date du premier contact entre le mentoré et le mentor.
+                    </p>
+                </div>
+            </div>);
+
+        panelbar.Add().Text("Définition")
+            //.Expanded(true)
+            .Content(@<div style="padding: 10px;">
+                <div>
+                    <p>
+                        Le développement des compétences des conseillers représente un défi hautement stratégique dans la livraison de services-conseils en agroenvironnement. C’est pourquoi la Coordination services-conseils (CSC) propose le mentorat comme moyen efficace et efficient afin d’assurer la transmission des connaissances et des façons de faire entre les conseillers.<br /><br />
+                        Le mentorat est une relation de soutien entre une personne qui veut apprendre, développer ses compétences et qui choisit d’être aidée et un <i>coach</i> qui peut donner le soutien nécessaire à son développement.<br /><br />
+                        Selon cette orientation, un mentor agit sur une période plus ou moins importante dans la carrière d’une ou de plusieurs personnes. En quelque sorte, il joue le rôle de <i>coach</i> sur des thématiques et des activités circonscrites qui varient dans le temps.<br /><br />
+                        La CSC a choisi de baser l’approche de mentorat en GIEC sur la compétence et les connaissances de six personnes « expertes » dans différents aspects de la phytoprotection. Ces personnes, dites les mentors, seront outillées et accompagnées afin d’agir au-delà de leur rôle naturel « d’experts » pour devenir des mentors auprès des conseillers désirant perfectionner leurs compétences en phytoprotection.<br /><br />
+                        Les mentors seront disponibles et assureront un suivi dans un délai de 24 à 48 heures à la suite à vos demandes. N’hésitez pas à faire appel à eux!
+                    </p>
+                </div>
+            </div>);
+    })
+)
+<br />
+<p>
+    @(Html.Kendo().Button()
+                    .Name("Accueil")
+                    .HtmlAttributes(new { type = "button", @class = "button-max" })
+                    .Content("Retour à la page d'accueil")
+                    .Events(ev => ev.Click("onClickAccueil"))
+    )
+
+    @(Html.Kendo().Button()
+                    .Name("Mentors")
+                    .HtmlAttributes(new { type = "button", @class = "button-max" })
+                    .Content("Les mentors")
+                    .Events(ev => ev.Click("onClickMentors"))
+    )
+
+    @(Html.Kendo().Button()
+                    .Name("Inscription")
+                    .HtmlAttributes(new { type = "button", @class = "button-max" })
+                    .Content("Je veux m'inscrire")
+                    .Events(ev => ev.Click("onClickInscription"))
+    )
+</p>
+
+<script>
+    function onClickAccueil(e) {
+        window.open("../Accueil/Index", "_self");
+    }
+    function onClickMentors(e) {
+        window.open("../Accueil/Mentors", "_self");
+    }
+    function onClickInscription(e) {
+        window.open("../Inscriptions/Index", "_self");
+    }
+</script>
+
+<style>
+    #panelbar {
+        max-width: 960px;
+        margin: 0 auto;
+    }
+
+     .button-max {
+        min-width: 307px;
+        line-height: 30px;
+        margin: 0 10px 0 0;
+    }
+
+     #piedPageEntente{
+         font-size:11px;
+     }
+</style>
+

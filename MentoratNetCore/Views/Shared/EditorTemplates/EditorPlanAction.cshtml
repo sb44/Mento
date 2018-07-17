@@ -1,0 +1,23 @@
+﻿@model string
+
+@(Html.Kendo().EditorFor(model => model)
+    .Name(Html.NameFor(model => model) + "_Editor")
+    .Tag("div")
+    .HtmlAttributes(new { data_bind = "value: " + Html.NameFor(model => model) })
+    .Encode(false)
+    .Tools(tools => tools.Clear().Bold().Italic().Underline())
+    .Events(events => events.Change(@"function (ev){
+    var hiddenInput =  $('#" + Html.NameFor(model => model) + @"');
+    hiddenInput.val(ev.sender.value());
+    hiddenInput.change();
+}"))
+)
+@Html.HiddenFor(model => model)
+
+@*<script>
+    $(document).ready(function () {
+
+        var editor = $("#@Html.NameFor(m => m)").data("kendoEditor");
+        editor.value($("#@Html.NameFor(m => m)").val());
+    });
+</script>*@
