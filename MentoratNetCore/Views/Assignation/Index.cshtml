@@ -2,9 +2,9 @@
 @{
     ViewBag.Title = "Mentorés";
 }
-@using Mentorat.Models
+@using MentoratNetCore.Models
 
-@using Microsoft.AspNet.Identity
+@using Microsoft.AspNetCore.Identity
 
     @if (User.Identity.IsAuthenticated && User.IsInRole("PageMentores"))
     {
@@ -75,7 +75,7 @@
        
         <br />
 
-        @(Html.Kendo().Grid<Mentorat.ViewModels.AssignationViewModel>()
+        @(Html.Kendo().Grid<MentoratNetCore.ViewModels.AssignationViewModel>()
                               .Name("grid")
                           .Scrollable(s => s.Enabled(true))
 
@@ -121,7 +121,7 @@
                       {
                           if(User.IsInRole("Mentors"))
                           {
-                              toolbar.Custom().Name("AfficherTousLesMentores").Text("Afficher tous les mentorés").HtmlAttributes(new { id = "AfficherTousLesMentores" }).Url("#");
+                              toolbar.Custom().Name("AfficherTousLesMentores").Text("Afficher tous les mentorés").HtmlAttributes(new { id = "AfficherTousLesMentores" });
                           }
 
                           toolbar.Excel();

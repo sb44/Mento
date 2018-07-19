@@ -1,4 +1,4 @@
-﻿@model Mentorat.ViewModels.PlanActionViewModel
+﻿@model MentoratNetCore.ViewModels.PlanActionViewModel
 
 <style>
         
@@ -38,7 +38,7 @@
                    <td class="titre">Échéanciers et suivis à prévoir</td>
                    <td class="titre">Évaluation de la progression</td>
                </tr>
-               @foreach (var maLigne in ViewData["Actions"] as List<Mentorat.ViewModels.PlanActionViewModel>)
+               @foreach (var maLigne in ViewData["Actions"] as List<MentoratNetCore.ViewModels.PlanActionViewModel>)
     {
                    <tr>
                        <td class="tdCol1">@Html.Raw(@maLigne.Objectifs)</td>
@@ -89,7 +89,7 @@
                <td width="100px">Échéanciers et suivis à prévoir</td>
                <td width="85px">Évaluation de la progression</td>
             </tr>
-           @foreach (var maLigne in ViewData["Actions"] as List<Mentorat.ViewModels.PlanActionViewModel>)
+           @foreach (var maLigne in ViewData["Actions"] as List<MentoratNetCore.ViewModels.PlanActionViewModel>)
            {
                <tr> 
                    <td>@Html.Raw( @maLigne.Objectifs)</td>

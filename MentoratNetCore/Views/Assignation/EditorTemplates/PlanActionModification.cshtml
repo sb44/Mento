@@ -1,4 +1,4 @@
-﻿@model Mentorat.ViewModels.PlanActionViewModel
+﻿@model MentoratNetCore.ViewModels.PlanActionViewModel
 
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.Objectifs)
@@ -9,7 +9,7 @@
 @*@(Html.Kendo().Editor()
            .Name("editor")
            .Tag("div")
-           .Encode(false)
+           //.Encode(false)
            .HtmlAttributes(new { style = "height:440px", aria_label = "editor" })
             .Resizable(resizable => resizable.Content(true).Toolbar(true))
             .Events(events => events.Change(@"function (ev){
@@ -22,7 +22,7 @@
 @(Html.Kendo().EditorFor(model => model.Objectifs)
     .Name(Html.NameFor(model => model.Objectifs) + "_Editor")
     .Tag("div")
-    .Encode(false)
+    //.Encode(false)
     .Tools(tools => tools.Clear().Bold().Italic().Underline())
     .Events(events => events.Change(@"function (ev){
     var hiddenInput =  $('#" + Html.NameFor(model => model.Indicateurs) + @"');

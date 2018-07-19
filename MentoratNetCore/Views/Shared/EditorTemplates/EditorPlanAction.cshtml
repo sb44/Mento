@@ -4,7 +4,7 @@
     .Name(Html.NameFor(model => model) + "_Editor")
     .Tag("div")
     .HtmlAttributes(new { data_bind = "value: " + Html.NameFor(model => model) })
-    .Encode(false)
+    //.Encode(false)
     .Tools(tools => tools.Clear().Bold().Italic().Underline())
     .Events(events => events.Change(@"function (ev){
     var hiddenInput =  $('#" + Html.NameFor(model => model) + @"');

@@ -7,7 +7,7 @@
 <span class="spanTitrePlan">Année : </span>@ViewBag.noAnneePlanAction <br/><br/>
 </div>
 
-@(Html.Kendo().Grid<Mentorat.ViewModels.PlanActionViewModel>()
+@(Html.Kendo().Grid<MentoratNetCore.ViewModels.PlanActionViewModel>()
     .Name("gridPlanActions")
     .Columns(col =>
     {
@@ -26,7 +26,7 @@
      .ToolBar(toolbar =>
      {
          toolbar.Create().Text("Ajouter une ligne");
-         toolbar.Custom().Name("AfficherPlanAction").Text("Imprimer le plan d'action").HtmlAttributes(new { id = "AfficherPlanAction" }).Url("#");
+         toolbar.Custom().Name("AfficherPlanAction").Text("Imprimer le plan d'action").HtmlAttributes(new { id = "AfficherPlanAction" });
          toolbar.Custom().Name("CopierPlan").Text("Dupliquer le dernier plan d'action").HtmlAttributes(new { id = "CopierPlan" });
      })
     .DataSource(dataSource => dataSource

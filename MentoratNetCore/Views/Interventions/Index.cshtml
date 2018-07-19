@@ -2,129 +2,133 @@
     ViewBag.Title = "Interventions";
 }
 
-@model Mentorat.Models.ForeignKeyValues
-@using Microsoft.AspNet.Identity
-@using Mentorat.Extensions
+@model MentoratNetCore.Models.ForeignKeyValues
+@using Microsoft.AspNetCore.Identity
+@using MentoratNetCore.Extensions
+@using Microsoft.AspNetCore.Http
 
+@inject IHttpContextAccessor HttpContextAccessor
 
-        <hgroup class="title">
-            <h2>@ViewBag.Message</h2>
-        </hgroup>
+<hgroup class="title">
+    <h2>@ViewBag.Message</h2>
+</hgroup>
 
-        <br />
+<br />
 
-        <div>
-            <label>Année :</label>
-            @(Html.Kendo().DropDownList()
-            .Name("PeriodeIntervention")
-            .DataTextField("Text")
-            .DataValueField("Value")
-            .Events(e => e.Change("PeriodeInterventionOnChange"))
-            .BindTo(new List<SelectListItem>()
+<div>
+    <label>Année :</label>
+    @(Html.Kendo().DropDownList()
+                    .Name("PeriodeIntervention")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Events(e => e.Change("PeriodeInterventionOnChange"))
+                    .BindTo(new List<SelectListItem>()
+                    {
+            new SelectListItem()
             {
-                    new SelectListItem()
-                    {
-                        Value="1",Text="Toutes les années"
-                    },
-                     new SelectListItem()
-                    {
-                        Value="2018",Text="2018-2019"
-                    },
-                    new SelectListItem()
-                    {
-                        Value="2017",Text="2017-2018"
-                    },
-                    new SelectListItem()
-                    {
-                        Value="2016",Text="2016-2017"
-                    }                   
-            })
-            .Value(@ViewData["AnneeEnCours"].ToString())
-             )
-            <label id="labelPeriodeDate" class="k-label"></label>
-         </div>
+                Value="1",Text="Toutes les années"
+            },
+             new SelectListItem()
+            {
+                Value="2018",Text="2018-2019"
+            },
+            new SelectListItem()
+            {
+                Value="2017",Text="2017-2018"
+            },
+            new SelectListItem()
+            {
+                Value="2016",Text="2016-2017"
+            }
+                    })
+                    .Value(@ViewData["AnneeEnCours"].ToString())
+    )
+    <label id="labelPeriodeDate" class="k-label"></label>
+</div>
 
-        <br />
+<br />
 
-        @(Html.Kendo().Grid<Mentorat.ViewModels.InterventionsViewModel>()
-                      .Name("grid")
-                      .Columns(columns =>
-                      {
-                          columns.Bound(c => c.Date_Intervention).Title("Date").Format("{0:yyyy/MM/dd}").ClientGroupFooterTemplate("#= count # intervention(s)").ClientFooterTemplate("#= count # intervention(s)");
-                          columns.Bound(c => c.Duree_Intervention).Title("Durée (min.)").ClientGroupFooterTemplate("Total : #= kendo.format('{0:0.00}', sum/60)# hrs").ClientFooterTemplate("Total : #= kendo.format('{0:0.00}', sum/60)# hrs");
-                          columns.ForeignKey(c => c.No_Mentore_Intervention, (System.Collections.IEnumerable) ViewData["ListeMentor"], "No_Mentore", "NomComplet_Mentore").Title("Mentoré");
-                          columns.Bound(c => c.NomComplet_Mentore_Intervention).Hidden().ClientGroupHeaderTemplate("#= getHeaderMentores(value,data)#");
-                          columns.Bound(c => c.Description_Intervention).Title("Description");
-                          columns.Command(command => { command.Destroy(); }).Width(95);
-                      })
-                      .ToolBar(toolbar =>
-                      {
-                          if(Session["intNoMentor"].ToString()!="")
+@(Html.Kendo().Grid<MentoratNetCore.ViewModels.InterventionsViewModel>()
+                          .Name("grid")
+                          .Columns(columns =>
                           {
-                              toolbar.Create();
-                              toolbar.Custom().Name("RepartirTemps").Text("Répartir").HtmlAttributes(new { id = "RepartirTemps", @class = "k-plus" }).Url("#");
-                              toolbar.Save();
-                              toolbar.Excel();
-                          }
+                              columns.Bound(c => c.Date_Intervention).Title("Date").Format("{0:yyyy/MM/dd}").ClientGroupFooterTemplate("#= count # intervention(s)").ClientFooterTemplate("#= count # intervention(s)");
+                              columns.Bound(c => c.Duree_Intervention).Title("Durée (min.)").ClientGroupFooterTemplate("Total : #= kendo.format('{0:0.00}', sum/60)# hrs").ClientFooterTemplate("Total : #= kendo.format('{0:0.00}', sum/60)# hrs");
+                              columns.ForeignKey(c => c.No_Mentore_Intervention, (System.Collections.IEnumerable)ViewData["ListeMentor"], "No_Mentore", "NomComplet_Mentore").Title("Mentoré");
+                              columns.Bound(c => c.NomComplet_Mentore_Intervention).Hidden().ClientGroupHeaderTemplate("#= getHeaderMentores(value,data)#");
+                              columns.Bound(c => c.Description_Intervention).Title("Description");
+                              columns.Command(command => { command.Destroy(); }).Width(95);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                  //if(Session["intNoMentor"].ToString()!="")
+                  if (HttpContextAccessor.HttpContext.Session.GetString("intNoMentor") != "")
+                              {
+                                  toolbar.Create();
+                                  toolbar.Custom().Name("RepartirTemps").Text("Répartir").HtmlAttributes(new { id = "RepartirTemps", @class = "k-plus" });
+                                  toolbar.Save();
+                                  toolbar.Excel();
+                              }
 
-                      })
-                      .Editable(editable => editable.Mode(GridEditMode.InCell))
-                      .Pageable()
-                      .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
-                      .Groupable()
-                       //.Scrollable(scroll => scroll.Enabled(Request.Browser.IsMobileDevice))
-                       .Scrollable(scroll => scroll.Enabled(true))
-                      .Resizable(resize => resize.Columns(true))
-                      // .HtmlAttributes(new { style = "height:75vh;" })
-                      .Excel(excel => excel.AllPages(true).Filterable(true))
-                      .Events(events => events.DataBound("onDataBound"))
-                      .Events(events => events.Edit("onEdit"))
-                      //.Events(events => events.Save("onSave"))
-                      .Events(events => events.ExcelExport("excelExport"))
-                      //.Sortable(sortale => sortale.AllowUnsort(false))
-                      .Sortable(sortable =>
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InCell))
+                          .Pageable()
+                          .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                          .Groupable()
+                           //.Scrollable(scroll => scroll.Enabled(Request.Browser.IsMobileDevice))
+                           .Scrollable(scroll => scroll.Enabled(true))
+                          .Resizable(resize => resize.Columns(true))
+                          // .HtmlAttributes(new { style = "height:75vh;" })
+                          .Excel(excel => excel.AllPages(true).Filterable(true))
+                          .Events(events => events.DataBound("onDataBound"))
+                          .Events(events => events.Edit("onEdit"))
+                          //.Events(events => events.Save("onSave"))
+                          .Events(events => events.ExcelExport("excelExport"))
+                          //.Sortable(sortale => sortale.AllowUnsort(false))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(e => e.Change("onChange"))
+                              .Events(e => e.Error("onError"))
+                              .Events(e => e.Sync("onSync"))
+                               .Events(events => events.RequestEnd("onRequestEnd"))
+                              .Batch(true)
+                              .PageSize(100)
+                              .Model(model => model.Id(p => p.No_Intervention))
+                          .Read(read => read.Action("Interventions_Read", "Interventions").Data("ObtenirFiltreAnnee"))
+                          .Create(create => create.Action("Interventions_Create", "Interventions"))
+                          .Update(update => update.Action("Interventions_Update", "Interventions"))
+                          .Destroy(destroy => destroy.Action("Interventions_Destroy", "Interventions"))
+                      .Aggregates(ag =>
                       {
-                          sortable.SortMode(GridSortMode.SingleColumn);
+                          ag.Add(p => p.Duree_Intervention).Sum();
+                          ag.Add(p => p.Date_Intervention).Count();
                       })
-                      .DataSource(dataSource => dataSource
-                          .Ajax()
-                          .Events(e => e.Change("onChange"))
-                          .Events(e => e.Error("onError"))
-                          .Events(e => e.Sync("onSync"))
-                           .Events(events => events.RequestEnd("onRequestEnd"))
-                          .Batch(true)
-                          .PageSize(100)
-                          .Model(model => model.Id(p => p.No_Intervention))
-                      .Read(read => read.Action("Interventions_Read", "Interventions").Data("ObtenirFiltreAnnee"))
-                      .Create(create => create.Action("Interventions_Create", "Interventions"))
-                      .Update(update => update.Action("Interventions_Update", "Interventions"))
-                      .Destroy(destroy => destroy.Action("Interventions_Destroy", "Interventions"))
-                  .Aggregates(ag =>
-                  {
-                      ag.Add(p => p.Duree_Intervention).Sum();
-                      ag.Add(p => p.Date_Intervention).Count();
-                  })
-              )
-        )
-        @(Html.Kendo().Window()
-                     .Name("fenRepartir")
-                    .Title("")
-                    //.Width(500)
-                    //.Height(550)
-                    .Actions(actions => actions.Close())
-                    .LoadContentFrom("RepartirContent", "Interventions")
-                    .Modal(true)
-                    .Visible(false)
-                    .Draggable(true)
-                    .Events(ev => ev.Close("onClose"))
-        )
-   
-<script>   
+                  )
+)
+@(Html.Kendo().Window()
+                         .Name("fenRepartir")
+                        .Title("")
+                        //.Width(500)
+                        //.Height(550)
+                        .Actions(actions => actions.Close())
+                        .LoadContentFrom("RepartirContent", "Interventions")
+                        .Modal(true)
+                        .Visible(false)
+                        .Draggable(true)
+                        .Events(ev => ev.Close("onClose"))
+)
 
-    var _dateMax= @Html.Raw(Json.Encode(ViewData["DateFermeture"]));
+<script>
+
+
+    var _dateMax= @Html.Raw(Json.Serialize(ViewData["DateFermeture"]));
     _dateMax = new Date(parseInt(_dateMax.substr(6)));
 
-    $(document).ready(function () {        
+    $(document).ready(function () {
 
         $(window).trigger("resize");
 
@@ -142,17 +146,17 @@
         bodyCols.eq(2).addClass("colMentore");
         bodyCols.eq(3).addClass("colDescription");
 
-            
+
 
     });
 
-    
+
     //$(function () {
     //    var grid = $("#grid").data("kendoGrid");
 
     //    //var menu = grid.thead.find("th[data-field='Mentore.NomComplet_Mentore']");
-    //    //menu = menu.attr("data-field", "NomComplet_Mentore_Intervention");  
-        
+    //    //menu = menu.attr("data-field", "NomComplet_Mentore_Intervention");
+
     //    //var menu = grid.thead.find("th[data-field='NomComplet_Mentore_Intervention]");
     //    // menu = menu.attr("data-field", "Mentore.NomComplet_Mentore");
     //});
@@ -167,14 +171,14 @@
            //Aucune erreur alors on peut rafraichir le Grid pour mettre à jour le pied de page.
             var gridSource = $("#grid").data("kendoGrid").dataSource;
             gridSource.fetch();
-        }        
+        }
     }
 
     function onEdit(e)
     {
         if (Date.parse(e.model.Date_Intervention) < Date.parse(_dateMax)) {
             this.closeCell();
-            this.table.focus();            
+            this.table.focus();
         }
         else
         {
@@ -191,7 +195,7 @@
                 }
 
             }
-            
+
             var cdate = e.container.find("[data-role=datetimepicker]");
 
             if(cdate.length)
@@ -219,7 +223,7 @@ function onChange(e)
     console.log("On change : " + e.action);
 
     if (e.action == "add")
-    {      
+    {
         var model = e.items[0];
         var dateNow = new Date();
         var jour = dateNow.getDate();
@@ -228,7 +232,7 @@ function onChange(e)
 
         model.No_Mentore_Intervention = 1;
         model.Date_Intervention = new Date(annee + '/' + mois + '/' + jour);
-        model.Duree_Intervention = 0;        
+        model.Duree_Intervention = 0;
     }else
     {
         if(e.action == "itemchange")
@@ -242,8 +246,8 @@ function onChange(e)
         }
     }
 
-   
-}   
+
+}
 
 function onError(args) {
     if (args.errors) {
@@ -261,7 +265,7 @@ function onError(args) {
         })
 
         grid.one("dataBinding", function (e) {
-            e.preventDefault();   // cancel grid rebind if error occurs                             
+            e.preventDefault();   // cancel grid rebind if error occurs
 
             var fieldCellIndices = {},
             dataSource = grid.dataSource,
@@ -295,7 +299,7 @@ function onError(args) {
                     uid = item.uid;
                     id = error.id;
                 }
-                
+
                   var  row = grid.table.find("tr[data-uid='" + uid+ "']");
 
                 for (var j = 0; j < error.errors.length; j++) {
@@ -312,15 +316,15 @@ function onError(args) {
                 }
             }
         });
-            
+
     }
 }
 
 function showMessage(container, name, errors, id) {
     var validationMessageTmpl = kendo.template($("#message").html());
-   
+
     //add the validation message to the form
-  
+
     var cell = container.find("[data-valmsg-for=" + name + "]");
 
     if (cell.length)
@@ -331,7 +335,7 @@ function showMessage(container, name, errors, id) {
     {
         container.append(validationMessageTmpl({ field: name, message: errors, id: id }));
     }
-    
+
 }
 
 
@@ -341,16 +345,16 @@ function showMessage(container, name, errors, id) {
             icon:"plus"
         });
 
-        $("#RepartirTemps").bind("click", function() {         
-            var test = $("#fenRepartir").data("kendoWindow");           
+        $("#RepartirTemps").bind("click", function() {
+            var test = $("#fenRepartir").data("kendoWindow");
             test.open().center(true);
         // }
         });
 
 });
 
-    $('#btnRepartir').click(function (e) {   
-        e.preventDefault();      
+    $('#btnRepartir').click(function (e) {
+        e.preventDefault();
     });
 
    function validerAjax(){
@@ -373,14 +377,14 @@ function showMessage(container, name, errors, id) {
        else
        {
            nom = data.value;
-           // espace = "   ";           
+           // espace = "   ";
        }
-        
+
        result = nom + espace + total;
 
        return result;
    }
-      
+
    function onDataBound(e) {
        var grid = this;
 
@@ -400,7 +404,7 @@ function showMessage(container, name, errors, id) {
                    $(this).find('.k-grid-delete').attr('disabled', true).prop('disabled', true);
                }
            }
-          
+
        });
 
        if (grid.dataSource.group().length > 0) {
@@ -411,9 +415,9 @@ function showMessage(container, name, errors, id) {
 
            });
        }
-          
 
-       var footerCols = $(".k-grid-footer-wrap").find("col");        
+
+       var footerCols = $(".k-grid-footer-wrap").find("col");
        footerCols.eq(0).addClass("colDate");
        footerCols.eq(1).addClass("colDuree");
        footerCols.eq(2).addClass("colMentore");
@@ -421,7 +425,7 @@ function showMessage(container, name, errors, id) {
 
 
        //var grid = $("#grid").data("kendoGrid");
-       
+
 
        //for (var i = 0; i < grid.columns.length; i++) {
 
@@ -434,14 +438,14 @@ function showMessage(container, name, errors, id) {
    }
 
    $(window).resize(function(){
-       kendo.resize($("#grid"));      
+       kendo.resize($("#grid"));
    });
 
    function excelExport(e)
    {
        var sheet = e.workbook.sheets[0];
        //var workbook = new kendo.ooxml.Workbook();
-       
+
        //var workbook = new kendo.ooxml.Workbook({
        //    sheets: [
        //     {
@@ -451,63 +455,63 @@ function showMessage(container, name, errors, id) {
        //     }
        //    ]
        //});
-       
-       for (var i = 0; i < sheet.columns.length; i++)
-       {         
 
-           sheet.columns[i].autoWidth = false;  
+       for (var i = 0; i < sheet.columns.length; i++)
+       {
+
+           sheet.columns[i].autoWidth = false;
            switch(i)
            {
-               case (0):                   
-                   sheet.columns[i].width = 118;   
+               case (0):
+                   sheet.columns[i].width = 118;
                    break;
-               case (1):                  
+               case (1):
                    sheet.columns[i].width = 118;
                    break;
                case(2):
-                   sheet.columns[i].width = 234;                
+                   sheet.columns[i].width = 234;
                    break;
                case(3):
-                   sheet.columns[i].width = 335;                                               
+                   sheet.columns[i].width = 335;
                    break;
                default:
-                   sheet.columns[i].width = 118;                   
+                   sheet.columns[i].width = 118;
                  //  sheet.columns[i].autoWidth = true;
-           }          
+           }
        }
 
        for (var rowIndex = 1; rowIndex < sheet.rows.length; rowIndex++) {
            var row = sheet.rows[rowIndex];
-           for (var cellIndex = 0; cellIndex < row.cells.length; cellIndex ++) {               
+           for (var cellIndex = 0; cellIndex < row.cells.length; cellIndex ++) {
                row.cells[cellIndex].wrap = true;
                row.cells[cellIndex].verticalAlign = "top";
                row.cells[cellIndex].textAlign = "left";
                row.cells[cellIndex].borderBottom = new Object();
-               row.cells[cellIndex].borderBottom.size=1; 
-                            
+               row.cells[cellIndex].borderBottom.size=1;
+
            }
        }
    }
 
 
- 
+
    function ObtenirFiltreAnnee(e)
    {
        var dataItem = $("#PeriodeIntervention").data("kendoDropDownList");
        var strAnnee = "";
-       
+
        if (dataItem.value() != "")
        {
            strAnnee =dataItem.value();
        }
-        
+
        return { 'filtreAnnee':strAnnee };
    }
 
    function PeriodeInterventionOnChange(e)
    {
        var grid = $("#grid").data("kendoGrid");
-       grid.dataSource.page(1); 
+       grid.dataSource.page(1);
    }
 
    function onRequestEnd(e)
@@ -522,7 +526,7 @@ function showMessage(container, name, errors, id) {
    //$(window).on("resize", function() {
    //    kendo.resize($(".chart-wrapper"));
    //});
-     
+
 </script>
 
 <script type="text/kendo-template" id="message">
@@ -533,35 +537,35 @@ function showMessage(container, name, errors, id) {
 
 <style>
 
-         .k-list-container {
-            width:250px !important;  /*Augmenter la taille du dropbox*/      
-        }
+    .k-list-container {
+        width: 250px !important; /*Augmenter la taille du dropbox*/
+    }
 
     a[disabled] {
         pointer-events: none;
     }
 
-    #grid{
-        height:73vh;
+    #grid {
+        height: 73vh;
     }
 
-    .colDate{
-        width:140px;
+    .colDate {
+        width: 140px;
     }
 
-    .colMentore{
-            width:135px;
+    .colMentore {
+        width: 135px;
     }
 
-        .colDuree{
-            width:140px;
+    .colDuree {
+        width: 140px;
     }
-        
-            #labelPeriodeDate{
-        display:inline;
-        padding-left:5px;
-        font-size:medium;
-        font-weight:normal;
+
+    #labelPeriodeDate {
+        display: inline;
+        padding-left: 5px;
+        font-size: medium;
+        font-weight: normal;
     }
 
     @@media only screen and (max-width: 500px) {
@@ -572,54 +576,46 @@ function showMessage(container, name, errors, id) {
         #FormRepartir {
             width: 95vw !important;
         }
-
-    
-
-        }
-
-     @@media only screen and (max-width: 750px) {
-            .colDescription{
-            width:200px;
     }
+
+    @@media only screen and (max-width: 750px) {
+        .colDescription {
+            width: 200px;
         }
+    }
 
-    @@media only screen and (max-width: 850px)
- {
-           #grid{
-        height:95vh;
-    } 
-
- }
+    @@media only screen and (max-width: 850px) {
+        #grid {
+            height: 95vh;
+        }
+    }
 
     /*Cacher le pied page du grid pour les écrans trop petits*/
     @@media only screen and (max-height: 400px) {
-                    .k-grid-footer{
-                height:0px;
-            }
-            .k-grid-footer-wrap{
-                 height:0px;
-            }
+        .k-grid-footer {
+            height: 0px;
+        }
 
-                .colDate{
-                     width:90px;
-                }
+        .k-grid-footer-wrap {
+            height: 0px;
+        }
 
-                .colDuree{
-                     width:105px;
-                }
-                               
-             .k-link{
-                    font-size:small;
-                }
+        .colDate {
+            width: 90px;
+        }
 
-                .colMentore{
-                     width:96px;
-                }
+        .colDuree {
+            width: 105px;
+        }
 
+        .k-link {
+            font-size: small;
+        }
 
-
+        .colMentore {
+            width: 96px;
+        }
     }
-
 </style>
 
 

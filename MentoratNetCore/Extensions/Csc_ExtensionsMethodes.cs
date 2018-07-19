@@ -23,12 +23,13 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MentoratNetCore.Extensions
 {
     public static class CscExtensionsMethodes
     {
-        public static HtmlString Validation_Error_Convertion_Kendo_Template(this HtmlHelper helper)
+        public static HtmlString Validation_Error_Convertion_Kendo_Template(this IHtmlHelper helper)
         {
             //Partie 1 de la méthode
 
@@ -46,7 +47,7 @@ namespace MentoratNetCore.Extensions
 
         }
 
-        public static HtmlString Validation_Error_Convertion_Kendo_Script(this HtmlHelper helper, string nom)
+        public static HtmlString Validation_Error_Convertion_Kendo_Script(this IHtmlHelper helper, string nom)
         {
             //Partie 2 de la méthode
             var sb = new StringBuilder();
@@ -63,7 +64,7 @@ namespace MentoratNetCore.Extensions
 
         }
 
-        public static HtmlString ValidationMessageForKendoCsc(this HtmlHelper helper, string nom)
+        public static HtmlString ValidationMessageForKendoCsc(this IHtmlHelper helper, string nom)
         {
             //Partie 2 de la méthode
             var sb = new StringBuilder();

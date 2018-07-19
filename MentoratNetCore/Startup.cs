@@ -99,9 +99,7 @@ namespace MentoratNetCore
                 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); ;
 
 
-            //Service custom (UserService) injectera IHttpContextAccessor et sera utilisé ds ValidationCustom https://dotnetcoretutorials.com/2017/01/05/accessing-httpcontext-asp-net-core/
-            //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-           // services.AddSingleton<UserService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             // Add Kendo UI services to the services container
             services.AddKendo();
@@ -120,7 +118,7 @@ namespace MentoratNetCore
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
+            
             app.UseStaticFiles();
 
             // Identity is enabled for the application by calling UseAuthentication in the Configure method.

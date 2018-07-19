@@ -1,5 +1,5 @@
-﻿@model Mentorat.ViewModels.UtilisateurMentoratViewModel
-@using Mentorat.Extensions
+﻿@model MentoratNetCore.ViewModels.UtilisateurMentoratViewModel
+@using MentoratNetCore.Extensions
 
 @*@Html.HiddenFor(model => model.No_Mentore,new { id="No_Mentore"})*@
 
@@ -169,7 +169,7 @@
 
         var url = '@Url.Action("PlanActionAfficher","Assignation")?noMentore=' + mentore + '&noAnnee=' + annee;
 
-        var Modification = @Html.Raw(Json.Encode(ViewData["ModificationPdf"]));
+        var Modification = @Html.Raw(Json.Serialize(ViewData["ModificationPdf"]));
        
 
         if (Modification == true)
@@ -267,7 +267,7 @@
     <ul id="fieldlist">
         <li>
 
-            @(Html.Kendo().Grid<Mentorat.ViewModels.AssignationViewModel>()
+            @(Html.Kendo().Grid<MentoratNetCore.ViewModels.AssignationViewModel>()
               .Name("grid")
          //.Scrollable(s => s.Enabled(true))
          .Editable()

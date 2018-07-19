@@ -59,7 +59,7 @@ namespace MentoratNetCore.Controllers
         // GET: /Account/Login
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult> LoginAsync(string returnUrl)
+        public async Task<ActionResult> Login(string returnUrl)
         {
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
@@ -148,7 +148,7 @@ namespace MentoratNetCore.Controllers
 
                 if (result.Succeeded)
                 {
-                    await DupliqerDroitsAsync(model, user);
+                    await DupliqerDroits(model, user);
 
                     //await SignInAsync(user, isPersistent: false);
                     await _signInManager.SignInAsync(user, isPersistent: false);
@@ -289,7 +289,7 @@ namespace MentoratNetCore.Controllers
 
 
         [Authorize(Roles = "GererUtilisateurDroits")]
-        private async Task DupliqerDroitsAsync(RegisterViewModel model, ApplicationUser user)
+        private async Task DupliqerDroits(RegisterViewModel model, ApplicationUser user)
         {
             //aller chercher le user en cours
             // string idUserenCours = User.Identity.GetUserId();

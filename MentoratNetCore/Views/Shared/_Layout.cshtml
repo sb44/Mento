@@ -12,39 +12,54 @@
     <title>@ViewBag.Title - Service de mentorat</title>
     <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
 
-    <link href="https://kendo.cdn.telerik.com/2017.3.1026/styles/kendo.common.min.css" rel="stylesheet" type="text/css" />
-    <link href="https://kendo.cdn.telerik.com/2017.3.1026/styles/kendo.mobile.all.min.css" rel="stylesheet" type="text/css" />
-    <link href="https://kendo.cdn.telerik.com/2017.3.1026/styles/kendo.dataviz.min.css" rel="stylesheet" type="text/css" />
-    <link href="https://kendo.cdn.telerik.com/2017.3.1026/styles/kendo.blueopal.min.css" rel="stylesheet" type="text/css" />
-    <link href="https://kendo.cdn.telerik.com/2017.3.1026/styles/kendo.dataviz.blueopal.min.css" rel="stylesheet" type="text/css" />
-    <script src="http://kendo.cdn.telerik.com/2017.3.1026/js/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js"></script> @*Info : https://cdnjs.com/libraries/js-cookie*@
-    <script src="https://kendo.cdn.telerik.com/2017.3.1026/js/jszip.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2017.3.1026/js/kendo.all.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2017.3.1026/js/kendo.aspnetmvc.min.js"></script>
-    <script src="http://kendo.cdn.telerik.com/2017.3.1026/js/cultures/kendo.culture.fr-CA.min.js"></script>
+    @*<link href="https://kendo.cdn.telerik.com/2017.3.1026/styles/kendo.common.min.css" rel="stylesheet" type="text/css" />
+        <link href="https://kendo.cdn.telerik.com/2017.3.1026/styles/kendo.mobile.all.min.css" rel="stylesheet" type="text/css" />
+        <link href="https://kendo.cdn.telerik.com/2017.3.1026/styles/kendo.dataviz.min.css" rel="stylesheet" type="text/css" />
+        <link href="https://kendo.cdn.telerik.com/2017.3.1026/styles/kendo.blueopal.min.css" rel="stylesheet" type="text/css" />
+        <link href="https://kendo.cdn.telerik.com/2017.3.1026/styles/kendo.dataviz.blueopal.min.css" rel="stylesheet" type="text/css" />
+        <script src="http://kendo.cdn.telerik.com/2017.3.1026/js/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js"></script> @*Info : https://cdnjs.com/libraries/js-cookie*@
+    @*<script src="https://kendo.cdn.telerik.com/2017.3.1026/js/jszip.min.js"></script>
+        <script src="https://kendo.cdn.telerik.com/2017.3.1026/js/kendo.all.min.js"></script>
+        <script src="https://kendo.cdn.telerik.com/2017.3.1026/js/kendo.aspnetmvc.min.js"></script>
+        <script src="http://kendo.cdn.telerik.com/2017.3.1026/js/cultures/kendo.culture.fr-CA.min.js"></script>
+    *@
+    <environment include="Development">
+        <link href="~/lib/kendo-ui/styles/kendo.common.min.css" rel="stylesheet" type="text/css" />
+        <link href="~/lib/kendo-ui/styles/kendo.mobile.all.min.css" rel="stylesheet" type="text/css" />
+        <link href="~/lib/kendo-ui/styles/kendo.dataviz.min.css" rel="stylesheet" type="text/css" />
+        <link href="~/lib/kendo-ui/styles/kendo.blueopal.min.css" rel="stylesheet" type="text/css" />
+        <link href="~/lib/kendo-ui/styles/kendo.dataviz.black.min.css" rel="stylesheet" type="text/css" />
 
-    <!--
-                Pour collecter les données d'analyse de l'utilisation de votre application par l'utilisateur final,
-                insérez le script suivant dans chaque page dont vous voulez effectuer le suivi.
-                Placez ce code juste avant la balise 	<script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>
-    </head> de fermeture,
-                et avant tout autre script. Vos premières données apparaissent
-                automatiquement au bout de quelques secondes.
-                -->
-    <script type="text/javascript">
-        var appInsights = window.appInsights || function (config) {
-            function r(config) { t[config] = function () { var i = arguments; t.queue.push(function () { t[config].apply(t, i) }) } } var t = { config: config }, u = document, e = window, o = "script", s = u.createElement(o), i, f; for (s.src = config.url || "//az416426.vo.msecnd.net/scripts/a/ai.0.js", u.getElementsByTagName(o)[0].parentNode.appendChild(s), t.cookie = u.cookie, t.queue = [], i = ["Event", "Exception", "Metric", "PageView", "Trace"]; i.length;)r("track" + i.pop()); return r("setAuthenticatedUserContext"), r("clearAuthenticatedUserContext"), config.disableExceptionTracking || (i = "onerror", r("_" + i), f = e[i], e[i] = function (config, r, u, e, o) { var s = f && f(config, r, u, e, o); return s !== !0 && t["_" + i](config, r, u, e, o), s }), t
-        }({
-            instrumentationKey: "2173af31-4eb9-4bf9-9e78-77e0e1a6e7b8"
-        });
+        <script src="~/lib/kendo-ui/js/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js"></script>
+        <script src="~/lib/kendo-ui/js/jszip.min.js"></script>
+        <script src="~/lib/kendo-ui/js/kendo.all.min.js"></script>
+        <script src="~/lib/kendo-ui/js/kendo.aspnetmvc.min.js"></script>
+        <script src="~/lib/kendo-ui/js/cultures/kendo.culture.fr-CA.min.js"></script>
 
-        window.appInsights = appInsights;
-        appInsights.trackPageView();
+    </environment>
+        <!--
+                    Pour collecter les données d'analyse de l'utilisation de votre application par l'utilisateur final,
+                    insérez le script suivant dans chaque page dont vous voulez effectuer le suivi.
+                    Placez ce code juste avant la balise 	<script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>
+        </head> de fermeture,
+                    et avant tout autre script. Vos premières données apparaissent
+                    automatiquement au bout de quelques secondes.
+                    -->
+        <script type="text/javascript">
+            var appInsights = window.appInsights || function (config) {
+                function r(config) { t[config] = function () { var i = arguments; t.queue.push(function () { t[config].apply(t, i) }) } } var t = { config: config }, u = document, e = window, o = "script", s = u.createElement(o), i, f; for (s.src = config.url || "//az416426.vo.msecnd.net/scripts/a/ai.0.js", u.getElementsByTagName(o)[0].parentNode.appendChild(s), t.cookie = u.cookie, t.queue = [], i = ["Event", "Exception", "Metric", "PageView", "Trace"]; i.length;)r("track" + i.pop()); return r("setAuthenticatedUserContext"), r("clearAuthenticatedUserContext"), config.disableExceptionTracking || (i = "onerror", r("_" + i), f = e[i], e[i] = function (config, r, u, e, o) { var s = f && f(config, r, u, e, o); return s !== !0 && t["_" + i](config, r, u, e, o), s }), t
+            }({
+                instrumentationKey: "2173af31-4eb9-4bf9-9e78-77e0e1a6e7b8"
+            });
 
-        kendo.culture("fr-CA");
+            window.appInsights = appInsights;
+            appInsights.trackPageView();
 
-    </script>
+            kendo.culture("fr-CA");
+
+        </script>
 </head>
 <body>
     <header>

@@ -33,7 +33,7 @@
               {
                   if (User.Identity.IsAuthenticated && User.IsInRole("GererUtilisateur"))
                   {
-                      toolbar.Custom().Name("AjouterUtilisateur").Text("Nouveau").HtmlAttributes(new { id = "AjouterUtilisateur", @class = "k-plus" }).Url("#");
+                      toolbar.Custom().Name("AjouterUtilisateur").Text("Nouveau").HtmlAttributes(new { id = "AjouterUtilisateur", @class = "k-plus" });
                   }
                   toolbar.Excel();
               })

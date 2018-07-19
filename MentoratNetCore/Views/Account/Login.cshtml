@@ -8,10 +8,11 @@
 <div class="row">
     <div class="col-md-8">
         <section id="loginForm">
-            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-            {
+            @*@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {*@
+            <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewBag.ReturnUrl" class="form-horizontal" role="form" method="post">
                 @Html.AntiForgeryToken()
-                <h4>Se connecter à l'intranet du MentoratNetCore.</h4>
+                <h4>Se connecter à l'intranet du Mentorat.</h4>
                 <hr />
                 @Html.ValidationSummary(true)
                 <div class="form-group">
@@ -34,14 +35,14 @@
                     <div class="col-md-offset-2 col-md-10">
                         <div class="checkbox">
                             @(Html.Kendo().CheckBoxFor(m => m.RememberMe)
-                            .HtmlAttributes(new
-                            {
-                                @class = "k-checkbox"
-                            })
-                            .Label("Garder ma session active?")
+                                            .HtmlAttributes(new
+                                            {
+                                                @class = "k-checkbox"
+                                            })
+                                            .Label("Garder ma session active?")
                             )
                             @*@Html.Kendo().CheckBoxFor(m => m.RememberMe)
-                            @Html.Label("Garder ma session active?")*@
+                        @Html.Label("Garder ma session active?")*@
                         </div>
                     </div>
                 </div>
@@ -49,19 +50,20 @@
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
                         @(Html.Kendo().Button()
-                            .Name("textButton")
-                            .SpriteCssClass("k-icon k-i-tick")
-                            .Content("Se connecter")
+                                            .Name("textButton")
+                                            .SpriteCssClass("k-icon k-i-tick")
+                                            .Content("Se connecter")
                         )
                         @* <input type="submit" value="Se connecter" class="btn btn-default" /> class="btn btn-default*@
                     </div>
                 </div>
                 @*<p>
-                    @Html.ActionLink("Register", "Register") if you don't have a local account.
-                </p>*@
-            }
+                @Html.ActionLink("Register", "Register") if you don't have a local account.
+            </p>*@
+                @*}*@
+            </form>
 
-            <div>@Html.ActionLink("Mot de  passe oublié?", "MotDePasseOublie", "Account", new { @id="lienOublie" })<div>
+            <div>@Html.ActionLink("Mot de  passe oublié?", "MotDePasseOublie", "Account", new { @id = "lienOublie" })<div>
         </section>
        
     </div>
