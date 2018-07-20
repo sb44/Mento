@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace MentoratNetCore.Extensions
 {
@@ -35,10 +36,10 @@ namespace MentoratNetCore.Extensions
 
             var sb = new StringBuilder();
 
-            string strCode = "<script type='text/kendo-template' id='message'>" + ((char) 13) +
-                        "<span class='k-widget k-tooltip k-tooltip-validation k-invalid-msg field-validation-error' data-for='#=field#' data-valmsg-for='#=field#' id='#=field#_validationMessage' role='alert'>" + ((char) 13) +
-                        "<span class='k-icon k-i-warning'> </span> #=message#" + ((char) 13) +
-                        "</span>" + ((char) 13) +
+            string strCode = "<script type='text/kendo-template' id='message'>" + ((char)13) +
+                        "<span class='k-widget k-tooltip k-tooltip-validation k-invalid-msg field-validation-error' data-for='#=field#' data-valmsg-for='#=field#' id='#=field#_validationMessage' role='alert'>" + ((char)13) +
+                        "<span class='k-icon k-i-warning'> </span> #=message#" + ((char)13) +
+                        "</span>" + ((char)13) +
                      "</script>";
 
             sb.Append(strCode);
@@ -52,10 +53,10 @@ namespace MentoratNetCore.Extensions
             //Partie 2 de la méthode
             var sb = new StringBuilder();
 
-            string strCode = "var validationMessageTmpl = kendo.template($('#message').html());" + ((char) 13) +
-                             "$('#" + nom + "').kendoValidator();" + ((char) 13) +
-                             "$('#" + nom + "').find('.field-validation-error').replaceWith(function (e) {" + ((char) 13) +
-                             "var element = $(this);" + ((char) 13) +
+            string strCode = "var validationMessageTmpl = kendo.template($('#message').html());" + ((char)13) +
+                             "$('#" + nom + "').kendoValidator();" + ((char)13) +
+                             "$('#" + nom + "').find('.field-validation-error').replaceWith(function (e) {" + ((char)13) +
+                             "var element = $(this);" + ((char)13) +
                              "return validationMessageTmpl({ field: element.attr('data-valmsg-for'), message: element.text() });})";
 
             sb.Append(strCode);
@@ -69,7 +70,7 @@ namespace MentoratNetCore.Extensions
             //Partie 2 de la méthode
             var sb = new StringBuilder();
 
-            string strCode = "<span class='k-invalid-msg' data-for="+nom+"></span>";
+            string strCode = "<span class='k-invalid-msg' data-for=" + nom + "></span>";
 
             sb.Append(strCode);
 
@@ -118,14 +119,14 @@ namespace MentoratNetCore.Extensions
             return roleMgr;
         }
 
-        public static IQueryable<ApplicationUser> ObtenirUsersInRole(string roleName,RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
+        public static IQueryable<ApplicationUser> ObtenirUsersInRole(string roleName, RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
         {
 
             //List<ApplicationUserRole> lstUserRoles = roleManager.FindByName(roleName).Users.ToList();
 
             return (from u in userManager.Users
-                        where u.UserRoles.Any(a => a.Role.Name == roleName) // where u.Roles.Any(a => a.Role.Name == roleName)
-                        select u);
+                    where u.UserRoles.Any(a => a.Role.Name == roleName) // where u.Roles.Any(a => a.Role.Name == roleName)
+                    select u);
         }
 
 
@@ -153,17 +154,17 @@ namespace MentoratNetCore.Extensions
             return result;
         }
 
-        public static void AttribuerDateDebutDateFinAnneeFinanciereProjet(string annee,out Nullable<DateTime> dateDebut, out Nullable<DateTime> dateFin)
+        public static void AttribuerDateDebutDateFinAnneeFinanciereProjet(string annee, out Nullable<DateTime> dateDebut, out Nullable<DateTime> dateFin)
         {
             int iAnnee;
-            string strAnneeFin =annee;
+            string strAnneeFin = annee;
             string moisJourDebut = "-01-01";
             string moisJourFin = "-02-15";
 
             dateDebut = null;
             dateFin = null;
 
-            if(int.TryParse(annee,out iAnnee) && (iAnnee>=2016 && iAnnee <= 2100))
+            if (int.TryParse(annee, out iAnnee) && (iAnnee >= 2016 && iAnnee <= 2100))
             {
                 switch (iAnnee)
                 {
@@ -189,9 +190,9 @@ namespace MentoratNetCore.Extensions
                         break;
                 }
 
-                
-                dateDebut =   DateTime.ParseExact(annee + moisJourDebut,"yyyy-MM-dd",CultureInfo.CurrentCulture);
-                dateFin = DateTime.ParseExact(strAnneeFin + moisJourFin, "yyyy-MM-dd", CultureInfo.CurrentCulture).AddDays(1).AddTicks(-1);               
+
+                dateDebut = DateTime.ParseExact(annee + moisJourDebut, "yyyy-MM-dd", CultureInfo.CurrentCulture);
+                dateFin = DateTime.ParseExact(strAnneeFin + moisJourFin, "yyyy-MM-dd", CultureInfo.CurrentCulture).AddDays(1).AddTicks(-1);
             }
         }
 
@@ -247,7 +248,8 @@ namespace MentoratNetCore.Extensions
 
             //De:
             var contactEmail = new Email();
-            contactEmail.Address = "coordination@coordination-sc.org";
+            ///contactEmail.Address = "coordination@coordination-sc.org";
+            contactEmail.Address = "sasha.bouchard@gmail.com";
             contactEmail.Name = "Inscription Mentorat";
             monCourriel.From = contactEmail;
 
@@ -270,7 +272,7 @@ namespace MentoratNetCore.Extensions
             ///      mesInformations.AddCc(contactEmail);
 
             contactEmail = new Email();
-            contactEmail.Address = "sasha.bouchard@coordination-sc.org";
+            contactEmail.Address = "sasha.bouchard@gmail.com";
             mesInformations.AddTo(contactEmail);
 
 
@@ -336,8 +338,6 @@ namespace MentoratNetCore.Extensions
             //désactivé pour ne pas envoyer de courriel
             dynamic response = await sg.client.mail.send.post(requestBody: monCourriel.Get());
         }
-
-
-
     }
+
 }

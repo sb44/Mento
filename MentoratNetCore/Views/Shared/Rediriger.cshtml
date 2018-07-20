@@ -12,7 +12,9 @@
 <script type="text/javascript" language="javascript">
  //   $(this.document).ready(function () {      
        
-        window.location.href = '@Url.Action(ViewBag.ActionRedirection, ViewBag.ControllerRedirection)';
+        @*window.location.href = '@Url.Action(ViewBag.ActionRedirection, ViewBag.ControllerRedirection)';*@
+        window.location.href = '/@ViewBag.ControllerRedirection/@ViewBag.ActionRedirection';
+
       
   //  });
 </script>

@@ -359,7 +359,7 @@ namespace MentoratNetCore.Controllers
         [Authorize]
         //
         // GET: /Account/Manage
-        public ActionResult Manage(ManageMessageId? message)
+        public async Task<ActionResult> Manage(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Votre mot de passe a été changé."
@@ -367,7 +367,7 @@ namespace MentoratNetCore.Controllers
                 : message == ManageMessageId.RemoveLoginSuccess ? "La connexion externe a été retiré."
                 : message == ManageMessageId.Error ? "Une erreur est survenue."
                 : "";
-            ViewBag.HasLocalPassword = HasPasswordAsync();
+            ViewBag.HasLocalPassword = await HasPasswordAsync();
             ViewBag.ReturnUrl = Url.Action("Manage");
             return View();
         }
@@ -1720,7 +1720,7 @@ namespace MentoratNetCore.Controllers
         // GET: /Account/Utilisateur
         // [Authorize(Roles = "GererUtilisateur,GererUtilisateurDroits")]
         [CustomAuthorizeMentoresAttribute]
-        public async Task<ActionResult> MonDossierAsync()
+        public async Task<ActionResult> MonDossier()
         {
 
             string idUserenCours = this.User.FindFirstValue(ClaimTypes.NameIdentifier);  //User.Identity.GetUserId();

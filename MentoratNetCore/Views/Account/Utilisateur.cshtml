@@ -1,12 +1,15 @@
 ﻿@model MentoratNetCore.Models.UtilisateurViewModel
 @using MentoratNetCore.Extensions
 
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
 @{
     ViewBag.Title = "Utilisateur";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@if(Model.Id == User.Id())
+@if (Model.Id == User.Id())
 {
     <h2>Mon dossier</h2>
 }
@@ -14,7 +17,7 @@ else
 {
     <h2>Dossier de @Model.Nom</h2>
 }
-<br/>
+<br />
 
 @*<input type="hidden" name="cookiePage" id="cookiePage" />*@
 
@@ -23,8 +26,16 @@ else
 <div class="wrapper">
     @{bool boolPageDefault;
         //string valPage = Request.Cookies["UtilisateurTabStripPage"].Value;
+
+        /*
         HttpCookie monCookie = Request.Cookies["UtilisateurTabStripPage"];
         string valPage = monCookie != null ? monCookie.Value : "";
+        */
+
+        //read cookie from IHttpContextAccessor  
+        string monCookie = HttpContextAccessor.HttpContext.Request.Cookies["UtilisateurTabStripPage"];
+        string valPage = monCookie != null ? monCookie : "";
+
 
         if (Model.section != null && Model.section != "")
         {
@@ -33,7 +44,7 @@ else
         }
         else
         {
-            if(valPage !=null && valPage !="")
+            if (valPage != null && valPage != "")
             {
                 boolPageDefault = false;
                 valPage = valPage.ToLower();
@@ -45,74 +56,76 @@ else
 
         }
 
-      }
+    }
 
     @(Html.Kendo().TabStrip()
-              .Name("tabstripUtilisateur")
-              .Items(tabstrip =>
-              {
-              if (User.Identity.IsAuthenticated && User.IsInRole("PageUtilisateurs"))
-              {
-                  if (valPage == "info")
-                  {
-                      boolPageDefault = true;
-                  }
+                      .Name("tabstripUtilisateur")
+                      .Items(tabstrip =>
+                      {
+                          if (User.Identity.IsAuthenticated && User.IsInRole("PageUtilisateurs"))
+                          {
+                              if (valPage == "info")
+                              {
+                                  boolPageDefault = true;
+                              }
 
-                  tabstrip.Add().Text("Informations")
+                              tabstrip.Add().Text("Informations")
                   .Selected(boolPageDefault)
                   .LoadContentFrom("UtilisateurInfoOuvrir", "Account", new { utilisateur = Model.userName });
-                  boolPageDefault = false;
-              }
+                              boolPageDefault = false;
+                          }
 
-              if (User.Identity.IsAuthenticated)
-              {
-                  if((bool)ViewData["AfficherSectionPhyto"])
-                  {
-                      if (valPage == "dossier")
-                      {
-                          boolPageDefault = true;
-                      }
+                          if (User.Identity.IsAuthenticated)
+                          {
+                              if ((bool)ViewData["AfficherSectionPhyto"])
+                              {
+                                  if (valPage == "dossier")
+                                  {
+                                      boolPageDefault = true;
+                                  }
 
-                      tabstrip.Add().Text("Dossier")
+                                  tabstrip.Add().Text("Dossier")
                             .Selected(boolPageDefault)
                             .LoadContentFrom("InformationsMentore", "Inscriptions", new { utilisateur = Model.userName });
-                      boolPageDefault = false;
+                                  boolPageDefault = false;
 
-                      if (valPage == "phyto")
-                      {
-                          boolPageDefault = true;
-                      }
-                      tabstrip.Add().Text("Phytoprotection")
+                                  if (valPage == "phyto")
+                                  {
+                                      boolPageDefault = true;
+                                  }
+                                  tabstrip.Add().Text("Phytoprotection")
                        .Selected(boolPageDefault)
                    .LoadContentFrom("Modification", "Assignation", new { utilisateur = Model.userName, type = "Phyto" });
-                  }
+                              }
 
-              }
+                          }
 
 
-              if (User.Identity.IsAuthenticated && User.IsInRole("GererUtilisateurDroits"))
-              {
+                          if (User.Identity.IsAuthenticated && User.IsInRole("GererUtilisateurDroits"))
+                          {
                   // .Content(@<text>@Html.Action("UtilisateurInfoOuvrir", "Account", new { utilisateur= Model.userName })</text>);
                   if (valPage == "Droits")
-                  {
-                      boolPageDefault = true;
-                  }
-                  tabstrip.Add().Text("Droits d'accès")
+                              {
+                                  boolPageDefault = true;
+                              }
+                              tabstrip.Add().Text("Droits d'accès")
                   .Selected(boolPageDefault)
               .LoadContentFrom("UtilisateurDroits", "Account", new { utilisateur = Model.userName });
-                    @*.Content(@<text>@Html.Action("UtilisateurDroits", "Account", new { utilisateur = Model.userName })</text>);*@
+                  /**/
+                @*.Content(@<text>@Html.Action("UtilisateurDroits", "Account", new { utilisateur = Model.userName })</text>);*@
+                /**/
 
-                  }
+                        }
 
-                  //       tabstrip.Add().Text("Plan d'action")
-                  //    .Selected(false)
-                  //.LoadContentFrom("PlanAction", "Assignation");
+            //       tabstrip.Add().Text("Plan d'action")
+            //    .Selected(false)
+            //.LoadContentFrom("PlanAction", "Assignation");
 
-              })
-           .Events(events => events
-            //.Activate("onActivateTabStripUtilisateur")            
-            .Select("onSelectTabStripUtilisateur")
-        )
+        })
+                 .Events(events => events
+                  //.Activate("onActivateTabStripUtilisateur")
+                  .Select("onSelectTabStripUtilisateur")
+              )
 
     )
 </div>
@@ -121,27 +134,26 @@ else
     //window.onload = function ()
     //{
     //    var cookie = Cookies.get('UtilisateurTabStripPage') + "";
-       
+
 
     //    if (cookie != "")
     //    {
-    //        $("#cookiePage").val(cookie);            
+    //        $("#cookiePage").val(cookie);
     //    }
     //    else {
-    //        $("#cookiePage").val("");            
+    //        $("#cookiePage").val("");
     //    }
 
-        
+
 
     //}
-       
+
 
     function onSelectTabStripUtilisateur(e) {
         var nomTab = $(e.item).text().toLowerCase();
         var valeurCookie = "";
 
-        if (nomTab.indexOf("phyto") >= 0)
-        {
+        if (nomTab.indexOf("phyto") >= 0) {
             valeurCookie = "phyto";
         }
 
@@ -149,12 +161,10 @@ else
             valeurCookie = "dossier";
         }
 
-        if (valeurCookie != "")
-        {
+        if (valeurCookie != "") {
             Cookies.set('UtilisateurTabStripPage', valeurCookie, { expires: 1 / 48 });
         }
-        else
-        {
+        else {
             Cookies.remove('UtilisateurTabStripPage');
         }
 
@@ -168,22 +178,22 @@ else
         //}
 
         //alert($("#cookiePage").val());
-       
+
     }
-   
+
 
     $(document).ready(function () {
-      
-      
+
+
 
         var ts = $("#tabstripUtilisateur").data('kendoTabStrip');
-       
-            ts.tabGroup.on('click', 'li', function (e) {
-                var index = $(this).index();
-                if (!$(ts.contentElement(index)).is(":empty")) {
-                    ts.reload($(this));
-                }
-            })
-            
+
+        ts.tabGroup.on('click', 'li', function (e) {
+            var index = $(this).index();
+            if (!$(ts.contentElement(index)).is(":empty")) {
+                ts.reload($(this));
+            }
+        })
+
     });
-    </script>
+</script>

@@ -4,6 +4,31 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
+@* S.Bouchard - 2018-07-20
+    Fonction pour déterminer si l'item du menu principal Telerik est autorizé à être affiché.
+     N.B.: Dans .NetCore, non-support de ".SecurityTrimming(s => s.HideParent(true))")
+     Code adapté de :
+     - https://www.telerik.com/forums/securitytrimming-in-mvc-core-menu
+     - https://stackoverflow.com/questions/40912729/check-if-a-user-has-permission-to-access-a-controller-action-before-accessing-i
+     - https://stackoverflow.com/questions/32331157/replacement-for-helper-in-asp-net-5-asp-net-mvc-6
+*@
+@functions {
+    private class AutorisationMenu
+    {
+        public bool Autorise { get; set; }
+        public AutorisationMenu(string nomController, string nomAction)
+        {
+            Autorise = false;
+
+            Autorise = MentoratNetCore.Extensions.CscExtensionsMethodes.HasActionPermission(nomController, nomAction);
+
+        }
+    }
+
+
+}
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -39,27 +64,27 @@
         <script src="~/lib/kendo-ui/js/cultures/kendo.culture.fr-CA.min.js"></script>
 
     </environment>
-        <!--
-                    Pour collecter les données d'analyse de l'utilisation de votre application par l'utilisateur final,
-                    insérez le script suivant dans chaque page dont vous voulez effectuer le suivi.
-                    Placez ce code juste avant la balise 	<script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>
-        </head> de fermeture,
-                    et avant tout autre script. Vos premières données apparaissent
-                    automatiquement au bout de quelques secondes.
-                    -->
-        <script type="text/javascript">
-            var appInsights = window.appInsights || function (config) {
-                function r(config) { t[config] = function () { var i = arguments; t.queue.push(function () { t[config].apply(t, i) }) } } var t = { config: config }, u = document, e = window, o = "script", s = u.createElement(o), i, f; for (s.src = config.url || "//az416426.vo.msecnd.net/scripts/a/ai.0.js", u.getElementsByTagName(o)[0].parentNode.appendChild(s), t.cookie = u.cookie, t.queue = [], i = ["Event", "Exception", "Metric", "PageView", "Trace"]; i.length;)r("track" + i.pop()); return r("setAuthenticatedUserContext"), r("clearAuthenticatedUserContext"), config.disableExceptionTracking || (i = "onerror", r("_" + i), f = e[i], e[i] = function (config, r, u, e, o) { var s = f && f(config, r, u, e, o); return s !== !0 && t["_" + i](config, r, u, e, o), s }), t
-            }({
-                instrumentationKey: "2173af31-4eb9-4bf9-9e78-77e0e1a6e7b8"
-            });
+    <!--
+                Pour collecter les données d'analyse de l'utilisation de votre application par l'utilisateur final,
+                insérez le script suivant dans chaque page dont vous voulez effectuer le suivi.
+                Placez ce code juste avant la balise 	<script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>
+    </head> de fermeture,
+                et avant tout autre script. Vos premières données apparaissent
+                automatiquement au bout de quelques secondes.
+                -->
+    <script type="text/javascript">
+        var appInsights = window.appInsights || function (config) {
+            function r(config) { t[config] = function () { var i = arguments; t.queue.push(function () { t[config].apply(t, i) }) } } var t = { config: config }, u = document, e = window, o = "script", s = u.createElement(o), i, f; for (s.src = config.url || "//az416426.vo.msecnd.net/scripts/a/ai.0.js", u.getElementsByTagName(o)[0].parentNode.appendChild(s), t.cookie = u.cookie, t.queue = [], i = ["Event", "Exception", "Metric", "PageView", "Trace"]; i.length;)r("track" + i.pop()); return r("setAuthenticatedUserContext"), r("clearAuthenticatedUserContext"), config.disableExceptionTracking || (i = "onerror", r("_" + i), f = e[i], e[i] = function (config, r, u, e, o) { var s = f && f(config, r, u, e, o); return s !== !0 && t["_" + i](config, r, u, e, o), s }), t
+        }({
+            instrumentationKey: "2173af31-4eb9-4bf9-9e78-77e0e1a6e7b8"
+        });
 
-            window.appInsights = appInsights;
-            appInsights.trackPageView();
+        window.appInsights = appInsights;
+        appInsights.trackPageView();
 
-            kendo.culture("fr-CA");
+        kendo.culture("fr-CA");
 
-        </script>
+    </script>
 </head>
 <body>
     <header>
@@ -74,99 +99,103 @@
                 @*@if (Request.IsAuthenticated)*@
                 @if (SignInManager.IsSignedIn(User))
                 {
-                    //using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm" }))
-                    //{
-                    <form asp-controller="Account" action="LogOff" id="logoutForm" method="post">
+
+                    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+                    {
                         @Html.AntiForgeryToken()
-                    </form>
-                        //}
+                    }
 
-                        @(Html.Kendo().Menu()
-                                                              .Name("menuIntranet")
-                                                               //.SecurityTrimming(s => s.HideParent(true))
-                                                               .Items(items =>
-                                                               {
-                                                                   items.Add()
-                                                                   .Text("Bonjour " + MentoratNetCore.Extensions.CscExtensionsMethodes.NomCompletUtilisateur(User) + "!")
-                                                                   .Action("Manage", "Account")
-                                                                   .HtmlAttributes(new { title = "Manage" });
+                    @*<form asp-controller="Account" action="LogOff" area="" id="logoutForm" method="post">
+                            @Html.AntiForgeryToken()
+                        </form>*@
 
 
-                                                                   items.Add()
-                                                                   .Text("Mon dossier")
-                                                                   .Action("MonDossier", "Account");
-
-                                                                   items.Add()
-                                                                    .Text("Mentorés")
-                                                                    .Action("Index", "Assignation");
-
-
-                                                                   items.Add()
-                                                                   .Text("Mentors")
-                                                                   .Action("Index", "Mentors");
-
-                                                                   items.Add()
-                                                                   .Text("Interventions")
-                                                                   .Action("Index", "InterventionsAdm");
-
-                                                                   items.Add()
-                                                                   .Text("Interventions")
-                                                                   .Action("Index", "Interventions");
-
-                                                                   items.Add()
-                                                                   .Text("Paramètres")
-                                                                   .Items(children =>
-                                                                   {
-                                                                       children.Add()
-                                                                            .Text("Utilisateurs")
-                                                                            .Action("Utilisateurs", "Account");
-
-                                                                       children.Add()
-                                                                           .Text("Gestion des droits")
-                                                                           .Action("ParametresDroits", "Account");
-
-                                                                   }
-                                                                       );
+                    @(Html.Kendo().Menu()
+                                                                                                                                          .Name("menuIntranet")
+                                                                                                                                           //.SecurityTrimming(s => s.HideParent(true))
+                                                                                                                                           .Items(items =>
+                                                                                                                                           {
+                                                                                                                                               items.Add()
+                                                                                                                                               .Text("Bonjour " + @UserManager.GetUserAsync(User).Result.NomCompletUser + "!")
+                                                                                                                                               .Action("Manage", "Account")
+                                                                                                                                               .HtmlAttributes(new { title = "Manage" });
 
 
-                                                                   items.Add()
-                                                                   .Text("Déconnexion")
-                                                                   .HtmlAttributes(new { onclick = "getElementById('logoutForm').submit()" });
-                                                               }
+                                                                                                                                               items.Add()
+                                                                                                                                               .Text("Mon dossier")
+                                                                                                                                               .Action("MonDossier", "Account");
 
-                                                               )
-                        )
-                        }
-                        else
-                        {
-                        @(Html.Kendo().Menu()
-                                                        .Name("menuVisiteurs")
-                                                        .Items(items =>
-                                                        {
-                                                            items.Add()
-                                                            .Text("Accueil")
-                                                            .Action("Index", "Accueil");
+                                                                                                                                               items.Add()
+                                                                                                                                                .Text("Mentorés")
+                                                                                                                                                .Action("Index", "Assignation").Visible(new AutorisationMenu("Index", "Assignation").Autorise);
 
-                                                            items.Add()
-                                                            .Text("Inscription")
-                                                            .Action("Index", "Inscriptions");
 
-                                                            items.Add()
-                                                            .Text("Mentors")
-                                                            .Action("Mentors", "Accueil");
+                                                                                                                                               items.Add()
+                                                                                                                                               .Text("Mentors")
+                                                                                                                                               .Action("Index", "Mentors").Visible(new AutorisationMenu("Index", "Mentors").Autorise);
 
-                                                            items.Add()
-                                                            .Text("En apprendre plus")
-                                                            .Action("Fonctionnement", "Accueil");
+                                                                                                                                               items.Add()
+                                                                                                                                               .Text("Interventions")
+                                                                                                                                               .Action("Index", "InterventionsAdm").Visible(new AutorisationMenu("Index", "InterventionsAdm").Autorise);
 
-                                                            items.Add()
-                                                            .Text("Connexion")
-                                                            .Action("Login", "Account", routeValues: null)
-                                                            .HtmlAttributes(new { id = "loginLink" });
-                                                        })
-                        )
-                        }
-                </div>
+                                                                                                                                               items.Add()
+                                                                                                                                               .Text("Interventions")
+                                                                                                                                               .Action("Index", "Interventions").Visible(new AutorisationMenu("Index", "Interventions").Autorise);
+
+                                                                                                                                               items.Add()
+                                                                                                                                               .Text("Paramètres")
+                                                                                                                                               .Items(children =>
+                                                                                                                                               {
+                                                                                                                                                   children.Add()
+                                                                                                                                                        .Text("Utilisateurs")
+                                                                                                                                                        .Action("Utilisateurs", "Account");
+
+                                                                                                                                                   children.Add()
+                                                                                                                                                       .Text("Gestion des droits")
+                                                                                                                                                       .Action("ParametresDroits", "Account");
+
+                                                                                                                                               }
+                                                                                                                                                   ).Visible(new AutorisationMenu("Utilisateurs", "Account").Autorise);
+
+
+                                                                                                                                               items.Add()
+                                                                                                                                               .Text("Déconnexion")
+                                                                                                                                               .HtmlAttributes(new { onclick = "getElementById('logoutForm').submit()" });
+                                                                                                                                           }
+
+                                                                                                                                           )
+                    )
+                }
+                else
+                {
+                    @(Html.Kendo().Menu()
+                                                                                                                                    .Name("menuVisiteurs")
+                                                                                                                                    .Items(items =>
+                                                                                                                                    {
+                                                                                                                                        items.Add()
+                                                                                                                                        .Text("Accueil")
+                                                                                                                                        .Action("Index", "Accueil");
+
+                                                                                                                                        items.Add()
+                                                                                                                                        .Text("Inscription")
+                                                                                                                                        .Action("Index", "Inscriptions");
+
+                                                                                                                                        items.Add()
+                                                                                                                                        .Text("Mentors")
+                                                                                                                                        .Action("Mentors", "Accueil");
+
+                                                                                                                                        items.Add()
+                                                                                                                                        .Text("En apprendre plus")
+                                                                                                                                        .Action("Fonctionnement", "Accueil");
+
+                                                                                                                                        items.Add()
+                                                                                                                                        .Text("Connexion")
+                                                                                                                                        .Action("Login", "Account", routeValues: null)
+                                                                                                                                        .HtmlAttributes(new { id = "loginLink" });
+                                                                                                                                    })
+                    )
+                }
+            </div>
         </div>
     </header>
     <div id="body">

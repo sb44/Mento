@@ -60,7 +60,7 @@ namespace MentoratNetCore.AuthorizeCustom
 
                 var user = actionContext.HttpContext.User;
 
-                if (!user.Identity.IsAuthenticated)    //if (HttpContext.Current.User.Identity.IsAuthenticated)
+                if (user.Identity.IsAuthenticated)    //if (HttpContext.Current.User.Identity.IsAuthenticated)
                 {
                     //doit être connecté
                     if (user.IsInRole("PageUtilisateurs") || user.IsInRole("Mentors")) //  if (HttpContext.Current.User.IsInRole("PageUtilisateurs") || HttpContext.Current.User.IsInRole("Mentors")) 
