@@ -32,7 +32,7 @@ else
         string valPage = monCookie != null ? monCookie.Value : "";
         */
 
-        //read cookie from IHttpContextAccessor  
+        //read cookie from IHttpContextAccessor
         string monCookie = HttpContextAccessor.HttpContext.Request.Cookies["UtilisateurTabStripPage"];
         string valPage = monCookie != null ? monCookie : "";
 

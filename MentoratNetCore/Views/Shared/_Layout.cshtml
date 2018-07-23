@@ -3,7 +3,6 @@
 
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
-
 @* S.Bouchard - 2018-07-20
     Fonction pour déterminer si l'item du menu principal Telerik est autorizé à être affiché.
      N.B.: Dans .NetCore, non-support de ".SecurityTrimming(s => s.HideParent(true))")
@@ -13,15 +12,15 @@
      - https://stackoverflow.com/questions/32331157/replacement-for-helper-in-asp-net-5-asp-net-mvc-6
 *@
 @functions {
+
     private class AutorisationMenu
     {
+
         public bool Autorise { get; set; }
         public AutorisationMenu(string nomController, string nomAction)
         {
-            Autorise = false;
-
-            Autorise = MentoratNetCore.Extensions.CscExtensionsMethodes.HasActionPermission(nomController, nomAction);
-
+            // UrlActionContext urlActionContext = new UrlActionContext() { Action = nomAction, Controller = nomController };
+            // Autorise = await Url.HasAccess(urlActionContext); // 
         }
     }
 
@@ -94,7 +93,6 @@
                 <p class="site-title"><a href="../"><img src="~/Images/CSC/logo-rvb.gif" width="137" height="40" border="0" /></a></p>
             </div>
             <div class="float-right">
-
                 @*@using Microsoft.AspNet.Identity*@
                 @*@if (Request.IsAuthenticated)*@
                 @if (SignInManager.IsSignedIn(User))
@@ -106,93 +104,93 @@
                     }
 
                     @*<form asp-controller="Account" action="LogOff" area="" id="logoutForm" method="post">
-                            @Html.AntiForgeryToken()
-                        </form>*@
+                @Html.AntiForgeryToken()
+            </form>*@
 
 
                     @(Html.Kendo().Menu()
-                                                                                                                                          .Name("menuIntranet")
-                                                                                                                                           //.SecurityTrimming(s => s.HideParent(true))
-                                                                                                                                           .Items(items =>
-                                                                                                                                           {
-                                                                                                                                               items.Add()
-                                                                                                                                               .Text("Bonjour " + @UserManager.GetUserAsync(User).Result.NomCompletUser + "!")
-                                                                                                                                               .Action("Manage", "Account")
-                                                                                                                                               .HtmlAttributes(new { title = "Manage" });
+                                                                                                                                                                  .Name("menuIntranet")
+                                                                                                                                                                   //.SecurityTrimming(s => s.HideParent(true))
+                                                                                                                                                                   .Items(items =>
+                                                                                                                                                                   {
+                                                                                                                                                                       items.Add()
+                                                                                                                                                                       .Text("Bonjour " + @UserManager.GetUserAsync(User).Result.NomCompletUser + "!")
+                                                                                                                                                                       .Action("Manage", "Account")
+                                                                                                                                                                       .HtmlAttributes(new { title = "Manage" });
 
 
-                                                                                                                                               items.Add()
-                                                                                                                                               .Text("Mon dossier")
-                                                                                                                                               .Action("MonDossier", "Account");
+                                                                                                                                                                       items.Add()
+                                                                                                                                                                       .Text("Mon dossier")
+                                                                                                                                                                       .Action("MonDossier", "Account");
 
-                                                                                                                                               items.Add()
-                                                                                                                                                .Text("Mentorés")
-                                                                                                                                                .Action("Index", "Assignation").Visible(new AutorisationMenu("Index", "Assignation").Autorise);
-
-
-                                                                                                                                               items.Add()
-                                                                                                                                               .Text("Mentors")
-                                                                                                                                               .Action("Index", "Mentors").Visible(new AutorisationMenu("Index", "Mentors").Autorise);
-
-                                                                                                                                               items.Add()
-                                                                                                                                               .Text("Interventions")
-                                                                                                                                               .Action("Index", "InterventionsAdm").Visible(new AutorisationMenu("Index", "InterventionsAdm").Autorise);
-
-                                                                                                                                               items.Add()
-                                                                                                                                               .Text("Interventions")
-                                                                                                                                               .Action("Index", "Interventions").Visible(new AutorisationMenu("Index", "Interventions").Autorise);
-
-                                                                                                                                               items.Add()
-                                                                                                                                               .Text("Paramètres")
-                                                                                                                                               .Items(children =>
-                                                                                                                                               {
-                                                                                                                                                   children.Add()
-                                                                                                                                                        .Text("Utilisateurs")
-                                                                                                                                                        .Action("Utilisateurs", "Account");
-
-                                                                                                                                                   children.Add()
-                                                                                                                                                       .Text("Gestion des droits")
-                                                                                                                                                       .Action("ParametresDroits", "Account");
-
-                                                                                                                                               }
-                                                                                                                                                   ).Visible(new AutorisationMenu("Utilisateurs", "Account").Autorise);
+                                                                                                                                                                       items.Add()
+                                                                                                                                                                        .Text("Mentorés")
+                                                                                                                                                                        .Action("Index", "Assignation").Visible(User.IsInRole("PageMentores"));
 
 
-                                                                                                                                               items.Add()
-                                                                                                                                               .Text("Déconnexion")
-                                                                                                                                               .HtmlAttributes(new { onclick = "getElementById('logoutForm').submit()" });
-                                                                                                                                           }
+                                                                                                                                                                       items.Add()
+                                                                                                                                                                       .Text("Mentors")
+                                                                                                                                                                       .Action("Index", "Mentors").Visible(User.IsInRole("GestionMentors"));
 
-                                                                                                                                           )
+                                                                                                                                                                       items.Add()
+                                                                                                                                                                       .Text("Interventions")
+                                                                                                                                                                       .Action("Index", "InterventionsAdm").Visible(User.IsInRole("InterventionsAdm"));
+
+                                                                                                                                                                       items.Add()
+                                                                                                                                                                       .Text("Interventions")
+                                                                                                                                                                       .Action("Index", "Interventions").Visible(User.IsInRole("Interventions"));
+
+                                                                                                                                                                       items.Add()
+                                                                                                                                                                       .Text("Paramètres")
+                                                                                                                                                                       .Items(children =>
+                                                                                                                                                                       {
+                                                                                                                                                                           children.Add()
+                                                                                                                                                                                .Text("Utilisateurs")
+                                                                                                                                                                                .Action("Utilisateurs", "Account").Visible(User.IsInRole("PageUtilisateurs"));
+
+                                                                                                                                                                           children.Add()
+                                                                                                                                                                               .Text("Gestion des droits")
+                                                                                                                                                                               .Action("ParametresDroits", "Account").Visible(User.IsInRole("ParametresDroits"));
+
+                                                                                                                                                                       }
+                                                                                                                                                                           ).Visible(User.IsInRole("PageUtilisateurs") || User.IsInRole("ParametresDroits"));
+
+
+                                                                                                                                                                       items.Add()
+                                                                                                                                                                       .Text("Déconnexion")
+                                                                                                                                                                       .HtmlAttributes(new { onclick = "getElementById('logoutForm').submit()" });
+                                                                                                                                                                   }
+
+                                                                                                                                                                   )
                     )
                 }
                 else
                 {
                     @(Html.Kendo().Menu()
-                                                                                                                                    .Name("menuVisiteurs")
-                                                                                                                                    .Items(items =>
-                                                                                                                                    {
-                                                                                                                                        items.Add()
-                                                                                                                                        .Text("Accueil")
-                                                                                                                                        .Action("Index", "Accueil");
+                                                                                                                                                            .Name("menuVisiteurs")
+                                                                                                                                                            .Items(items =>
+                                                                                                                                                            {
+                                                                                                                                                                items.Add()
+                                                                                                                                                                .Text("Accueil")
+                                                                                                                                                                .Action("Index", "Accueil");
 
-                                                                                                                                        items.Add()
-                                                                                                                                        .Text("Inscription")
-                                                                                                                                        .Action("Index", "Inscriptions");
+                                                                                                                                                                items.Add()
+                                                                                                                                                                .Text("Inscription")
+                                                                                                                                                                .Action("Index", "Inscriptions");
 
-                                                                                                                                        items.Add()
-                                                                                                                                        .Text("Mentors")
-                                                                                                                                        .Action("Mentors", "Accueil");
+                                                                                                                                                                items.Add()
+                                                                                                                                                                .Text("Mentors")
+                                                                                                                                                                .Action("Mentors", "Accueil");
 
-                                                                                                                                        items.Add()
-                                                                                                                                        .Text("En apprendre plus")
-                                                                                                                                        .Action("Fonctionnement", "Accueil");
+                                                                                                                                                                items.Add()
+                                                                                                                                                                .Text("En apprendre plus")
+                                                                                                                                                                .Action("Fonctionnement", "Accueil");
 
-                                                                                                                                        items.Add()
-                                                                                                                                        .Text("Connexion")
-                                                                                                                                        .Action("Login", "Account", routeValues: null)
-                                                                                                                                        .HtmlAttributes(new { id = "loginLink" });
-                                                                                                                                    })
+                                                                                                                                                                items.Add()
+                                                                                                                                                                .Text("Connexion")
+                                                                                                                                                                .Action("Login", "Account", routeValues: null)
+                                                                                                                                                                .HtmlAttributes(new { id = "loginLink" });
+                                                                                                                                                            })
                     )
                 }
             </div>

@@ -98,6 +98,13 @@ namespace MentoratNetCore
                 // https://github.com/aspnet/Announcements/issues/194
                 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); ;
 
+           // //  Usage de policy : https://gooroo.io/GoorooTHINK/Article/17333/Custom-user-roles-and-rolebased-authorization-in-ASPNET-core/28352#.W1XsmNVKjRZ
+           // services.AddAuthorization(options =>
+           // {
+           //     options.AddPolicy("RequireSasha", policy => policy.RequireUserName("sasha")); // [Authorize(Policy = "RequireSasha")]
+           //     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin")); // [Authorize(Policy = "RequireAdminRole")]
+           // });
+
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
