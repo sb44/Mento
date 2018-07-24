@@ -103,7 +103,7 @@ namespace MentoratNetCore.AuthorizeCustom
                 bool valide = false;
                 var user = actionContext.HttpContext.User;
 
-                if (!user.Identity.IsAuthenticated)    //if (HttpContext.Current.User.Identity.IsAuthenticated)
+                if (user.Identity.IsAuthenticated)    //if (HttpContext.Current.User.Identity.IsAuthenticated)
                 {
 
 

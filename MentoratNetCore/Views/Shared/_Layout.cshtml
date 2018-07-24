@@ -22,6 +22,7 @@
             // UrlActionContext urlActionContext = new UrlActionContext() { Action = nomAction, Controller = nomController };
             // Autorise = await Url.HasAccess(urlActionContext); // 
         }
+
     }
 
 
@@ -61,29 +62,43 @@
         <script src="~/lib/kendo-ui/js/kendo.all.min.js"></script>
         <script src="~/lib/kendo-ui/js/kendo.aspnetmvc.min.js"></script>
         <script src="~/lib/kendo-ui/js/cultures/kendo.culture.fr-CA.min.js"></script>
-
     </environment>
-    <!--
-                Pour collecter les données d'analyse de l'utilisation de votre application par l'utilisateur final,
-                insérez le script suivant dans chaque page dont vous voulez effectuer le suivi.
-                Placez ce code juste avant la balise 	<script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>
-    </head> de fermeture,
-                et avant tout autre script. Vos premières données apparaissent
-                automatiquement au bout de quelques secondes.
-                -->
-    <script type="text/javascript">
-        var appInsights = window.appInsights || function (config) {
-            function r(config) { t[config] = function () { var i = arguments; t.queue.push(function () { t[config].apply(t, i) }) } } var t = { config: config }, u = document, e = window, o = "script", s = u.createElement(o), i, f; for (s.src = config.url || "//az416426.vo.msecnd.net/scripts/a/ai.0.js", u.getElementsByTagName(o)[0].parentNode.appendChild(s), t.cookie = u.cookie, t.queue = [], i = ["Event", "Exception", "Metric", "PageView", "Trace"]; i.length;)r("track" + i.pop()); return r("setAuthenticatedUserContext"), r("clearAuthenticatedUserContext"), config.disableExceptionTracking || (i = "onerror", r("_" + i), f = e[i], e[i] = function (config, r, u, e, o) { var s = f && f(config, r, u, e, o); return s !== !0 && t["_" + i](config, r, u, e, o), s }), t
-        }({
-            instrumentationKey: "2173af31-4eb9-4bf9-9e78-77e0e1a6e7b8"
-        });
 
-        window.appInsights = appInsights;
-        appInsights.trackPageView();
+    <environment exclude="Development">
+        <link href="~/lib/kendo-ui/styles/kendo.common.min.css" rel="stylesheet" type="text/css" />
+        <link href="~/lib/kendo-ui/styles/kendo.mobile.all.min.css" rel="stylesheet" type="text/css" />
+        <link href="~/lib/kendo-ui/styles/kendo.dataviz.min.css" rel="stylesheet" type="text/css" />
+        <link href="~/lib/kendo-ui/styles/kendo.blueopal.min.css" rel="stylesheet" type="text/css" />
+        <link href="~/lib/kendo-ui/styles/kendo.dataviz.black.min.css" rel="stylesheet" type="text/css" />
 
-        kendo.culture("fr-CA");
+        <script src="~/lib/kendo-ui/js/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js"></script>
+        <script src="~/lib/kendo-ui/js/jszip.min.js"></script>
+        <script src="~/lib/kendo-ui/js/kendo.all.min.js"></script>
+        <script src="~/lib/kendo-ui/js/kendo.aspnetmvc.min.js"></script>
+        <script src="~/lib/kendo-ui/js/cultures/kendo.culture.fr-CA.min.js"></script>
+    </environment>
+        <!--
+                    Pour collecter les données d'analyse de l'utilisation de votre application par l'utilisateur final,
+                    insérez le script suivant dans chaque page dont vous voulez effectuer le suivi.
+                    Placez ce code juste avant la balise 	<script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>
+        </head> de fermeture,
+                    et avant tout autre script. Vos premières données apparaissent
+                    automatiquement au bout de quelques secondes.
+                    -->
+        <script type="text/javascript">
+            var appInsights = window.appInsights || function (config) {
+                function r(config) { t[config] = function () { var i = arguments; t.queue.push(function () { t[config].apply(t, i) }) } } var t = { config: config }, u = document, e = window, o = "script", s = u.createElement(o), i, f; for (s.src = config.url || "//az416426.vo.msecnd.net/scripts/a/ai.0.js", u.getElementsByTagName(o)[0].parentNode.appendChild(s), t.cookie = u.cookie, t.queue = [], i = ["Event", "Exception", "Metric", "PageView", "Trace"]; i.length;)r("track" + i.pop()); return r("setAuthenticatedUserContext"), r("clearAuthenticatedUserContext"), config.disableExceptionTracking || (i = "onerror", r("_" + i), f = e[i], e[i] = function (config, r, u, e, o) { var s = f && f(config, r, u, e, o); return s !== !0 && t["_" + i](config, r, u, e, o), s }), t
+            }({
+                instrumentationKey: "2173af31-4eb9-4bf9-9e78-77e0e1a6e7b8"
+            });
 
-    </script>
+            window.appInsights = appInsights;
+            appInsights.trackPageView();
+
+            kendo.culture("fr-CA");
+
+        </script>
 </head>
 <body>
     <header>
@@ -93,7 +108,7 @@
                 <p class="site-title"><a href="../"><img src="~/Images/CSC/logo-rvb.gif" width="137" height="40" border="0" /></a></p>
             </div>
             <div class="float-right">
-                @*@using Microsoft.AspNet.Identity*@
+                @*@using Microsoft.   *@
                 @*@if (Request.IsAuthenticated)*@
                 @if (SignInManager.IsSignedIn(User))
                 {
@@ -110,7 +125,7 @@
 
                     @(Html.Kendo().Menu()
                                                                                                                                                                   .Name("menuIntranet")
-                                                                                                                                                                   //.SecurityTrimming(s => s.HideParent(true))
+                                                                                                                                                                   //.SecurityTrimming(s => s.HideParent(true)) // PROPRIÉTÉ TELERIK NON-FONCTIONNEL DS .NET CORE
                                                                                                                                                                    .Items(items =>
                                                                                                                                                                    {
                                                                                                                                                                        items.Add()
@@ -120,8 +135,8 @@
 
 
                                                                                                                                                                        items.Add()
-                                                                                                                                                                       .Text("Mon dossier")
-                                                                                                                                                                       .Action("MonDossier", "Account");
+                                                                                                                                                                       .Text("Mon dossier") // CustomAuthorizePageUtilisateurAttribute ...
+                                                                                                                                                                       .Action("MonDossier", "Account").Visible(MentoratNetCore.Extensions.ExtensionUserCsc.ADesInscriptionsMentorat(User));
 
                                                                                                                                                                        items.Add()
                                                                                                                                                                         .Text("Mentorés")

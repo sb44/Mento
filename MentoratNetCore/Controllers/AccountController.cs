@@ -651,7 +651,7 @@ namespace MentoratNetCore.Controllers
 
                 using (var db = new ApplicationDbContext())
                 {
-                    boolPhyto = db.MentoratInscription.Any(a => a.Mentore.No_Mentore == monUser.Id && a.MentoratCategorie.Nom.ToString() == "phyto");
+                    boolPhyto = db.MentoratInscription.Any(a => a.Mentore.No_Mentore == monUser.Id && a.MentoratCategorie.Nom.ToString().ToLower() == "phyto");
                 }
                 ViewData["AfficherSectionPhyto"] = boolPhyto;
                 return View(new UtilisateurViewModel { userName = utilisateur, section = section, Id = monUser.Id, Nom = monUser.NomCompletUser });

@@ -2,9 +2,9 @@
     ViewBag.Title = "Interventions";
 }
 
-@model Mentorat.Models.ForeignKeyValues 
+@model MentoratNetCore.Models.ForeignKeyValues 
 
-@using Microsoft.AspNet.Identity
+@using Microsoft.AspNetCore.Identity
 
         <hgroup class="title">
             <h2>@ViewBag.Message</h2>
@@ -44,7 +44,7 @@
 </div>
 
 <br />
-        @(Html.Kendo().Grid<Mentorat.Models.Intervention>()
+        @(Html.Kendo().Grid<MentoratNetCore.Models.Intervention>()
               .Name("grid")
               .Columns(columns =>
               {

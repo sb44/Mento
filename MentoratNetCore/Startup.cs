@@ -123,9 +123,10 @@ namespace MentoratNetCore
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Accueil/Error");
+                app.UseStatusCodePagesWithReExecute("/StatusCode/{0}");
             }
-            
+
             app.UseStaticFiles();
 
             // Identity is enabled for the application by calling UseAuthentication in the Configure method.

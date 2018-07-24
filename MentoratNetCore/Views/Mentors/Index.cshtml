@@ -2,7 +2,7 @@
     ViewBag.Title = "Mentors";
 }
 
-@using Microsoft.AspNet.Identity
+@using Microsoft.AspNetCore.Identity
 
         <hgroup class="title">
             <h1>@ViewBag.Title.</h1>
@@ -14,9 +14,9 @@
  
        
 
-        @(Html.Kendo().Grid<global::Mentorat.Models.Mentor>()
+        @(Html.Kendo().Grid<global::MentoratNetCore.Models.Mentor>()
                       .Name("grid")
-                      .Columns((Kendo.Mvc.UI.Fluent.GridColumnFactory<global::Mentorat.Models.Mentor> columns) =>
+                      .Columns((Kendo.Mvc.UI.Fluent.GridColumnFactory<global::MentoratNetCore.Models.Mentor> columns) =>
                       {
                           columns.Bound(c => c.PrenomMentor).Title("Prénom");
                           columns.Bound(c => c.NomMentor).Title("Nom");
@@ -27,7 +27,7 @@
 
                           int iEditWidth = 90;
 
-                          columns.Command((Kendo.Mvc.UI.Fluent.GridActionCommandFactory<global::Mentorat.Models.Mentor> command) =>
+                          columns.Command((Kendo.Mvc.UI.Fluent.GridActionCommandFactory<global::MentoratNetCore.Models.Mentor> command) =>
                           { command.Edit();
                               if (User.IsInRole("GestionMentorsSuppression"))
                               {
@@ -41,16 +41,17 @@
                       //{
                       //    toolbar.Create();
                       //})
-                      .Editable((Kendo.Mvc.UI.Fluent.GridEditingSettingsBuilder<global::Mentorat.Models.Mentor> editable) => editable.Mode(GridEditMode.InLine))
-                      .Sortable((Kendo.Mvc.UI.Fluent.GridSortSettingsBuilder<global::Mentorat.Models.Mentor> sortable) =>
-                      {
-                          sortable.SortMode(GridSortMode.SingleColumn);
-                      })
+                      .Editable((Kendo.Mvc.UI.Fluent.GridEditingSettingsBuilder<global::MentoratNetCore.Models.Mentor> editable) => editable.Mode(GridEditMode.InLine))
+                      //.Sortable((Kendo.Mvc.UI.Fluent.GridSortSettingsBuilder<global::MentoratNetCore.Models.Mentor> sortable) =>
+                      .Sortable((Kendo.Mvc.UI.Fluent.GridSortableSettingsBuilder<global::MentoratNetCore.Models.Mentor> sortable) =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
                       .Scrollable(scroll => scroll.Enabled(true))
-                      .DataSource((Kendo.Mvc.UI.Fluent.DataSourceBuilder<global::Mentorat.Models.Mentor> dataSource) => dataSource
+                      .DataSource((Kendo.Mvc.UI.Fluent.DataSourceBuilder<global::MentoratNetCore.Models.Mentor> dataSource) => dataSource
                           .Ajax()
                           .Model(
-                          (Kendo.Mvc.UI.Fluent.DataSourceModelDescriptorFactory<global::Mentorat.Models.Mentor> model) =>
+                          (Kendo.Mvc.UI.Fluent.DataSourceModelDescriptorFactory<global::MentoratNetCore.Models.Mentor> model) =>
                           { model.Id(p => p.NoMentor); model.Field(f => f.PrenomMentor).Editable(false); model.Field(f => f.NomMentor).Editable(false); } )
                           .Read(read => read.Action("Mentors_Read", "Mentors"))
                           //.Create(create => create.Action("Mentors_Create", "Mentors"))

@@ -77,41 +77,41 @@ else
 
                           if (User.Identity.IsAuthenticated)
                           {
-                              if ((bool)ViewData["AfficherSectionPhyto"])
-                              {
-                                  if (valPage == "dossier")
-                                  {
-                                      boolPageDefault = true;
-                                  }
-
-                                  tabstrip.Add().Text("Dossier")
-                            .Selected(boolPageDefault)
-                            .LoadContentFrom("InformationsMentore", "Inscriptions", new { utilisateur = Model.userName });
-                                  boolPageDefault = false;
-
-                                  if (valPage == "phyto")
-                                  {
-                                      boolPageDefault = true;
-                                  }
-                                  tabstrip.Add().Text("Phytoprotection")
-                       .Selected(boolPageDefault)
-                   .LoadContentFrom("Modification", "Assignation", new { utilisateur = Model.userName, type = "Phyto" });
-                              }
-
-                          }
-
-
-                          if (User.Identity.IsAuthenticated && User.IsInRole("GererUtilisateurDroits"))
+                          if ((bool)ViewData["AfficherSectionPhyto"])
                           {
-                  // .Content(@<text>@Html.Action("UtilisateurInfoOuvrir", "Account", new { utilisateur= Model.userName })</text>);
-                  if (valPage == "Droits")
+                              if (valPage == "dossier")
                               {
                                   boolPageDefault = true;
                               }
-                              tabstrip.Add().Text("Droits d'accès")
-                  .Selected(boolPageDefault)
-              .LoadContentFrom("UtilisateurDroits", "Account", new { utilisateur = Model.userName });
-                  /**/
+
+                              tabstrip.Add().Text("Dossier")
+                        .Selected(boolPageDefault)
+                        .LoadContentFrom("InformationsMentore", "Inscriptions", new { utilisateur = Model.userName });
+                              boolPageDefault = false;
+
+                              if (valPage == "phyto")
+                              {
+                                  boolPageDefault = true;
+                              }
+                              tabstrip.Add().Text("Phytoprotection")
+                   .Selected(boolPageDefault)
+               .LoadContentFrom("Modification", "Assignation", new { utilisateur = Model.userName, type = "Phyto" });
+                          }
+
+                      }
+
+
+                          if (User.Identity.IsAuthenticated && User.IsInRole("GererUtilisateurDroits"))
+        {
+            // .Content(@<text>@Html.Action("UtilisateurInfoOuvrir", "Account", new { utilisateur= Model.userName })</text>);
+            if (valPage == "Droits")
+            {
+                boolPageDefault = true;
+            }
+            tabstrip.Add().Text("Droits d'accès")
+.Selected(boolPageDefault)
+.LoadContentFrom("UtilisateurDroits", "Account", new { utilisateur = Model.userName });
+            /**/
                 @*.Content(@<text>@Html.Action("UtilisateurDroits", "Account", new { utilisateur = Model.userName })</text>);*@
                 /**/
 
