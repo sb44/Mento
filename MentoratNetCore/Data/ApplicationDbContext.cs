@@ -21,8 +21,10 @@ namespace MentoratNetCore.Data
 
         /// <summary>
         /// SB: Hack "Poor Man's DI" pour adapté code legacy MVC5 à MVCCore
+        /// N.B: Inclure le Lazy loading en installant package NUget "Microsoft.EntityFrameworkCore.Proxies"
+        /// https://docs.microsoft.com/en-us/ef/core/querying/related-data#lazy-loading
         /// </summary>
-        public ApplicationDbContext() : this(new DbContextOptionsBuilder<ApplicationDbContext>().UseSqlServer(Startup.ConnectionString).Options)
+        public ApplicationDbContext() : this(new DbContextOptionsBuilder<ApplicationDbContext>().UseLazyLoadingProxies().UseSqlServer(Startup.ConnectionString).Options)
         {
         }
 
@@ -53,6 +55,15 @@ namespace MentoratNetCore.Data
             // Configur. table de jonction "MentoresExpertises" pour relation plus. à plus.
             builder.Entity<MentoresExpertises>()
                 .HasKey(t => new { t.No_Expertise, t.No_Mentore });
+
+            builder.Entity<MentoresExpertises>()
+                .HasOne(pt => pt.Expertise)
+                .WithMany("MentoresExpertises");
+
+            builder.Entity<MentoresExpertises>()
+                .HasOne(pt => pt.Mentore)
+                .WithMany("MentoresExpertises");
+
 
             // Configur. table de jonction "MentoratCategorieMentors" pour relation plus. à plus.
             builder.Entity<MentoratCategorieMentors>()

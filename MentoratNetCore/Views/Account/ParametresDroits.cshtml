@@ -10,7 +10,7 @@
     ViewBag.Title = "Utilisateurs";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    /* SB 2018-07-18
+    /* SB 2018-07-18 
      * Snippet pour déterminé si l'appareil est mobile
      * Adapté de : https://stackoverflow.com/questions/49833925/request-browser-ismobiledevice-equivalent-in-asp-net-core-2-0
     */
@@ -20,7 +20,8 @@
 
     var u = HttpContextAccessor.HttpContext.Request.Headers["HTTP_USER_AGENT"].ToString();
 
-    if (u.Length >= 4) {
+    if (u.Length >= 4)
+    {
         if (MobileCheck.IsMatch(u) || MobileVersionCheck.IsMatch(u.Substring(0, 4)))
         {
             estAppareilMobile = true;
@@ -35,32 +36,32 @@
 
 <div class="divGridPDroits">
     @(Html.Kendo().Grid<MentoratNetCore.Models.ParametresDroitsViewModel>()
-                              .Name("gridDroits")
-                              .Selectable(selectable => selectable.Mode(GridSelectionMode.Single).Type(GridSelectionType.Row))
-                              .Columns(columns =>
-                              {
-                                  columns.Bound(c => c.Id).Title("Id").Hidden();
-                                  columns.Bound(c => c.NomLong).Title("Nom").Filterable(filtre => filtre.Extra(false).Operators(operateur => operateur.ForString(str => str.Clear().Contains("Contient"))));
-                              })
-                              .Events(events => events.Change("onChangeGridDroits"))
-                              .Scrollable(scroll => scroll.Virtual(true))
-                              .Sortable()
-                              .Filterable()
-                              .Events(events => events.DataBound("onDataboundGridDroits"))
-                                .ToolBar(toolbar =>
-                                {
-                                    if (User.Identity.IsAuthenticated && User.IsInRole("CreerDroit"))
-                                    {
-                                        toolbar.Custom().Name("AjouterDroit").Text("Ajouter").HtmlAttributes(new { id = "AjouterDroit" });
-                                    }
-                                })
+                      .Name("gridDroits")
+                      .Selectable(selectable => selectable.Mode(GridSelectionMode.Single).Type(GridSelectionType.Row))
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Id).Title("Id").Hidden();
+                          columns.Bound(c => c.NomLong).Title("Nom").Filterable(filtre => filtre.Extra(false).Operators(operateur => operateur.ForString(str => str.Clear().Contains("Contient"))));
+                      })
+                      .Events(events => events.Change("onChangeGridDroits"))
+                      .Scrollable(scroll => scroll.Virtual(true))
+                      .Sortable()
+                      .Filterable()
+                      .Events(events => events.DataBound("onDataboundGridDroits"))
+                        .ToolBar(toolbar =>
+                        {
+                            if (User.Identity.IsAuthenticated && User.IsInRole("CreerDroit"))
+                            {
+                                toolbar.Custom().Name("AjouterDroit").Text("Ajouter").HtmlAttributes(new { id = "AjouterDroit" });
+                            }
+                        })
 
-                              .DataSource(dataSource => dataSource
-                                 .Ajax()
-                                  .Model(model => model.Id(p => p.Id))
-                                  .Sort(sort => sort.Add("NomLong").Ascending())
-                                  .Read(read => read.Action("ParametresDroits_Read", "Account"))
-                              )
+                      .DataSource(dataSource => dataSource
+                         .Ajax()
+                          .Model(model => model.Id(p => p.Id))
+                          .Sort(sort => sort.Add("NomLong").Ascending())
+                          .Read(read => read.Action("ParametresDroits_Read", "Account"))
+                      )
     )
 
 </div>
@@ -91,56 +92,56 @@
                 <li>
                     @Html.LabelFor(m => m.IdCategorie)
                     @(Html.Kendo().DropDownListFor(model => model.IdCategorie)
-                                    .DataSource(source =>
-                                    {
-                                        source.Read(read =>
-                                        {
-                                            read.Action("ObtenirCategorieUtisateur", "Account");
-                                        }).ServerFiltering(false);
-                                    })
-                                    .DataTextField("nomCat")
-                                    .DataValueField("noCat")
-                                    .HtmlAttributes(new { style = "width:320px; padding-bottom:.5em;", data_bind = "value:IdCategorie" })
+                            .DataSource(source =>
+                            {
+                                source.Read(read =>
+                                {
+                                    read.Action("ObtenirCategorieUtisateur", "Account");
+                                }).ServerFiltering(false);
+                            })
+                            .DataTextField("nomCat")
+                            .DataValueField("noCat")
+                            .HtmlAttributes(new { style = "width:320px; padding-bottom:.5em;", data_bind = "value:IdCategorie" })
                     )
                     @Html.ValidationMessageFor(m => m.IdCategorie)
                 </li>
                 <li>
                     @Html.LabelFor(m => m.IdParent)
                     @(Html.Kendo().DropDownListFor(model => model.IdParent)
-                                   .Name("IdParent")
-                                    .DataSource(source =>
-                                    {
-                                        source.Read(read =>
-                                        {
-                                            read.Action("ParametresDroitsRoles_Read", "Account");
-                                        }).ServerFiltering(false);
-                                    })
-                                    .DataTextField("NomLong")
-                                    .DataValueField("Id")
-                                    .OptionLabel("Aucun")
-                                    .HtmlAttributes(new { style = "width:320px; padding-bottom:.5em;", data_bind = "value:IdParent" })
+                            //.Name("IdParent")
+                            .DataSource(source =>
+                            {
+                                source.Read(read =>
+                                {
+                                    read.Action("ParametresDroitsRoles_Read", "Account");
+                                }).ServerFiltering(false);
+                            })
+                            .DataTextField("NomLong")
+                            .DataValueField("Id")
+                            .OptionLabel("Aucun")
+                            .HtmlAttributes(new { style = "width:320px; padding-bottom:.5em;", data_bind = "value:IdParent" })
                     )
                     @Html.ValidationMessageFor(m => m.IdParent)
                 </li>
                 <li class="actions">
                     @(Html.Kendo().Button()
-                                        .Name("btnSubmit")
-                                        .HtmlAttributes(new { type = "button", @class = "k-primary" })
-                                        .Content("Enregistrer les modifications")
+                                .Name("btnSubmit")
+                                .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                .Content("Enregistrer les modifications")
                     )
                     @if (User.Identity.IsAuthenticated && User.IsInRole("CreerDroit"))
                     {
                         <div class="k-edit-buttons k-state-default">
                             @(Html.Kendo().Button()
-                                                .Name("btnAjouter")
-                                                .Content("Ajouter")
-                                                .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                        .Name("btnAjouter")
+                                        .Content("Ajouter")
+                                        .HtmlAttributes(new { type = "button", @class = "k-primary" })
                             )
                             @(Html.Kendo().Button()
-                                                .Name("btnAnnuler")
-                                                .Content("Annuler")
-                                                .HtmlAttributes(new { type = "button" })
-                                                .Icon("cancel")
+                                        .Name("btnAnnuler")
+                                        .Content("Annuler")
+                                        .HtmlAttributes(new { type = "button" })
+                                        .Icon("cancel")
                             )
                         </div>
 
@@ -153,51 +154,48 @@
 
         <label id="lblUtilisateursDuDroit">Utilisateurs qui possèdent le droit</label>
         @(Html.Kendo().Grid<MentoratNetCore.Models.UtilisateursParametresDrtoisViewModel>()
-                              .Name("gridUser")
-                               .ToolBar(toolbar =>
-                               {
-                                   toolbar.Custom().Name("AjouterUtilisateur").Text("Ajouter").HtmlAttributes(new { id = "AjouterUtilisateur" });
-                                   toolbar.Custom().Name("RetirerUtilisateur").Text("Retirer").HtmlAttributes(new { id = "RetirerUtilisateur" });
-                               })
-                              .Columns(columns =>
-                              {
-                      /**/
-                      /**/
-                    @*columns.Template(@<text></text> )
-                        .ClientTemplate("<text><input id='chkUtilisateur' type='checkbox' #= IsChk ? checked='checked' : '' # title='' /></text>")
-                        .HeaderTemplate("<text><input id='selectAllChk' type='checkbox' title='' onclick='checkAll(this)' /></text>").Width(25);*@
-                    /**/
-                    /**/
-                                columns.Bound(c => c.NomComplet).Title("Utilisateurs").Filterable(filtre => filtre.Extra(false).Operators(operateur => operateur.ForString(str => str.Clear().Contains("Contient")))); ;
-                                columns.Bound(c => c.StatutUser).Title("Statut");
-                            }).Excel(excel => excel
-                                      .AllPages(true)
-                                      .Filterable(true))
-                           .Scrollable(scroll => scroll.Virtual(true))
-                            .Sortable()
+                      .Name("gridUser")
+                       .ToolBar(toolbar =>
+                       {
+                           toolbar.Custom().Name("AjouterUtilisateur").Text("Ajouter").HtmlAttributes(new { id = "AjouterUtilisateur" });
+                           toolbar.Custom().Name("RetirerUtilisateur").Text("Retirer").HtmlAttributes(new { id = "RetirerUtilisateur" });
+                       })
+                      .Columns(columns =>
+                      {
+                  /**/
+                @*columns.Template(@<text></text> )
+                    .ClientTemplate("<text><input id='chkUtilisateur' type='checkbox' #= IsChk ? checked='checked' : '' # title='' /></text>")
+                    .HeaderTemplate("<text><input id='selectAllChk' type='checkbox' title='' onclick='checkAll(this)' /></text>").Width(25);*@
+                /**/
+                        columns.Bound(c => c.NomComplet).Title("Utilisateurs").Filterable(filtre => filtre.Extra(false).Operators(operateur => operateur.ForString(str => str.Clear().Contains("Contient")))); ;
+                        columns.Bound(c => c.StatutUser).Title("Statut");
+                    }).Excel(excel => excel
+                              .AllPages(true)
+                              .Filterable(true))
+                     .Scrollable(scroll => scroll.Virtual(true))
+                      .Sortable()
 
 
-                            .Selectable(select =>
-                            {
-                    //if (Request.Browser.IsMobileDevice)
-                    if (estAppareilMobile)
-                                {
-                                    select.Mode(GridSelectionMode.Single);
-                                }
-                                else
-                                {
-                                    select.Mode(GridSelectionMode.Multiple);
-                                }
-                            })
+                      .Selectable(select =>
+                      {
+                          if (estAppareilMobile)
+                          {
+                              select.Mode(GridSelectionMode.Single);
+                          }
+                          else
+                          {
+                              select.Mode(GridSelectionMode.Multiple);
+                          }
+                      })
 
-                            .PersistSelection(true)
-                            .Filterable()
-                            .DataSource(dataSource => dataSource
-                                        .Ajax()
-                                        .Model(model => model.Id(p => p.Id))
-                                        .Read(read => read.Action("UtilisateursParametresDroits_Read", "Account").Data("obtenirParametreGrid"))
-                                       )
-                            .Events(events => events.DataBound("onDataboundGridUser"))
+                      .PersistSelection(true)
+                      .Filterable()
+                      .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Model(model => model.Id(p => p.Id))
+                                  .Read(read => read.Action("UtilisateursParametresDroits_Read", "Account").Data("obtenirParametreGrid"))
+                                 )
+                      .Events(events => events.DataBound("onDataboundGridUser"))
         )
 
     }
@@ -207,12 +205,12 @@
 
 
 @(Html.Kendo().Window()
-         .Name("FenRechercheUtilisateurs")
-         .Title("Rechercher des Utilisateurs")
-         .Draggable()
-         .Modal(true)
-         .Visible(false)
-         .Events(ev => ev.Close("onClose"))
+     .Name("FenRechercheUtilisateurs")
+     .Title("Rechercher des Utilisateurs")
+     .Draggable()
+     .Modal(true)
+     .Visible(false)
+     .Events(ev => ev.Close("onClose"))
 )
 
 

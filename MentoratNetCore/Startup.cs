@@ -33,8 +33,11 @@ namespace MentoratNetCore
         {
             Startup.ConnectionString = Configuration.GetConnectionString("DefaultConnection");
 
+            // SB: Inclure le Lazy loading en installant package NUget "Microsoft.EntityFrameworkCore.Proxies"
+            // https://docs.microsoft.com/en-us/ef/core/querying/related-data#lazy-loading
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseLazyLoadingProxies()
+                .UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             
             // SB: Service enlevé et remplacer par code suivant avec "ApplicationRole"
             //services.AddIdentity<ApplicationUser, IdentityRole>()

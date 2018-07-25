@@ -58,7 +58,7 @@ namespace MentoratNetCore.Extensions.Classes
                     instance = Activator.CreateInstance(controller, new object[] { null, null });
                     break;
                 case "AssignationController":
-                    instance = Activator.CreateInstance(controller, new object[] { null, null });
+                    instance = Activator.CreateInstance(controller, new object[] { null, null,null });
                     break;
                 case "MentorsController":
                     instance = Activator.CreateInstance(controller);

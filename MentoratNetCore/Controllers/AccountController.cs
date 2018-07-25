@@ -313,19 +313,20 @@ namespace MentoratNetCore.Controllers
         [Authorize(Roles = "PageUtilisateurs")]
         public JsonResult ObtenirUtilisateurs()
         {
-            return Json(_userManager.Users.OrderBy(o => new { o.NomUser, o.PrenomUser }).Select(g => new { NoUser = g.Id, NomPrenomUser = g.NomUser + " " + g.PrenomUser }));
+            var vm = _userManager.Users.OrderBy(o => new { o.NomUser, o.PrenomUser }).Select(g => new { NoUser = g.Id, NomPrenomUser = g.NomUser + " " + g.PrenomUser });
+            return Json(vm);
         }
 
         [Authorize(Roles = "GererUtilisateur,CreerDroit")]
-        public async Task<JsonResult> ObtenirCategorieUtisateurAsync()
+        public async Task<JsonResult> ObtenirCategorieUtisateur()
         {
             var db = new ApplicationDbContext();
             //ApplicationUser userEnCours = _userManager.FindById(User.Identity.GetUserId());
             var userEnCours = await _userManager.GetUserAsync(User);
 
-            string dump = Extensions.CscExtensionsMethodes.DumpToHtmlString(db.ApplicationCategorieUser.Where(w => w.Id >= userEnCours.IdCategorieUtilisateur).OrderByDescending(o => o.Id).Select(g => new { noCat = g.Id, nomCat = g.Description }));
-
-            return Json(db.ApplicationCategorieUser.Where(w => w.Id >= userEnCours.IdCategorieUtilisateur).OrderByDescending(o => o.Id).Select(g => new { noCat = g.Id, nomCat = g.Description }));
+            //string dump = Extensions.CscExtensionsMethodes.DumpToHtmlString(db.ApplicationCategorieUser.Where(w => w.Id >= userEnCours.IdCategorieUtilisateur).OrderByDescending(o => o.Id).Select(g => new { noCat = g.Id, nomCat = g.Description }));
+            var vMCategs = db.ApplicationCategorieUser.Where(w => w.Id >= userEnCours.IdCategorieUtilisateur).OrderByDescending(o => o.Id).Select(g => new { noCat = g.Id, nomCat = g.Description });
+            return Json(vMCategs);
 
         }
 
@@ -1003,7 +1004,7 @@ namespace MentoratNetCore.Controllers
 
         [Authorize(Roles = "GererUtilisateurDroits")]
         //[AcceptVerbs(HttpVerbs.Post)]
-        public async Task<JsonResult> UtilisateurDroitsTree_ReadAsync(string id, string utilisateurEnCours, string utilisateurACopier)
+        public async Task<JsonResult> UtilisateurDroitsTree_Read(string id, string utilisateurEnCours, string utilisateurACopier)
         {
             var monContext = new ApplicationDbContext();
 
@@ -1066,7 +1067,7 @@ namespace MentoratNetCore.Controllers
             {
                 List<string> lstLesDroits = lesDroits.OfType<string>().ToList();
 
-                bool result = EnregistrerUtilisateurDroitsTree_SaveAsync(utilisateurId, lstLesDroits).Result;
+                bool result = EnregistrerUtilisateurDroitsTree_Save(utilisateurId, lstLesDroits).Result;
                 // ViewBag.strMsg 
                 if (result)
                 { }
@@ -1079,7 +1080,7 @@ namespace MentoratNetCore.Controllers
         }
 
 
-        private async Task<bool> EnregistrerUtilisateurDroitsTree_SaveAsync(string utilisateurId, List<string> lesDroits)
+        private async Task<bool> EnregistrerUtilisateurDroitsTree_Save(string utilisateurId, List<string> lesDroits)
         {
             var monContext = new ApplicationDbContext();
             
@@ -1326,7 +1327,7 @@ namespace MentoratNetCore.Controllers
         [Authorize(Roles = "CreerDroit")]
         private async Task<bool> AjouterRoleAsync(ParametresDroitsViewModel model)
         {
-            var monContext = new ApplicationDbContext();
+           // var monContext = new ApplicationDbContext();
             string idUserenCours = this.User.FindFirstValue(ClaimTypes.NameIdentifier);  //User.Identity.GetUserId();
             bool valide = false;
 
@@ -1350,10 +1351,10 @@ namespace MentoratNetCore.Controllers
         }
 
         [Authorize(Roles = "ParametresDroits")]
-        public async Task<ActionResult> ParametresDroits_ReadAsync([DataSourceRequest] DataSourceRequest request)
+        public async Task<ActionResult> ParametresDroits_Read([DataSourceRequest] DataSourceRequest request)
         {
 
-            var monContext = new ApplicationDbContext();
+           // var monContext = new ApplicationDbContext();
             string idUserenCours = this.User.FindFirstValue(ClaimTypes.NameIdentifier);  //User.Identity.GetUserId();
 
             ApplicationUser userEnCours = await _userManager.FindByIdAsync(idUserenCours);
@@ -1368,9 +1369,9 @@ namespace MentoratNetCore.Controllers
         }
 
         [Authorize(Roles = "ParametresDroits")]
-        public async Task<JsonResult> ParametresDroitsRoles_ReadAsync()
+        public async Task<JsonResult> ParametresDroitsRoles_Read()
         {
-            var monContext = new ApplicationDbContext();
+          //  var monContext = new ApplicationDbContext();
             string idUserenCours = this.User.FindFirstValue(ClaimTypes.NameIdentifier);  //User.Identity.GetUserId();
 
             ApplicationUser userEnCours = await _userManager.FindByIdAsync(idUserenCours);
@@ -1407,7 +1408,7 @@ namespace MentoratNetCore.Controllers
         [HttpPost]
         public async Task<JsonResult> UserToRoles_AddAsync(string nomRole, List<ApplicationUser> userToAdd)
         {
-            var monContext = new ApplicationDbContext();
+          //  var monContext = new ApplicationDbContext();
             string idUserenCours = this.User.FindFirstValue(ClaimTypes.NameIdentifier);// User.Identity.GetUserId();
             bool boolAdd = false;
 

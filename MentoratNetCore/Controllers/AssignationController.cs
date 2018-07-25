@@ -30,16 +30,19 @@ namespace MentoratNetCore.Views
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly ApplicationDbContext db;
 
         public AssignationController(
+            ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
             IConfiguration configuration)
         {
+            db = context;
             _userManager = userManager;
             _configuration = configuration;
         }
 
-        private ApplicationDbContext db = new ApplicationDbContext();
+        //private ApplicationDbContext db = new ApplicationDbContext();
         private static List<string> lstLiensImg = new List<string>() ;
         private string strPath { get; set; }
 
@@ -259,54 +262,60 @@ namespace MentoratNetCore.Views
             }
 
             //on retire le mentore administration
-            DataSourceResult test = mentoresInsc.Where(w => w.Mentore.No_Mentore != "F1490F96-566E-4440-ABE1-11660546E914").ToDataSourceResult(request, m => new MentoratNetCore.ViewModels.AssignationViewModel()
-            {
-                NoInscription = m.Id,
+            DataSourceResult test1 = mentoresInsc.Where(w => w.Mentore.No_Mentore != "F1490F96-566E-4440-ABE1-11660546E914")
+                        .ToDataSourceResult(request);
 
-                NomUtilisateur = lesUsers.FirstOrDefault(u => u.Id == m.Mentore.No_Mentore).UserName.ToString(),
-                Annee = m.Annee,
-                //PrenomMentore = m.Mentore.Prenom_Mentore,
-                //NomMentore = m.Mentore.Nom_Mentore,
-                //Organisme_Mentore = m.Mentore.Organisme_Mentore,                
-                Mentore = new MentoratNetCore.ModelsViews.MentoreViewModel
-                {
-                    NoMentore = m.Mentore.No_Mentore,
-                    PrenomMentore = m.Mentore.Prenom_Mentore,
-                    NomMentore = m.Mentore.Nom_Mentore,
-                    CellulaireMentore = m.Mentore.Cellulaire_Mentore,
-                    CourrielMentore = m.Mentore.Courriel_Mentore,
-                    Organisme_Mentore = m.Mentore.Organisme_Mentore,
-                    Expertises = m.Mentore.MentoresExpertises.Select(e => e.Expertise).Select(t => new Expertise // ********* TODO VÉRIFIER
-                    {
-                        Nom_Expertise = t.Nom_Expertise,  //Nom_Expertise = t.Nom_Expertise, //SB: enlever pour EFCore2.0
-                        No_Expertise = t.No_Expertise
-                    }).ToList(),
-                    //Expertises = m.Mentore.Expertises.Select(t => new Expertise
-                    //{
-                    //    Nom_Expertise = t.Nom_Expertise,
-                    //    No_Expertise = t.No_Expertise
-                    //}).ToList(),
-                    Objectifs_Mentore = m.Mentore.Objectifs_Mentore
+            DataSourceResult test = mentoresInsc.Where(w => w.Mentore.No_Mentore != "F1490F96-566E-4440-ABE1-11660546E914")
+                                    .ToDataSourceResult(request, m => new MentoratNetCore.ViewModels.AssignationViewModel()
+                                    {
+                                        NoInscription = m.Id,
 
-                },
-                Mentor = new ViewModels.Assignation.AssignationMentorViewModel()
-                {
-                    NoMentor = m.Mentor.NoMentor,
-                    PrenomMentor = m.Mentor.PrenomMentor,
-                    NomMentor = m.Mentor.NomMentor
-                },
-                //Objectifs_Mentore = m.Objectifs_Mentore,
-                APaye = m.APaye,
-                DateInscription = m.DateInscription,
-                DateDebut = m.DateDebut,
-                DateFin = m.DateFin,
-                AfficherBoutonPlan = idMentor != "" ? (m.Mentor.NoMentor == idMentor ? true : false) : boolDroitGerer,
-                //Mentore = m.Mentore,
-                // Mentor = m.Mentor,
-                MentoratCategorie = new MentoratNetCore.ModelsViews.MentoratCategorieViewModel() { Id = m.MentoratCategorie.Id, Nom = m.MentoratCategorie.Nom, Description = m.MentoratCategorie.Description }
+                                        NomUtilisateur = lesUsers.FirstOrDefault(u => u.Id == m.Mentore.No_Mentore).UserName.ToString(),
+                                        Annee = m.Annee,
+                                        //PrenomMentore = m.Mentore.Prenom_Mentore,
+                                        //NomMentore = m.Mentore.Nom_Mentore,
+                                        //Organisme_Mentore = m.Mentore.Organisme_Mentore,                
+                                        Mentore = new MentoratNetCore.ModelsViews.MentoreViewModel
+                                        {
+                                            NoMentore = m.Mentore.No_Mentore,
+                                            PrenomMentore = m.Mentore.Prenom_Mentore,
+                                            NomMentore = m.Mentore.Nom_Mentore,
+                                            CellulaireMentore = m.Mentore.Cellulaire_Mentore,
+                                            CourrielMentore = m.Mentore.Courriel_Mentore,
+                                            Organisme_Mentore = m.Mentore.Organisme_Mentore,
+                                            //Expertises = m.Mentore.MentoresExpertises.Select(t => new Expertise // ********* TODO VÉRIFIER                                                                                                                 //Expertises = m.Mentore.MentoresExpertises.Select(e => e.Expertise).Select(t => new Expertise // ********* TODO VÉRIFIER
+                                            //{
+                                            //    Nom_Expertise = t.Expertise.Nom_Expertise,  //Nom_Expertise = t.Nom_Expertise, //SB: enlever pour EFCore2.0
+                                            //    No_Expertise = t.No_Expertise
+                                            //}).ToList(),
+
+                                            Expertises = m.Mentore.MentoresExpertises.Select(e => e.Expertise).Select(t => new Expertise
+                                            {
+                                                Nom_Expertise = t.Nom_Expertise,
+                                                No_Expertise = t.No_Expertise
+                                            }).ToList(),
+
+                                            Objectifs_Mentore = m.Mentore.Objectifs_Mentore
+
+                                        },
+                                        Mentor = new ViewModels.Assignation.AssignationMentorViewModel()
+                                        {
+                                            NoMentor = m.Mentor.NoMentor,
+                                            PrenomMentor = m.Mentor.PrenomMentor,
+                                            NomMentor = m.Mentor.NomMentor
+                                        },
+                                        //Objectifs_Mentore = m.Objectifs_Mentore,
+                                        APaye = m.APaye,
+                                        DateInscription = m.DateInscription,
+                                        DateDebut = m.DateDebut,
+                                        DateFin = m.DateFin,
+                                        AfficherBoutonPlan = idMentor != "" ? (m.Mentor.NoMentor == idMentor ? true : false) : boolDroitGerer,
+                                        //Mentore = m.Mentore,
+                                        // Mentor = m.Mentor,
+                                        MentoratCategorie = new MentoratNetCore.ModelsViews.MentoratCategorieViewModel() { Id = m.MentoratCategorie.Id, Nom = m.MentoratCategorie.Nom, Description = m.MentoratCategorie.Description }
 
 
-            });
+                                    });
 
             return Json(test);
 
