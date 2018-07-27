@@ -23,6 +23,7 @@ using System.Web;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using Microsoft.EntityFrameworkCore;
+using MentoratNetCore.ViewModels.Account;
 
 namespace MentoratNetCore.Controllers
 {
@@ -1395,22 +1396,20 @@ namespace MentoratNetCore.Controllers
             //List<UtilisateursViewModel> lstUtilisateurs = _userManager.Users.Select(s => new Models.UtilisateursViewModel() { Id = s.Id, UserName = s.UserName, Nom = s.NomUser, Prenom = s.PrenomUser, ActifUser = s.ActifUser, Email = s.Email }).ToList();
             DataSourceResult results = null;
 
-            if (nomRole != null && nomRole != string.Empty)
-            {
+            //if (nomRole != null && nomRole != string.Empty)
+            //{
                 RoleManager<ApplicationRole> monRoleManager = CscExtensionsMethodes.ObtenirRoleManager(this._serviceProvider);
                 List<UtilisateursViewModel> lstUtilisateurs = CscExtensionsMethodes.ObtenirUsersInRole(nomRole, monRoleManager, _userManager).Select(s => new Models.UtilisateursViewModel() { Id = s.Id, UserName = s.UserName, Nom = s.NomUser, Prenom = s.PrenomUser, ActifUser = s.ActifUser, Email = s.Email }).ToList();
 
                 results = lstUtilisateurs.ToDataSourceResult(request);
-            }
-
-
+            //}
 
             return Json(results);
         }
 
         [Authorize(Roles = "ParametresDroits")]
         [HttpPost]
-        public async Task<JsonResult> UserToRoles_AddAsync(string nomRole, List<ApplicationUser> userToAdd)
+        public async Task<JsonResult> UserToRoles_Add(string nomRole, List<ApplicationUser> userToAdd)
         {
           //  var monContext = new ApplicationDbContext();
             string idUserenCours = this.User.FindFirstValue(ClaimTypes.NameIdentifier);// User.Identity.GetUserId();
@@ -1516,8 +1515,12 @@ namespace MentoratNetCore.Controllers
 
         [Authorize(Roles = "ParametresDroits")]
         [HttpPost]
-        public async Task<JsonResult> UserToRoles_RemoveAsync(string nomRole, List<ApplicationUser> userToRemove)
+        //public async Task<JsonResult> UserToRoles_Remove(string nomRole, List<ApplicationUser> userToRemove)
+        public async Task<JsonResult> UserToRoles_Remove([FromBody] RemoveUserViewModel vm)
         {
+            string nomRole = vm.nomRole;
+            List<ApplicationUser> userToRemove = vm.userToRemove;
+
             var monContext = new ApplicationDbContext();
             string idUserenCours = this.User.FindFirstValue(ClaimTypes.NameIdentifier); //User.Identity.GetUserId();
             bool boolRemove = false;
@@ -1568,9 +1571,9 @@ namespace MentoratNetCore.Controllers
 
                                 }
                             }
-                            catch (Exception)
+                            catch (Exception ex)
                             {
-
+                                string w2 = ex.Message;
                                 throw;
                             }
                         }

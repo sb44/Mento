@@ -119,7 +119,7 @@ namespace Mentorat.Controllers
 
    
         [Authorize(Roles = "ParametresDroits")]
-        public async System.Threading.Tasks.Task<JsonResult> Roles_ReadAsync()
+        public async System.Threading.Tasks.Task<JsonResult> Roles_Read()
         {
             var monContext = new ApplicationDbContext();
             //ApplicationUserManager userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();

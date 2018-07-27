@@ -172,7 +172,7 @@
                     }).Excel(excel => excel
                               .AllPages(true)
                               .Filterable(true))
-                     .Scrollable(scroll => scroll.Virtual(true))
+                      .Scrollable(scroll => scroll.Virtual(true))
                       .Sortable()
 
 
@@ -344,6 +344,81 @@
 
         $("#RetirerUtilisateur").kendoButton({
             icon: "minus"
+        });
+
+
+            $("#gridUser").find(".k-grid-toolbar").on("click", ".k-grid-AjouterUtilisateur", function (e) {
+        e.preventDefault();
+        if ($("#NomHidden").val() != null && $("#NomHidden").val() != "") {
+            var fen = $("#FenRechercheUtilisateurs").data("kendoWindow");
+            var button = $("#gridUser");
+            //alert(fen.element.closest(".k-window").clientHeight);
+            //console.log("fen", $("#FenRechercheUtilisateurs"));
+
+            //alert($("#FenRechercheUtilisateurs").height());
+            fen.refresh('@Url.Action("RechercherUtilisateurs", "SharedUtilisateurs")?nomParent=ParametresDroits&parentComplement=' + $("#NomHidden").val());
+
+            fen.open()
+            var y = button.position().top ;
+            var x = button.position().left;
+           // alert($("#FenRechercheUtilisateurs")["0"].clientHeight);
+
+            fen.element.closest(".k-window").css({ top: y , left: x });
+
+            console.log("fen", fen.element["0"].clientHeight);
+        }
+    });
+
+        $("#gridUser").find(".k-grid-toolbar").on("click", ".k-grid-RetirerUtilisateur", function (e) {
+            e.preventDefault();
+            if ($("#NomHidden").val() != null && $("#NomHidden").val() != "")
+            {
+                StatutBoutonsParametresDroits(false);
+
+                var grid = $("#gridUser").data("kendoGrid")
+
+                var selectedItem = grid.select();
+
+                if (selectedItem.length > 0) {
+                    var tabUser = $.map(selectedItem, function (item) {
+                        return grid.dataItem(item);
+                    });
+
+                    var toSend = JSON.stringify({ nomRole: $("#NomHidden").val(), userToRemove: tabUser });
+
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("UserToRoles_Remove", "Account")',
+                        data: toSend,
+                        dataType: "json",
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (result) {
+                            if (result.success) {
+                                $("#gridUser").data("kendoGrid").dataSource.read();
+                            }
+                            else {
+                                if (result.msg=="")
+                                {
+                                    alert("Aucun utilisateur retiré!");
+                                    StatutBoutonsParametresDroits(true);
+                                }
+                            }
+
+                            if(result.msg!="")
+                            {
+                                alert(result.msg);
+                            }
+                            StatutBoutonsParametresDroits(true);
+                        }
+                    });
+
+                }
+                else
+                {
+                    //aucun item
+                    StatutBoutonsParametresDroits(true);
+                }
+            }
         });
 
         @*$("#AjouterUtilisateur").bind("click", function () {
@@ -592,7 +667,7 @@
 
     }
 
-    $("#gridUser").find(".k-grid-toolbar").on("click", ".k-grid-AjouterUtilisateur", function (e) {
+    @*$("#gridUser").find(".k-grid-toolbar").on("click", ".k-grid-AjouterUtilisateur", function (e) {
         e.preventDefault();
         if ($("#NomHidden").val() != null && $("#NomHidden").val() != "") {
             var fen = $("#FenRechercheUtilisateurs").data("kendoWindow");
@@ -664,7 +739,7 @@
                     StatutBoutonsParametresDroits(true);
                 }
             }
-        });
+        });*@
 
 
     function onDataboundGridDroits(e) {
