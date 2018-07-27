@@ -77,22 +77,33 @@ namespace Mentorat.Views
         {
             if (ModelState.IsValid)
             {
-                var entity = new Mentor
-                {
-                    NoMentor = mentor.NoMentor,
-                    //PrenomMentor = mentor.PrenomMentor,
-                    //NomMentor = mentor.NomMentor,
-                    TaxeMentor = mentor.TaxeMentor,
-                    NoTpsMentor = mentor.NoTpsMentor,
-                    NoTvqMentor = mentor.NoTvqMentor,
-                    DateConnexionMentor = mentor.DateConnexionMentor,
-                    //CourrielMentor = mentor.CourrielMentor
-                };
+                var entity = db.Mentors.SingleOrDefault(m => m.NoMentor == mentor.NoMentor);
+                entity.NoMentor = mentor.NoMentor;
+                entity.TaxeMentor = mentor.TaxeMentor;
+                entity.NoTpsMentor = mentor.NoTpsMentor;
+                entity.NoTvqMentor = mentor.NoTvqMentor;
+                entity.DateConnexionMentor = mentor.DateConnexionMentor;
 
-                db.Mentors.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
+                db.Update(entity);
                 db.SaveChanges();
-               
+
+                // ENLEVER SB:
+                ////var entity = new Mentor
+                ////{
+                ////    NoMentor = mentor.NoMentor,
+                ////    //PrenomMentor = mentor.PrenomMentor,
+                ////    //NomMentor = mentor.NomMentor,
+                ////    TaxeMentor = mentor.TaxeMentor,
+                ////    NoTpsMentor = mentor.NoTpsMentor,
+                ////    NoTvqMentor = mentor.NoTvqMentor,
+                ////    DateConnexionMentor = mentor.DateConnexionMentor,
+                ////    //CourrielMentor = mentor.CourrielMentor
+                ////};
+
+                ////db.Mentors.Attach(entity);
+                ////db.Entry(entity).State = EntityState.Modified;
+                ////db.SaveChanges();
+
             }
 
             return Json(new[] { mentor }.ToDataSourceResult(request, ModelState));
@@ -106,21 +117,27 @@ namespace Mentorat.Views
         {
             if (ModelState.IsValid)
             {
-                var entity = new Mentor
-                {
-                    NoMentor = mentor.NoMentor,
-                    PrenomMentor = mentor.PrenomMentor,
-                    NomMentor = mentor.NomMentor,
-                    TaxeMentor = mentor.TaxeMentor,
-                    NoTpsMentor = mentor.NoTpsMentor,
-                    NoTvqMentor = mentor.NoTvqMentor,
-                    DateConnexionMentor = mentor.DateConnexionMentor,
-                    CourrielMentor = mentor.CourrielMentor
-                };
-
-                db.Mentors.Attach(entity);
+                var entity = db.Mentors.SingleOrDefault(m => m.NoMentor == mentor.NoMentor);
                 db.Mentors.Remove(entity);
                 db.SaveChanges();
+
+                // ENLEVER SB:
+                ////var entity = new Mentor
+                ////{
+                ////    NoMentor = mentor.NoMentor,
+                ////    PrenomMentor = mentor.PrenomMentor,
+                ////    NomMentor = mentor.NomMentor,
+                ////    TaxeMentor = mentor.TaxeMentor,
+                ////    NoTpsMentor = mentor.NoTpsMentor,
+                ////    NoTvqMentor = mentor.NoTvqMentor,
+                ////    DateConnexionMentor = mentor.DateConnexionMentor,
+                ////    CourrielMentor = mentor.CourrielMentor
+                ////};
+
+                ////db.Mentors.Attach(entity);
+                ////db.Mentors.Remove(entity);
+                ////db.SaveChanges();
+                // Fin enlever SB
             }
 
             return Json(new[] { mentor }.ToDataSourceResult(request, ModelState));

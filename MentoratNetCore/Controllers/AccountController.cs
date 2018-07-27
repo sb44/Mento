@@ -22,6 +22,7 @@ using MentoratNetCore.Extensions;
 using System.Web;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using Microsoft.EntityFrameworkCore;
 
 namespace MentoratNetCore.Controllers
 {
@@ -313,8 +314,11 @@ namespace MentoratNetCore.Controllers
         [Authorize(Roles = "PageUtilisateurs")]
         public JsonResult ObtenirUtilisateurs()
         {
-            var vm = _userManager.Users.OrderBy(o => new { o.NomUser, o.PrenomUser }).Select(g => new { NoUser = g.Id, NomPrenomUser = g.NomUser + " " + g.PrenomUser });
+         
+            // SB: Dans EFCore2.1 : OrderBy ne fonctionne pas par défaut ..
+            var vm = _userManager.Users.ToList().Select(g => new { NoUser = g.Id, NomPrenomUser = g.NomUser + " " + g.PrenomUser });
             return Json(vm);
+            //             return Json(UserManager.Users.OrderBy(o => new { o.NomUser, o.PrenomUser }).Select(g => new { NoUser = g.Id, NomPrenomUser = g.NomUser + " " + g.PrenomUser }), JsonRequestBehavior.AllowGet);
         }
 
         [Authorize(Roles = "GererUtilisateur,CreerDroit")]

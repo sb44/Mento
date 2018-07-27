@@ -303,12 +303,15 @@
 
                   if (User.IsInRole("AssignationSuppression"))
                   {
-                      command.Destroy().Text(" ").HtmlAttributes("new {width:20px;}");
+                      //command.Destroy().Text(" ").HtmlAttributes("new {width:20px;}");
+                      command.Destroy().Text(" ");
                   }
 
                   if (User.IsInRole("GererMentores"))
                   {
-                      command.Edit().Text(" ").Visible("ModifierVisible").HtmlAttributes("new {width:20px;}");
+                      //command.Edit().Text(" ").Visible("ModifierVisible").HtmlAttributes("new {width:20px;}");
+                      command.Edit().Text(" ").Visible("ModifierVisible");
+
                   }
 
                   if (User.IsInRole("AssignationCourriel"))

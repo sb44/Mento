@@ -12,11 +12,11 @@
     .Columns(col =>
     {
         col.Bound(c => c.Id).Hidden();
-        col.Bound(c => c.Objectifs).Title("Objectifs priorisés").Encoded(false).Width(280).EditorTemplateName("EditorPlanAction");
-        col.Bound(c => c.Indicateurs).Title("Indicateurs").Encoded(false).EditorTemplateName("EditorPlanAction").Width(120);
-        col.Bound(c => c.Actions).Title("Actions-Étapes \n Moyens-Ressources").Encoded(false).EditorTemplateName("EditorPlanAction");
-        col.Bound(c => c.Echeancier).Title("Échéanciers et suivis à prévoir").Encoded(false).EditorTemplateName("EditorPlanAction").Width(120);
-        col.Bound(c => c.Evaluation).Title("Évaluation de la progression").Encoded(false).EditorTemplateName("EditorPlanAction").Width(110);
+        col.Bound(c => c.Objectifs).Title("Objectifs priorisés").Encoded(false).Width(280);   //col.Bound(c => c.Objectifs).Title("Objectifs priorisés").Encoded(false).Width(280).EditorTemplateName("EditorPlanAction");
+        col.Bound(c => c.Indicateurs).Title("Indicateurs").Encoded(false).Width(120);         //col.Bound(c => c.Indicateurs).Title("Indicateurs").Encoded(false).EditorTemplateName("EditorPlanAction").Width(120);
+        col.Bound(c => c.Actions).Title("Actions-Étapes \n Moyens-Ressources").Encoded(false);//col.Bound(c => c.Actions).Title("Actions-Étapes \n Moyens-Ressources").Encoded(false).EditorTemplateName("EditorPlanAction");
+        col.Bound(c => c.Echeancier).Title("Échéanciers et suivis à prévoir").Encoded(false).Width(120); //col.Bound(c => c.Echeancier).Title("Échéanciers et suivis à prévoir").Encoded(false).EditorTemplateName("EditorPlanAction").Width(120);
+        col.Bound(c => c.Evaluation).Title("Évaluation de la progression").Encoded(false).Width(110);   //col.Bound(c => c.Evaluation).Title("Évaluation de la progression").Encoded(false).EditorTemplateName("EditorPlanAction").Width(110);
         col.Bound(c => c.Ordre).Hidden();
         col.Command(command => { command.Edit().Text(" "); command.Destroy().Text(" "); }).Width(100);
     })
