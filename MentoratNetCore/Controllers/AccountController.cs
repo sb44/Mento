@@ -1550,22 +1550,22 @@ namespace MentoratNetCore.Controllers
                 {
                     ApplicationUser userValide = await _userManager.FindByIdAsync(monUser.Id);
 
-                    if (userValide != null && await _userManager.IsInRoleAsync(monUser, nomRole))
+                    if (userValide != null && await _userManager.IsInRoleAsync(userValide, nomRole))
                     {
                         if (!VerifierSiRoleEnfantAvecDroitsSuperieur(leRole, userValide, lstIdEnfantsNiveauSup))
                         {
                             try
                             {
-                                if (await _userManager.RemoveFromRoleAsync(monUser, nomRole) == IdentityResult.Success)
+                                if (await _userManager.RemoveFromRoleAsync(userValide, nomRole) == IdentityResult.Success)
                                 {
                                     boolRemove = true;
 
                                     //Supprimer les rôles enfants
                                     foreach (var nomEnfant in lstNomEnfants)
                                     {
-                                        if (await _userManager.IsInRoleAsync(monUser, nomEnfant))
+                                        if (await _userManager.IsInRoleAsync(userValide, nomEnfant))
                                         {
-                                            await _userManager.RemoveFromRoleAsync(monUser, nomEnfant);
+                                            await _userManager.RemoveFromRoleAsync(userValide, nomEnfant);
                                         }
                                     }
 
