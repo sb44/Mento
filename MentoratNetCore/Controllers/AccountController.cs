@@ -1409,8 +1409,12 @@ namespace MentoratNetCore.Controllers
 
         [Authorize(Roles = "ParametresDroits")]
         [HttpPost]
-        public async Task<JsonResult> UserToRoles_Add(string nomRole, List<ApplicationUser> userToAdd)
+        //public async Task<JsonResult> UserToRoles_Add(string nomRole, List<ApplicationUser> userToAdd)
+        public async Task<JsonResult> UserToRoles_Add([FromBody] AddUserViewModel vm)
         {
+            string nomRole = vm.nomRole;
+            List<ApplicationUser> userToAdd = vm.userToAdd;
+
           //  var monContext = new ApplicationDbContext();
             string idUserenCours = this.User.FindFirstValue(ClaimTypes.NameIdentifier);// User.Identity.GetUserId();
             bool boolAdd = false;
@@ -1437,9 +1441,9 @@ namespace MentoratNetCore.Controllers
 
                     foreach (var monRole in lstNomRoles)
                     {
-                        if (userValide != null && !await _userManager.IsInRoleAsync(monUser, monRole))
+                        if (userValide != null && !await _userManager.IsInRoleAsync(userValide, monRole))
                         {
-                            await _userManager.AddToRoleAsync(monUser, monRole);
+                            await _userManager.AddToRoleAsync(userValide, monRole);
                             boolAdd = true;
                         }
                     }

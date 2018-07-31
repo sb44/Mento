@@ -5,26 +5,26 @@
     switch (statusCode)
     {
         case 400:
-            statusmessage = "Bad request: The request cannot be fulfilled due to bad syntax";
+            statusmessage = "Mauvaise requête: La requête ne peut être complété car la syntaxe est erronée"; // "Bad request: The request cannot be fulfilled due to bad syntax";
             break;
         case 403:
-            statusmessage = "Forbidden";
+            statusmessage = "Interdit"; // Forbidden
             break;
         case 404:
-            statusmessage = "Page not found";
+            statusmessage = "Page non trouvée"; //"Page not found"; 
             break;
         case 408:
-            statusmessage = "The server timed out waiting for the request";
+            statusmessage = "Le serveur a expiré en attendant la demande"; //"The server timed out waiting for the request";
             break;
         case 500:
-            statusmessage = "Internal Server Error - server was unable to finish processing the request";
+            statusmessage = "Erreur interne du serveur - le serveur n'a pas pu terminer le traitement de la requête"; //"Internal Server Error - server was unable to finish processing the request";
             break;
         default:
-            statusmessage = "That’s odd... Something we didn't expect happened";
+            statusmessage = "C'est étrange ... Nous ne nous attendions pas à quelque chose"; //"That’s odd... Something we didn't expect happened";
             break;
     }
 }
 <div class="jumbotron">
-    <h1>Error @Model</h1>
+    <h1>Erreur @Model</h1>
     <h3>@statusmessage</h3>
 </div>

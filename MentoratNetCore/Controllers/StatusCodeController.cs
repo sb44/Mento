@@ -8,6 +8,10 @@ using Microsoft.Extensions.Logging;
 
 namespace MentoratNetCore.Controllers
 {
+    /// <summary>
+    /// SB: 2018-07-31
+    /// Code pour gestion d'erreur (Mauvaise saisie URL au navigateur / liens brisés) adapté de: " https://gooroo.io/GoorooTHINK/Article/17086/Creating-Custom-Error-Pages-in-ASPNET-core-10/32407#.W2B1BtVKi70 "
+    /// </summary>
     public class StatusCodeController : Controller
     {
         private readonly ILogger<AccueilController> _logger;
